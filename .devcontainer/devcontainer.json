@@ -1,0 +1,6 @@
+{
+    "name": "embedding_translation",
+    "dockerFile": "Dockerfile",
+    "context": "..",
+    "remoteUser": "root"
+}

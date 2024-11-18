@@ -1,0 +1,64 @@
+% 
+\documentclass{article}
+
+% Essential Packages
+\usepackage{amsmath, amssymb}
+\usepackage{mathtools}
+\usepackage{array}
+\usepackage{xparse}       % For advanced command definitions
+\usepackage{hyperref}
+
+% Define Semantic Commands
+\newcommand{\Reals}{\mathbb{R}}
+\newcommand{\defeq}{\coloneqq}
+\newcommand{\defin}{\in}
+
+% Custom Environment for Mathematical Definitions
+\newenvironment{mathdef}{
+    \[
+    \begin{array}{@{}rcl@{\qquad}rcl@{\qquad}rcl@{}}
+}{
+    \end{array}
+    \]
+}
+
+% Command to Add Up to Three Definitions per Row
+\NewDocumentCommand{\defitem}{m m m m m m}{
+    #1 &&\defeq #2 & #3 & \defeq & #4 & #5 & \defeq & #6 \\
+}
+
+\begin{document}
+
+\section*{Mathematical Definitions}
+
+\begin{mathdef}
+    % Row 1: Three Definitions
+    \defitem
+        {G}      {(V, E, w, h)}
+        {G}      {\text{fin. undir. }\textbf{Graph}}
+        {\mathbb{G}} {\{\text{all } G\}}
+    
+    % Row 2: Two Definitions (Third set empty)
+    \defitem
+        {V}      {\textbf{Vertex set}}
+        {E}      {\textbf{Edge set}}
+        {\phantom{x}} {\phantom{x}}
+    
+    % Row 3: Two Definitions with Additional Properties
+    \defitem
+        {w}      {\text{edge }\textbf{weights}}
+        {w_e}    {\Reals \land w_e \defin [-C, C]}
+        {\phantom{x}} {\phantom{x}}
+    \defitem
+        {h}      {\text{node features}} 
+        {h_v}    {\Reals^m \land h_v \defin [-C, C] \quad \forall v \defin V}
+        {\phantom{x}} {\phantom{x}}
+    % Row 4: Single Definition (Other sets empty)
+    \defitem
+        {C}      {(0, \infty)}
+        {\phantom{x}}       {\phantom{x}}
+        {\phantom{x}}       {\phantom{x}}
+\end{mathdef}
+
+\end{document}
+% 
