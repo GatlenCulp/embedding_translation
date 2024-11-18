@@ -2,4 +2,14 @@
     "remote.SSH.configFile": "${workspaceFolder}/secrets/config.ssh",
     // For ML
     "tensorBoard.logDirectory": "${workspaceFolder}/src/tensorboard/runs",
+    "workbench.colorCustomizations": {
+        "editor.lineHighlightBackground": "#1073cf2d",
+        "editor.lineHighlightBorder": "#9fced11f",
+        "statusBar.background": "#28632b",
+        "statusBar.foreground": "#ffffff",
+        "statusBarItem.hoverBackground": "#327e36",
+        "activityBar.background": "#46250D",
+        "titleBar.activeBackground": "#623413",
+        "titleBar.activeForeground": "#FEFBF9"
+    },
 }
