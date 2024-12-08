@@ -1,0 +1,221 @@
+\documentclass[9pt,letterpaper]{article}
+\input{preamble}
+% Required
+\newcommand{\assignmentClass}{6.7960} % Course/class
+\newcommand{\assignmentTitle}{Final Project Proposition \\ The Alignment of Semantic Representations Across Language Models} % Assignment title or name
+\newcommand{\assignmentCollaborators}{ChatGPT o1-preview}  % List of collaborators
+\newcommand{\assignmentResources}{None}      % List of resources used
+
+% Optional (comment lines to remove)
+\newcommand{\assignmentClassInstructor}{Isola and Beery} % Intructor name/time/description
+\newcommand{\assignmentDueDate}{Thursday,\ November\ 14,\ 2024} % Due date
+
+\begin{document}
+
+% The final project will be a research project on a deep learning topic of your choice.
+% You will run experiments and do analysis to explore your research question. You will then write up your research in the format of a blog post, which will include an explanation of the background material, the new investigations, and the results you found.
+% You are encouraged to include plots, animations, and interactive graphics to make your findings clear. Some examples of nice research blog posts are here: [1] [2] [3] [4].
+% The final project will be graded for clarity and insight as well as novelty and depth of the experiments and analysis. Detailed guidance will be given later in the semester.
+
+% https://karpathy.github.io/2015/05/21/rnn-effectiveness/
+
+% Submit a pro-
+% posal as a one page pdf. Provide an outline of your plan for the project and questions
+% you will investigate / analysis you’ll conduct in the course of it. It may help to define a
+% set of hypotheses you will test. An integral aspect of the proposal is to define a project
+% idea that is both realistic and ambitious in scope. We recommend that you use the
+% project proposal stage to get feedback from the teaching staff on the project’s feasibility
+% and whether the proposal satisfies the project expectations of the class.
+
+%-------------------------------------------------------- --------------------------------
+%  TITLE PAGE
+%----------------------------------------------------------------------------------------
+
+\maketitle % Print the title page
+
+\thispagestyle{empty} % Suppress headers and footers on the title page
+
+\newpage
+
+\section*{Introduction}
+
+Recent advances in Large Language Models (LLMs) have demonstrated their remarkable ability to capture and manipulate semantic information. However, a fundamental question remains unexplored: to what extent do different LLMs learn similar semantic representations despite variations in architecture, training data, and initialization? This question intersects with the broader theoretical framework of the Platonic Representation Hypothesis (PRH), which suggests the existence of universal semantic features that manifest across different models and modalities \cite{huh_platonic_2024}.
+
+There is ample evidence supporting the idea that representations may be similar to some degree. Some notable observations include:
+\begin{itemize}
+    \item The emergence of \textbf{functionally similar components across neural networks}, such as induction heads across different language transformer architectures \cite{olsson2022context}. This was verified at multiple scales (albeit small, relative to today's deployed Transformers) and with slightly architectural differences and different initialization. Analogous similarities have been observed for convolutional neural networks (in the vision setting) where curve detectors \cite{cammarata_curve_2020}, high-low frequency detectors \cite{schubert2021high-low}, and other common patterns \cite{olah2020zoom} have been found across different neural network instances, despite variations in architecture, size, and random initialization. We believe that functionally similar components likely correspond to similar representations (in activation space) and the language setting is less explored relative to the vision setting.
+    \item \textbf{Some research has indeed found similar representations across transformers and even similar behaviors to humans}. For example, consistent attention patterns when processing similar semantic concepts \cite{eberle-etal-2022-transformer} (consistent also with respect to human labels) have been observed. In the vision domain, other work has found that with only linear mappings it is possible to translate between representation spaces in ResNets with an eye on \textit{interoperability} \cite{hernandez_model_2023} \cite{bansal_revisiting_2021}. However, we should note that the field is not settled as there are alternate findings that suggest that more nuance may exist (thus meriting our work as useful in clarifying the extent to which representations align across language models) \cite{Klabunde2023TowardsMR}.
+    \item \textbf{Red-teaming efforts have often found that attacks transfer across different models}---even when trained on smaller, open source models like the Llama series, adaptive red-teaming attacks have found jailbreak prompts that work on black-box models from OpenAI and Anthropic \cite{zou_universal_2023} \cite{andriushchenko_jailbreaking_2024} \cite{chao_jailbreaking_2024} \cite{mehrotra_tree_2024}. We believe that this transfer may be due to underlying patterns in the data distribution. If so, this would explain why multiple models are vulnerable to the same, often odd and unexpected, adversarial examples.
+\end{itemize}
+
+There are also another couple of things to note that make us excited about our specific focus for this project:
+\begin{enumerate}
+    \item In the context of mechanistic interpretability (MI), there is a \textbf{feature superposition theory}, where multiple semantic features are compressed into individual neurons, we can conceptualize an idealized "platonic model" with perfectly disentangled representations \cite{anthropic}. This framework suggests that existing models might be various compressions of these fundamental platonic features, with different architectures and training procedures leading to different manifestations of the same underlying semantic structure. The recent proliferation and success of SAEs \cite{cunningham_sparse_2023} offers tentative evidence of the possible correctness of the proposition.
+    \item Over the past decade there has been a \textbf{proliferation and improvement of representational similarity tooling} such as CKA \cite{kornblith_similarity_2019}, stitching \cite{bansal_revisiting_2021}, CCA \cite{noauthor_canonical_2024} (and its deep counterpart \cite{andrew_deep_2013}), Orthogonal Procrustes and others \cite{box-rep-sim}. The (human/biological) neural representations community has also been involved in the exploration of representational similarity measures \cite{haxby_decoding_2014} \cite{kriegeskorte_representational_2008} \cite{yousefnezhad_deep_2021}.
+\end{enumerate}
+
+If representations are indeed (approximately) universal, then we can leverage this to cheaply translate between different models' embeddings\footnote{By embedding we mean the output of an embedding model, not the embedding layer of a autoregressive language model.}. \textbf{Our project proposes to both explore the extent to which representations are similar across moderately-sized different language models used in the real world (such as huggingface embedding models, finetuned Llama models, and OpenAI embedding models, among others) \textit{and also} leverage our findings to cheaply translate between different model representations if possible.} We explain why this is desireable in the motivation section below \ref{section:motivation}. We note that despite the various contributions we cite above, \textbf{this is a young field and much is still unknown, especially about transformer-based language models which offer a challenging, real-world use-case of representations.} Their popularity and applicability to many settings means that our work can not only be more rigorously tested, but also become useful to others (more on the latter point in the motivation section below \ref{section:motivation}).
+
+\section*{Motivation} \label{section:motivation}
+
+This project was directly inspired by \textit{practical challenges} encountered while working on MantisAI \cite{noauthor_mantis_nodate}, where we recognized the massive potential benefit of being able to utilize embeddings from smaller, cheaper models while maintaining the semantic richness of larger, more expensive models. In our use-case we-specifically had a lot of precomputed embeddings from an older language model, but wanted to leverage newer embedding models without having to fully compute their outputs on each body of writing. Specifically, we wanted to be able to cheaply translate the existing embeddings into the new embedding space to create visualizations to aid in data visualization for our customers. This was relevant, because newer data-points would get encoded using the newer, more nuanced (and generally better) models.
+
+If successful, these translations could provide us with a model cost increase proportional to the size of the dataset: a lot.
+
+\textbf{Our experiments is simply to try and train such translation layers to see whether this technique works. We provide more details below in the methodology section \ref{section:methodology}. At the same time we plan to leverage existing representational similarity techniques to understand whether and to what extent models we compare are behaving similarly.} Both these results will be not only of practical use but also of theoretical significance.
+
+\textbf{Theoretical Significance:}
+\begin{itemize}
+    \item \textbf{Platonic Representation Hypothesis:} Investigate the extent to which different LLMs share semantic representations, potentially validating or refining our understanding of universal features in neural networks
+    \item \textbf{Model Compression Understanding:} Explore whether smaller models' representations can be viewed as compressed versions of larger models' representations
+    \item \textbf{Architecture Impact:} Understand how different architectural choices affect semantic representation, potentially informing future model design
+\end{itemize}
+
+\textbf{Practical Applications:}
+\begin{itemize}
+    \item \textbf{Cost-Effective Computing:} Enable the re-use of cheaper models' embeddings and avoid pre-computing embeddings fully every time a new model comes out (by leveraging translation).
+    \item \textbf{Standardized Embeddings:} Develop foundation for a standardized embedding space where datasets could be published with precomputed embeddings, saving significant compute resources. Push the field forward in standardization and best practices.
+    \item \textbf{Model Distillation:} Inform new approaches to model distillation by understanding how semantic information is preserved across model scales. Specifically, when exploring how representations compare across models, we can find human-interpretable features that they are more or less sensitive to as a function of scale. Helping the broader community improve its intuitions on the fuzzy scaling laws for real world tasks (as opposed to loss or static benchmarks) in the context of semantic models, can help developers better select the model size they use for their use-case, leading to cost-savings and better, more reliable, products.
+\end{itemize}
+
+\textbf{Research Questions:}
+\begin{itemize}
+    \item How does translation loss vary with relative model scale? Small translation models with low loss would suggest practical utility for our data visualization use-case. We hypothesize this is possible for common uses-cases.
+    \item Which domains show minimal vs. maximal translation loss? This could reveal where models diverge in their representational strategies. We do not have a concrete hypothesis for this specific question and are curious to explore.
+    \item Can we identify systematic patterns in hard-to-translate samples, potentially revealing fundamental differences in how models process certain types of information? We hypothesize that more capturing subtle nuances requires larger models, and that, thus, smaller models will fail in these cases, causing difficulties in translation since it's ambiguous what to translate to.
+    \item How complicated do translations need to be? This might help us understand how architecture or random initialization affects learning to postulate theoretical advances in our understanding of deep learning models. It could help us standardize embeddings.
+\end{itemize}
+
+\section*{Methodology} \label{section:methodology}
+
+\begin{enumerate}
+    \item \textbf{Primary Investigation:} Train a translation function $T$ that maps embeddings from model $f_A$ to model $f_B$:
+    \begin{equation}
+        T: \mathcal{E}_A \rightarrow \mathcal{E}_B \text{ s.t. } \|T(f_A(x)) - f_B(x)\|_2 < \epsilon
+    \end{equation}
+    where $\mathcal{E}_A, \mathcal{E}_B$ represent the embedding spaces of models A and B respectively and $x$ is textual data.
+
+    \item \textbf{Systematic Evaluation:} Analyze translation quality across:
+    \begin{itemize}
+        \item Language Model scales ($10^7$ to $10^{11}$ parameters)
+        \item Architectures (BERT, GPT, T5, PaLM) and layers
+        \item Translation Model Sizes and types (Linear baseline, varying depth/width)
+        \item Diverse textual data (news, papers, social media, code)
+    \end{itemize}
+\end{enumerate}
+
+At the same time we plan to use data representation similarity techniques such as CKA and data subsample kernels to get reasonable sanity checks and evaluate whether models behave differently from an operational standpoint. The specific techniques we use here are TBD based on our needs and concrete implementations.
+
+\section*{Timeline}
+\begin{itemize}
+    \item \textbf{Week 1:} Literature review, setup, data pipeline development
+    \item \textbf{Week 2:} Translation network implementation and training. Design basic evaluations using representational similarity techniques to test for our hypotheses mentioned above.
+    \item \textbf{Week 3:} Evaluation and Analysis (cosine similarity preservation, MSE loss, nearest neighbors, etc...). Here we will also evaluate on our evaluations.
+    \item \textbf{Week 4:} Visualization (UMAP projection of embedding spaces) and blog post.
+\end{itemize}
+
+\section*{Conclusion}
+
+To recapitulate, this project will contribute to our understanding of semantic representations in (embedding) LLMs while potentially enabling more efficient use of computational resources through embedding translation. The findings could have significant implications for both theoretical understanding of language models and practical applications in model design and optimization.
+
+We proposed the following ideas, reasons, and plans:
+\begin{enumerate}
+    \item \textbf{Motivation}: increased computational efficiency for data visualization use-cases and both theoretical and praxis improvements.
+    \item \textbf{Positioning relative to prior work, what is the key novelty}: we are focus on language model use-cases that are relatively under-explored. We stand on the shoulders of giants by utilizing the existing representational similarity techniques and porting over translation (stitching) to our new use-case.
+    \item \textbf{Clear hypothesis or question you will investigate}: we hypothesize that smaller models' representations approximate larger models' while missing on increasingly larger nuances as the smaller model becomes smaller with the larger one held fixed. We also hypothesize that translation is possible and usable for data visualization uses-cases.
+    \item \textbf{Planned set of experiments}: we will trial with smaller models and move to larger ones. We will begin with simple translations and move on to larger ones. We will continually leverage representational similarity tooling and seek to understand why our findings are as they are.
+    \item \textbf{Well scoped, realistic and ambitious}: we believe this is. If not, contact us.
+\end{enumerate}
+and hope that the reader will be as excited about the possible benefits of this project as we are.
+
+% \section*{Research Objectives}
+
+% This project aims to quantitatively investigate the alignment of semantic representations across LLMs through the following objectives:
+
+% \begin{enumerate}
+%     \item \textbf{Primary Investigation:} Train a translation function $T$ that maps embeddings from model $f_A$ to model $f_B$:
+%     \begin{equation}
+%         T: \mathcal{E}_A \rightarrow \mathcal{E}_B \text{ s.t. } \|T(f_A(x)) - f_B(x)\|_2 < \epsilon
+%     \end{equation}
+%     where $\mathcal{E}_A, \mathcal{E}_B$ represent the embedding spaces of models A and B respectively.
+
+%     \item \textbf{Translation Quality Analysis:} Minimize the expected translation error (MSE):
+%     \begin{equation}
+%         \min_T \mathbb{E}_{x \sim \mathcal{D}} \|T(f_A(x)) - f_B(x)\|_2^2
+%     \end{equation}
+
+%     \item \textbf{Systematic Evaluation:} Analyze translation quality across:
+%     \begin{itemize}
+%         \item Language Model scales ($10^7$ to $10^{11}$ parameters)
+%         \item Architectures (BERT, GPT, T5, PaLM)
+%         \item Pre-training objectives (MLM, CLM, span prediction)
+%         \item Various layers/depths within models
+%         \item Translation Model Sizes (Linear baseline, scale depth and width)
+%         \item Diverse textual data (news, scientific papers, social media, code)
+%     \end{itemize}
+% \end{enumerate}
+
+% \section*{Motivation and Practical Applications}
+
+% This research is motivated by both theoretical interests and practical applications:
+
+% \begin{itemize}
+%     \item \textbf{Theoretical Understanding:} Investigate the extent to which different LLMs share semantic representations, contributing to the validation or refinement of the Platonic Representation Hypothesis.
+    
+%     \item \textbf{Practical Applications:} Developed from experience with MantisAI \cite{noauthor_mantis_nodate}, where efficient embedding translation could enable:
+%     \begin{itemize}
+%         \item Cost-effective use of embeddings by translating between cheap and expensive models
+%         \item Development of standardized embedding spaces for dataset publication
+%         \item More efficient model distillation techniques
+%     \end{itemize}
+    
+%     \item \textbf{Research Implications:} Understanding where and why translation loss is minimized or maximized could reveal:
+%     \begin{itemize}
+%         \item Fundamental similarities in how different models encode semantic information
+%         \item Domains where models diverge in their representational strategies
+%         \item Potential optimization strategies for model architecture design
+%     \end{itemize}
+% \end{itemize}
+
+% \section*{Timeline and Deliverables}
+
+% \begin{itemize}
+%     \item \textbf{Week 1 - Foundation} (November 15-21):
+%     \begin{itemize}
+%         \item Comprehensive literature review
+%         \item Environmental setup and data pipeline development
+%         \item Initial model selection and embedding generation
+%     \end{itemize}
+
+%     \item \textbf{Week 2 - Implementation} (November 22-28):
+%     \begin{itemize}
+%         \item Translation network implementation
+%         \item Training pipeline development
+%         \item Preliminary results collection
+%     \end{itemize}
+
+%     \item \textbf{Week 3 - Analysis} (November 29-December 5):
+%     \begin{itemize}
+%         \item Comprehensive evaluation across multiple metrics\\(cosine similarity preservation, MSE loss, nearest neighbor accuracy)
+%         \item Investigation of systematic failure modes
+%         \item Initial blog post draft
+%     \end{itemize}
+
+%     \item \textbf{Week 4 - Documentation} (December 6-12):
+%     \begin{itemize}
+%         \item Extended analysis of interesting findings
+%         \item Interactive visualization development\\(including UMAP projection of embedding spaces)
+%         \item Final blog post preparation
+%     \end{itemize}
+% \end{itemize}
+
+% \section*{Conclusion}
+
+% This project will contribute to our understanding of semantic representations in LLMs while potentially enabling more efficient use of computational resources through embedding translation. The findings could have significant implications for both theoretical understanding of language models and practical applications in model design and optimization.
+
+
+\newpage
+\bibliographystyle{plainnat}
+\bibliography{tex/references}
+
+\end{document}
