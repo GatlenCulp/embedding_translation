@@ -1,17 +1,15 @@
 [tool.poetry]
 
-name = "Embedding Translation"
+name = "embedding-translation"
 version = "0.0"
 description = "A final project for MIT's Deep Learning class"
 
-packages = [{ include = "embedding_translation" }]
+packages = [{ include = "src" }]
 
 license = "MIT"
 authors = ["Gatlen Culp, Adriano Hernandez <GatlenCulp@gmail.com>"]
 
 readme = "README.md"
-homepage = "https://pypi.org/project/Embedding Translation"
-documentation = "https://Embedding Translation.readthedocs.io"
 repository = "https://github.com/GatlenCulp/embedding_translation"
 
 keywords = [
@@ -28,7 +26,6 @@ classifiers = [
 
 
 [tool.poetry.dependencies]
-python = "^{{cookiecutter.python_major_version}}.{{cookiecutter.python_minor_version}}"
 
 # === Core Framework Dependencies ===
 typer = "^0.15.1"     # Modern CLI framework (built on Click/Pydantic)
@@ -36,6 +33,10 @@ rich = "^13.9.4"      # Terminal formatting and styling
 pydantic = ">=1.10.8" # Data validation using type annotations
 typeguard = "^4.2.1"  # Runtime type checking
 wrapt = "^1.17.0"     # Advanced Python decorators
+# might need this https://pypi.org/project/absl-py/
+# or pip install google-re2
+# google-re2 = "^1.1.20240702" not working for me
+# absl-py = "^2.1.0"
 
 # === Web & API ===
 # fastapi = "^0.115.6"       # Fast modern web framework for building APIs
@@ -61,7 +62,7 @@ ipywidgets = "^8.1.5" # Interactive Jupyter widgets
 # cookiecutter = "^2.6.0" # Project scaffolding
 
 # -- Workflow Management --
-apache-airflow = "^2.10.3" # Workflow orchestration
+# apache-airflow = "^2.10.3" # Workflow orchestration (not working for me)
 
 # -- Logging --
 loguru = "^0.7.3"        # Enhanced logging
@@ -154,7 +155,7 @@ typecheck = { cmd = "pyright", help = "Typecheck" }
 
 [tool.poetry.scripts]
 
-embedding_tranlation = "embedding_translation.cli:main"
+embedding_tranlation = "src:main"
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
