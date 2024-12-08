@@ -1,3 +1,7 @@
+[project]
+name = "embedding-translation"
+requires-python = ">=3.11,<3.13"
+
 [tool.poetry]
 
 name = "embedding-translation"
@@ -76,26 +80,24 @@ poethepoet = "*" # Task runner for Poetry projects (similar to npm scripts)
 
 # === Optional Dependencies ===
 # -- Data Processing --
-# polars = "^1.16.0"     # High-performance DataFrame library with Rust backend
-# tomli = "*"            # TOML parser (only needed for Python <3.11)
-# orjson = "^3.10.12"    # Rust-based JSON parser optimized for Python
+tomli = "*"            # TOML parser (only needed for Python <3.11)
 
 # -- HTTP & Networking --
 # requests = "^2.31.0"   # Industry-standard HTTP client library
 
 # -- AI/ML Stack --
 # langchain = "^0.3.9"   # Framework for LLM application development
-# transformers = "^4.47.0"  # HuggingFace's state-of-the-art ML models
+transformers = "^4.47.0"  # HuggingFace's state-of-the-art ML models
 # torch = "^2.5.1"         # Deep learning framework (CPU/GPU)
-# datasets = "^3.1.0"      # HuggingFace's dataset management
-# jaxtyping = "^0.2.36"    # Type hints for numerical arrays
-# einops = "^0.8.0"        # Einstein-inspired array operations
+datasets = "^3.1.0"      # HuggingFace's dataset management
+jaxtyping = "^0.2.36"    # Type hints for numerical arrays
+einops = "^0.8.0"        # Einstein-inspired array operations
 # ell-ai = "^0.0.15"      # Toolkit for LLM prompt engineering
 # megaparse = "^0.0.48"   # Document parsing and extraction
-# chime = "^0.7.0"        # Audio notifications for long-running tasks
+chime = "^0.7.0"        # Audio notifications for long-running tasks
 
 # -- Data Visualization --
-# plotly = "^5.24.1"     # Interactive visualization library
+plotly = "^5.24.1"     # Interactive visualization library
 # dash = "^2.18.2"       # Web-based analytics applications
 # jupyterlab = "^4.3.2"  # Modern notebook interface and IDE
 
