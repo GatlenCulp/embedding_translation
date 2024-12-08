@@ -1,6 +1,10 @@
 [project]
 name = "embedding-translation"
 requires-python = ">=3.11,<3.13"
+dependencies = [
+    "nbqa",
+    "tokenize-rt",
+]
 
 [tool.poetry]
 
@@ -138,6 +142,7 @@ poethepoet = "*"  # Task running
 nbqa = "^1.9.1"         # Notebook code quality
 jupyter-book = "^1.0.3" # Notebook publishing
 testbook = "^0.4.2"     # Notebook testing
+# %pip install gdown
 
 [tool.poe.tasks]
 check = { help = "All checks", sequence = [
@@ -225,7 +230,7 @@ ignore = [
     "INP001", # __init__.py
     "ISC001", # Conflicts with ruff format
     "PGH003", # Type ignore
-    "TCH002", # Type checking imports
+    "TC002", # Type checking imports
     "TD002",  # Allow TODO
     "TD003",  # Allow TODO
     "E203",   # Whitespace before ':' (black formats this differently)
@@ -299,7 +304,6 @@ convention = "google"
 
 [tool.ruff.lint.flake8-quotes]
 docstring-quotes = "double"
-inline-quotes = "single"
 
 [tool.ruff.lint.isort]
 force-single-line = true
@@ -339,3 +343,9 @@ exclude = '\.venv'
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "pip>=24.3.1",
+    "uv>=0.5.7",
+]

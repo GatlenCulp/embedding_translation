@@ -1,5 +1,3 @@
-'''
-test.example.py
-'''
+"""test.example.py"""
 
 print("Test passed!")
