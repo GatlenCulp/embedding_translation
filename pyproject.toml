@@ -26,88 +26,313 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
 ]
 
+
 [tool.poetry.dependencies]
+python = "^{{cookiecutter.python_major_version}}.{{cookiecutter.python_minor_version}}"
 
-python = "^3.12"
+# === Core Framework Dependencies ===
+typer = "^0.15.1"     # Modern CLI framework (built on Click/Pydantic)
+rich = "^13.9.4"      # Terminal formatting and styling
+pydantic = ">=1.10.8" # Data validation using type annotations
+typeguard = "^4.2.1"  # Runtime type checking
+wrapt = "^1.17.0"     # Advanced Python decorators
 
-# TODO: Remove these and add your library's requirements
-click = "*"
-minilog = "*"
+# === Web & API ===
+# fastapi = "^0.115.6"       # Fast modern web framework for building APIs
+# playwright = "^1.49.0"     # Modern browser automation and testing
+# zrok = "^0.4.42"           # Self-hosted ngrok alternative for local development
+# beautifulsoup4 = "^4.12.3" # HTML parsing and web scraping
+# requests = "^2.31.0"       # HTTP client library (recommended for its simplicity)
+
+# === Data & Scientific Computing ===
+numpy = "^2.1.3"    # Scientific computing and array operations
+networkx = "^3.4.2" # Graph/network analysis and visualization
+polars = "^1.16.0"  # Fast DataFrame library (recommended over pandas for performance)
+orjson = "^3.10.12" # High-performance JSON parser (recommended for data processing)
+
+# === Development Tools ===
+# -- Interactive Computing --
+ipython = "^7.12.0"   # Enhanced Python REPL
+ipykernel = "^6.29.5" # Jupyter kernel
+ipywidgets = "^8.1.5" # Interactive Jupyter widgets
+
+# -- Templating --
+# Jinja2 = "^3.1.4"       # Template engine
+# cookiecutter = "^2.6.0" # Project scaffolding
+
+# -- Workflow Management --
+apache-airflow = "^2.10.3" # Workflow orchestration
+
+# -- Logging --
+loguru = "^0.7.3"        # Enhanced logging
+loguru-config = "^0.1.0"
+
+# -- Config --
+gin-config = "^0.5.0" # EXPERIMENTAL: configuration library
+
+# === Task Running ===
+poethepoet = "*" # Task runner for Poetry projects (similar to npm scripts)
+
+# === Optional Dependencies ===
+# -- Data Processing --
+# polars = "^1.16.0"     # High-performance DataFrame library with Rust backend
+# tomli = "*"            # TOML parser (only needed for Python <3.11)
+# orjson = "^3.10.12"    # Rust-based JSON parser optimized for Python
+
+# -- HTTP & Networking --
+# requests = "^2.31.0"   # Industry-standard HTTP client library
+
+# -- AI/ML Stack --
+# langchain = "^0.3.9"   # Framework for LLM application development
+# transformers = "^4.47.0"  # HuggingFace's state-of-the-art ML models
+# torch = "^2.5.1"         # Deep learning framework (CPU/GPU)
+# datasets = "^3.1.0"      # HuggingFace's dataset management
+# jaxtyping = "^0.2.36"    # Type hints for numerical arrays
+# einops = "^0.8.0"        # Einstein-inspired array operations
+# ell-ai = "^0.0.15"      # Toolkit for LLM prompt engineering
+# megaparse = "^0.0.48"   # Document parsing and extraction
+# chime = "^0.7.0"        # Audio notifications for long-running tasks
+
+# -- Data Visualization --
+# plotly = "^5.24.1"     # Interactive visualization library
+# dash = "^2.18.2"       # Web-based analytics applications
+# jupyterlab = "^4.3.2"  # Modern notebook interface and IDE
 
 [tool.poetry.dev-dependencies]
+# === Testing Framework ===
+pytest = "^8.1"                # Testing foundation
+pytest-mock = "^3.14.0"        # Mocking support
+pytest-random-order = "^1.1.1" # Randomized test ordering
+pytest-cov = "^6.0.0"          # Coverage reporting
+pytest-timeout = "^2.3.1"      # Test timeout control
+pytest-profiling = "^1.8.1"    # Performance profiling
+pytest-shutil = "^1.8.1"       # Filesystem utilities
+pytest-sugar = "^1.0.0"        # Enhanced test output
+pytest-icdiff = "^0.9"         # Improved diff output
+pytest-split = "^0.10.0"       # Parallel test execution
+pytest-cases = "^3.8.6"        # Better parameterization
+pytest-playwright = "^0.6.2"   # Browser testing
 
-# Formatters
-black = "^22.1"
-tomli = "*" # missing 'black' dependency
-isort = "^5.10"
+# === Code Quality ===
+ruff = "^22.1"          # Fast linter & formatter
+pyright = "^1.1.390"    # Static type checker
+bandit = "^1.8.0"       # Security Linter
+pydoclint = "*"         # Docstring linter
+hypothesis = "^6.122.1" # Property-based testing
+pyinstrument = "^0.4.0" # Profiling tool with GUI and well maintained
+taplo = "^0.9.3"        # TOML linting and formatting
 
-# Linters
-mypy = "^1.0"
-pydocstyle = "^6.1"
-pylint = "~2.15"
-pylint-pytest = "*"
-wrapt = "*" # missing 'pylint' dependency
+# === Documentation ===
+mkdocs = "^1.6.1"           # Documentation generator
+mkdocs-material = "^9.5.47" # Material theme
+mdformat = "^0.7.19"        # Markdown formatter
 
-# Testing
-pytest = "^8.1"
-pytest-describe = "^2.0"
-pytest-expecter = "^3.0"
-pytest-random = "*"
-pytest-cov = "^4.1"
-freezegun = "*"
+# === Build & Distribution ===
+# pyinstaller = "*" # Executable creation
+poethepoet = "*"  # Task running
 
-# Reports
-coveragespace = "^6.1"
+# === Notebook Tools ===
+nbqa = "^1.9.1"         # Notebook code quality
+jupyter-book = "^1.0.3" # Notebook publishing
+testbook = "^0.4.2"     # Notebook testing
 
-# Documentation
-mkdocs = "~1.3"
-pygments = "^2.11.1"
+[tool.poe.tasks]
+check = { help = "All checks", sequence = [
+    "check-lock",
+    "docstring-lint",
+    "format",
+    "lint",
+    "test",
+    "typecheck",
+], ignore_fail = false }
+format = { cmd = "ruff format .", help = "Format code (with autofix)" }
+lint = { cmd = "ruff check . --fix", help = "Lint (with autofix)" }
+docstring-lint = { cmd = "pydoclint .", help = "Lint docstrings" }
+test = { cmd = "pytest", help = "Run tests" }
+typecheck = { cmd = "pyright", help = "Typecheck" }
 
-# Tooling
-pyinstaller = "*"
-sniffer = "*"
-MacFSEvents = { version = "*", platform = "darwin" }
-pync = { version = "*", platform = "darwin" }
-ipython = "^7.12.0"
 
 [tool.poetry.scripts]
 
-Embedding Translation = "embedding_translation.cli:main"
-
-[tool.black]
-
-quiet = true
-
-[tool.isort]
-
-profile = "black"
-
-[tool.mypy]
-
-ignore_missing_imports = true
-no_implicit_optional = true
-check_untyped_defs = true
-
-cache_dir = ".cache/mypy/"
+embedding_tranlation = "embedding_translation.cli:main"
 
 [tool.pytest.ini_options]
-
+pythonpath = ["src"]
+testpaths = ["src"]
 addopts = """
---strict-markers
-
--r sxX
---show-capture=log
-
+--show-capture=no
+--code-highlight=yes
+--tb=long
+--cache-dir=.cache/pytest/
+-rA
+-x
+--doctest-modules
+--cov=src
 --cov-report=html
 --cov-report=term-missing:skip-covered
 --no-cov-on-fail
 """
+markers = [
+    "potentially_harmful: mark test as potentially harmful to the system (uninstalls, etc.)",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::UserWarning",
+    "ignore::pydantic.warnings.PydanticDeprecatedSince20",
+]
 
-cache_dir = ".cache/pytest/"
+[tool.ruff]
+cache-dir = ".cache/ruff"
+line-length = 88
+extend-include = ["*.ipynb"]
+target-version = "py312"
 
-markers = []
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+]
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    "COM812", # Conflicts with ruff format
+    "F722",   # Forward annotations
+    "FA102",  # Annotations support
+    "FBT001", # Bool args for Fire CLI
+    "FBT002", # Bool args for Fire CLI
+    "FIX002", # Allow TODO
+    "INP001", # __init__.py
+    "ISC001", # Conflicts with ruff format
+    "PGH003", # Type ignore
+    "TCH002", # Type checking imports
+    "TD002",  # Allow TODO
+    "TD003",  # Allow TODO
+    "E203",   # Whitespace before ':' (black formats this differently)
+    "E266",   # Too many leading '#' for block comment
+    "E501",   # Line too long (using B950 instead)
+    "E731",   # Do not assign lambda expression
+    "E741",   # Ambiguous variable name
+]
+
+fixable = [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "I",
+    "N",
+    "Q",
+    "S",
+    "T",
+    "W",
+    "ANN",
+    "ARG",
+    "BLE",
+    "COM",
+    "DJ",
+    "DTZ",
+    "EM",
+    "ERA",
+    "EXE",
+    "FBT",
+    "ICN",
+    "INP",
+    "ISC",
+    "NPY",
+    "PD",
+    "PGH",
+    "PIE",
+    "PL",
+    "PT",
+    "PTH",
+    "PYI",
+    "RET",
+    "RSE",
+    "RUF",
+    "SIM",
+    "SLF",
+    "TCH",
+    "TID",
+    "TRY",
+    "UP",
+    "YTT",
+]
+unfixable = []
+
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"] # Allow unused imports in __init__.py
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.ruff.lint.pycodestyle]
+max-doc-length = 88
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.flake8-quotes]
+docstring-quotes = "double"
+inline-quotes = "single"
+
+[tool.ruff.lint.isort]
+force-single-line = true
+lines-after-imports = 2
+
+[tool.ruff.lint.pylint]
+max-args = 5
+max-branches = 12
+max-locals = 15
+max-public-methods = 20
+max-returns = 6
+max-statements = 50
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+docstring-code-format = true
+docstring-code-line-length = 88
+
+[tool.pyright]
+include = ["."]
+reportMissingTypeStubs = false
+reportUnknownArgumentType = false
+reportUnknownMemberType = false
+reportUnknownParameterType = false
+reportUnknownVariableType = false
+
+[tool.pydoclint]
+style = "google"
+arg-type-hints-in-docstring = false
+check-return-types = false
+allow-init-docstring = true
+exclude = '\.venv'
 
 [build-system]
-
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
