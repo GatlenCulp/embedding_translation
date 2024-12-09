@@ -28,7 +28,16 @@ from pathlib import Path
 from src.viz.dimensionality_reduction import visualize_embeddings
 
 
+PROJ_ROOT = Path(__file__).parent.parent
+
+
 def dataviz_pipeline(data_path: Path) -> None:
     """Runs entire data visualization pipeline on saved data."""
     embeddings_dict = {}
     visualize_embeddings(embeddings_dict=embeddings_dict)
+
+
+def main() -> None:
+    """Runs dataviz pipeline with default config."""
+    data_path = PROJ_ROOT / "data" / "data.json"
+    dataviz_pipeline(data_path)
