@@ -32,10 +32,11 @@ class DatasetEvaluation(BaseModel):
     1. Sample n random datapoints
     2. Generate similarity matrix of these datapoints
     """
-    dataset_info: EmbeddingDatasetInformation
+    test_dataset: EmbeddingDatasetInformation = Field(description="")
     top_k_metrics: dict[int, float]  # Maps k -> score for different k values
     label_accuracy: float  # How often desired document appears in results
     query_performance: dict[str, float]  # Maps query_id -> relevance score
+
 
 
 class SimilarityMatrixEvaluation(BaseModel):
@@ -48,7 +49,7 @@ class SimilarityMatrixEvaluation(BaseModel):
     similarity_matrix: list[list[float]] = Field(description="n x n matrix of similarity scores")
     sample_size: int = Field(description="n samples chosen")
     record_ids: list[str] = Field(description="List of n record ids used for comparison")
-    similarity_function: Literal["normalized_dot_product"] = Field(description="Name of similarity function used")
+    similarity_function: Literal["normalized_dot_product", "cosine_distance"] = Field(description="Name of similarity function used")
 
 
 class SimilarityMatrixPairwaseEvaluation(BaseModel):
