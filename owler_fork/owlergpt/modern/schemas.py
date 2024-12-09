@@ -110,6 +110,7 @@ class EmbeddingDatasetInformation(BaseModel):
     # 2. make good way of storing this shit in folders
     # 3. make sure to give a unique id to each embedding
     # 4. train
+    # XXX :::::::::::::::::::::: files to be updated include (1) `train_linear_transforms_ds.py` and `schemas.py` here which might move.
     # XXX todo what is this
     # @staticmethod
     # def dataset_from_chromadb(self, chromadb_collection_name: str) -> Dataset:
@@ -146,40 +147,6 @@ class ExperimentConfig(BaseModel):
     # Architecture config
     architecture: Literal["affine"] = "affine"  # <--- which class
     architecture_config: Optional[Dict[str, Any]] = None  # <--- which kwargs for class
-
-################################ STITCHES AVAILABLE ################################
-
-class StitchNNModule(nn.Module):
-    """Parent of all stitches."""
-
-    def __init__(
-        self,
-        embedding_dataset_information_src: EmbeddingDatasetInformation,
-        embedding_dataset_information_target: EmbeddingDatasetInformation,
-    ):
-        raise NotImplementedError("Stitch is an abstract class")
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        raise NotImplementedError("Stitch is an abstract class")
-
-
-class AffineStitch(StitchNNModule):
-    """
-    A linear layer wrapper.
-    """
-
-    def __init__(
-        self,
-        embedding_dataset_information_src: EmbeddingDatasetInformation,
-        embedding_dataset_information_target: EmbeddingDatasetInformation,
-    ):
-        super().__init__()
-        self.source_dim = embedding_dataset_information_src.model_dimension
-        self.target_dim = embedding_dataset_information_target.model_dimension
-        self.stitch = nn.Linear(self.source_dim, self.target_dim, bias=True)
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return self.stitch(x)
 
 
 ################################ DEBUGGING SCHEMAS ################################
