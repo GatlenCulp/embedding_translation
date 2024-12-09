@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 import torch
-import torch.nn as nn
+from torch import nn
+
 from owlergpt.modern.schemas import EmbeddingDatasetInformation
 
+
 ################################ STITCHES AVAILABLE ################################
+
 
 class StitchNNModule(nn.Module):
     """Parent of all stitches."""
@@ -21,9 +24,7 @@ class StitchNNModule(nn.Module):
 
 
 class AffineStitch(StitchNNModule):
-    """
-    A linear layer wrapper.
-    """
+    """A linear layer wrapper."""
 
     def __init__(
         self,
