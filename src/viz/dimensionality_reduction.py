@@ -95,13 +95,13 @@ def _visualize_embedding_translations(
 def visualize_embeddings(
     embeddings_dict: dict[str, np.ndarray],
     config: dict | None = None,
-) -> tuple[go.Figure, go.Figure]:
-    """Create visualizations for arbitrary embedding spaces.
+) -> go.Figure:
+    """Create visualization for arbitrary embedding spaces.
 
     :param dict[str, np.ndarray] embeddings_dict: Dictionary mapping embedding names to arrays
     :param dict config: Configuration for visualization parameters (optional)
-    :return: Tuple of (combined method figure, separate method figure)
-    :rtype: tuple[go.Figure, go.Figure]
+    :return: Plotly figure with embedding visualization
+    :rtype: go.Figure
     """
     # Set default config if none provided
     if config is None:
@@ -113,30 +113,19 @@ def visualize_embeddings(
             "height": 600,
         }
 
-    logger.info("Creating visualizations...")
+    logger.info("Creating visualization...")
 
-    # Method 1: Combined
-    fig1 = _visualize_embedding_translations(
-        embeddings_dict,
-        random_state=config.get("random_state", 42),
-        n_neighbors=config.get("n_neighbors", 15),
-        min_dist=config.get("min_dist", 0.1),
-    )
-
-    # Method 2: Separate
     projections = reduce_embeddings_dimensionality(
         embeddings_dict,
         random_state=config.get("random_state", 42),
         n_neighbors=config.get("n_neighbors", 15),
         min_dist=config.get("min_dist", 0.1),
     )
-    fig2 = _plot_embedding_spaces(
+    return _plot_embedding_spaces(
         projections,
         width=config.get("width", 800),
         height=config.get("height", 600),
     )
-
-    return fig1, fig2
 
 
 def _iris_example() -> None:
@@ -154,14 +143,12 @@ def _iris_example() -> None:
     }
     logger.info(f"Created embeddings for {len(embeddings_dict)} species")
 
-    # Create visualizations
-    fig1, fig2 = visualize_embeddings(embeddings_dict)
+    # Create visualization
+    fig = visualize_embeddings(embeddings_dict)
 
-    # Display and save figures
-    fig1.show()
-    fig2.show()
-    save_figure(fig1, "iris_embeddings_combined")
-    save_figure(fig2, "iris_embeddings_separate")
+    # Display and save figure
+    fig.show()
+    save_figure(fig, "iris_embeddings")
 
     logger.success("Example completed successfully")
 

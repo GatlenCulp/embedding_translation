@@ -24,24 +24,36 @@ For each experiment:
 """
 
 from pathlib import Path
+import numpy as np
 
 from src.schema.mock.embeddings_dict import create_example_embeddings
 from src.schema.training_schemas import StitchSummary
+from src.utils.general_setup import setup
 from src.viz.dimensionality_reduction import visualize_embeddings
 from src.viz.plot_heatmap import visualize_heatmap
 from src.viz.save_figure import save_figure
 
+setup("run_dataviz_pipeline")
 
 PROJ_ROOT = Path(__file__).parent.parent
+rng = np.random.default_rng()
 
 
 def dataviz_pipeline(data_path: Path) -> None:
     """Runs entire data visualization pipeline on saved data."""
 
-    visualize_embeddings(embeddings_dict=create_example_embeddings())
+    fig = visualize_embeddings(embeddings_dict=create_example_embeddings())
+    save_figure(fig, "test_visualize_embeddings")
+
+    fig = visualize_heatmap(matrix=rng.random((10, 10)))
+    save_figure(fig, "test_heatmap")
 
 
 def main() -> None:
     """Runs dataviz pipeline with default config."""
     data_path = PROJ_ROOT / "data" / "data.json"
     dataviz_pipeline(data_path)
+
+
+if __name__ == "__main__":
+    main()

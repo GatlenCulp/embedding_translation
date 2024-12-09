@@ -14,13 +14,13 @@ def create_example_embeddings(
     :return: Dictionary of embedding spaces
     :rtype: dict[str, np.ndarray]
     """
-    gen = np.random.Generator(random_state)
+    rng = np.random.default_rng(random_state)
 
     # Create three different embedding spaces
     embeddings_dict = {
-        "Original": gen.normal(0, 1, (n_samples, n_dimensions)),
-        "Translated": gen.normal(2, 1, (n_samples, n_dimensions)),  # Shifted mean
-        "Scaled": gen.normal(0, 2, (n_samples, n_dimensions)),  # Different variance
+        "Original": rng.standard_normal((n_samples, n_dimensions)),
+        "Translated": rng.standard_normal((n_samples, n_dimensions)) + 2,
+        "Scaled": rng.standard_normal((n_samples, n_dimensions)) * 2,
     }
 
     return embeddings_dict
