@@ -97,6 +97,9 @@ class EmbeddingDatasetInformation(BaseModel):
 
     This object is SERIALIZEABLE and can be put into ChromaDB metadata AND it can alsobe stored in
     a JSON seperately.
+    
+    GATLEN NOTE: This does NOT represent the embeddings themselves, but rather
+        where the embeddings are stored.
 
     Every `EmbeddingDatasetInformation` always is created by:
     1. Ingesting
@@ -285,6 +288,15 @@ class StitchSummary(BaseModel):
     - To a target dataset
     - The resulting stitched embeddings
     - Training Data/Results
+
+    As the input for any analysis there should be 6 JSON files:
+
+    1. StitchSummary (this)
+    2. Training Embeddings Dataset
+    3. Test Embeddings Dataset
+    4. Stitched Training Embeddings
+    5. Stitched Test Embeddings
+    6. The trained stitch model dump
     """
 
     @computed_field
