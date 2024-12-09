@@ -40,7 +40,7 @@ def update_collection_metadata(collection: Collection, metadata_key: str, new_va
             metadatas=metadata
         ) # XXX
 
-@current_app.cli.command("ingest_ds")
+@current_app.cli.command("split_ds")
 def split_train_test_ds() -> None:
     split_frac = click.prompt("Enter the fraction of the dataset to be used for training", type=float, default=0.8)
     if split_frac < 0 or split_frac > 1:
