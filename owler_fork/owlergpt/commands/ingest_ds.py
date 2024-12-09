@@ -162,9 +162,10 @@ def ingest_dataset() -> None:
         batch_size = int(environ.get("BATCH_SIZE"))
 
         # Process the batch of documents
+        # NOTE: single 
         for filename in ['corpus.jsonl', 'queries.jsonl']:
             if filename == "queries.jsonl":
-                record_type = "query"
+                record_type = "query" # <---- imporant NOTE
             else:
                 record_type = "document"
             dataset = JSONDataset(os.path.join(environ["DATASET_FOLDER_PATH"], selected_folders[0], filename), text_splitter,
