@@ -1,6 +1,11 @@
 """Adds a bunch of random sugar for setup."""
 
+import rich.traceback
+
 from src.utils.logging import setup_logger
+
+
+rich.traceback.install()
 
 
 def setup(file_name: str) -> None:

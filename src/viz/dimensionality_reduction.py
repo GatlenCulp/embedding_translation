@@ -11,7 +11,6 @@ import plotly.express as px
 import plotly.graph_objects as go
 from loguru import logger
 
-from src.logic.reduce_embedding_dims import reduce_embeddings_dimensionality
 from src.utils.general_setup import setup
 from src.viz.save_figure import save_figure
 
@@ -65,40 +64,13 @@ def _plot_embedding_spaces(
     return fig
 
 
-# %% Combined function for backwards compatibility
-def _visualize_embedding_translations(
-    embeddings_dict: dict[str, np.ndarray],
-    random_state: int = 42,
-    n_neighbors: int = 15,
-    min_dist: float = 0.1,
-) -> go.Figure:
-    """Create a 2D visualization of multiple embedding spaces with transition arrows.
-
-    :param dict[str, np.ndarray] embeddings_dict: Dictionary mapping embedding names to arrays
-    :param int random_state: Random seed for reproducibility
-    :param int n_neighbors: UMAP parameter for local neighborhood size
-    :param float min_dist: UMAP parameter for minimum distance between points
-    :return: Plotly figure with embedding visualization
-    :rtype: go.Figure
-    """
-    logger.info("Starting combined visualization process")
-
-    projections = reduce_embeddings_dimensionality(
-        embeddings_dict,
-        random_state=random_state,
-        n_neighbors=n_neighbors,
-        min_dist=min_dist,
-    )
-    return _plot_embedding_spaces(projections)
-
-
 def visualize_embeddings(
     embeddings_dict: dict[str, np.ndarray],
     config: dict | None = None,
 ) -> go.Figure:
     """Create visualization for arbitrary embedding spaces.
 
-    :param dict[str, np.ndarray] embeddings_dict: Dictionary mapping embedding names to arrays
+    :param dict[str, np.ndarray] embeddings_dict: Dictionary of 2D embeddings
     :param dict config: Configuration for visualization parameters (optional)
     :return: Plotly figure with embedding visualization
     :rtype: go.Figure
@@ -106,27 +78,16 @@ def visualize_embeddings(
     # Set default config if none provided
     if config is None:
         config = {
-            "random_state": 42,
-            "n_neighbors": 15,
-            "min_dist": 0.1,
             "width": 800,
             "height": 600,
         }
 
     logger.info("Creating visualization...")
-
-    projections = reduce_embeddings_dimensionality(
-        embeddings_dict,
-        random_state=config.get("random_state", 42),
-        n_neighbors=config.get("n_neighbors", 15),
-        min_dist=config.get("min_dist", 0.1),
-    )
     return _plot_embedding_spaces(
-        projections,
+        embeddings_dict,
         width=config.get("width", 800),
         height=config.get("height", 600),
     )
-
 
 def _iris_example() -> None:
     """Run example visualization using iris dataset."""

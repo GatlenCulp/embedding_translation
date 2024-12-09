@@ -29,7 +29,7 @@
 			".vscode": false,
 			".gitattributes": false,
 			".prettierrc": true,
-			"pytest.ini": true,
+			"pytest.ini": false,
 			"requirements.txt": true,
 			"LICENSE.md": true,
 			"CHANGELOG.md": true,

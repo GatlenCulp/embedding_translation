@@ -35,6 +35,7 @@ from src.utils.general_setup import setup
 from src.viz.dimensionality_reduction import visualize_embeddings
 from src.viz.plot_heatmap import visualize_heatmap
 from src.viz.save_figure import save_figure
+from src.logic.reduce_embedding_dims import reduce_embeddings_dimensionality
 
 
 setup("run_dataviz_pipeline")
@@ -52,7 +53,15 @@ def dataviz_pipeline(data_path: Path) -> None:
 
     stitch_summary = _load_data_as_stitch_summary(data_path=data_path)
     anal_dump(stitch_summary, "test_visualize_embeddings")
-    fig = visualize_embeddings(embeddings_dict=create_example_embeddings())
+
+    # Get example embeddings
+    embeddings_dict = create_example_embeddings()
+
+    # Reduce dimensionality
+    reduced_embeddings = reduce_embeddings_dimensionality(embeddings_dict)
+
+    # Create and save visualization
+    fig = visualize_embeddings(reduced_embeddings)
     save_figure(fig, "test_visualize_embeddings")
 
     fig = visualize_heatmap(matrix=rng.random((10, 10)))
