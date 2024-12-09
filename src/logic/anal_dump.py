@@ -27,7 +27,9 @@ class DataFile(BaseModel):
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    pydantic_schema: str = Field(description="The pydantic schema that hte data is saved in")
+    pydantic_schema: str | None = Field(
+        default=None, description="The pydantic schema that the data is saved in"
+    )
 
     name: str = Field(description="Name of this piece of data")
 

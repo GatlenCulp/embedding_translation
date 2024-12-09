@@ -39,45 +39,55 @@ from src.viz.plot_heatmap import visualize_heatmap
 from src.viz.save_figure import save_figure
 
 
-setup("run_dataviz_pipeline")
+rng = setup("run_dataviz_pipeline")
 
 PROJ_ROOT = Path(__file__).parent.parent
-rng = np.random.default_rng()
 
 
-def _load_data_as_stitch_summary(data_path: Path) -> StitchSummary:
-    """Load JSON data from path and convert to StitchSummary."""
-    with data_path.open() as f:
-        data = f.read()
-    data = DataFile.model_validate_json(data)
-    data = StitchSummary.model_(data.data)
-    return data
+class DataVizPipeline:
+    """Class to run the datavisualization on the results of the main process."""
 
+    @staticmethod
+    def _load_data_as_stitch_summary(data_path: Path) -> StitchSummary:
+        """Load JSON data from path and convert to StitchSummary."""
+        with data_path.open() as f:
+            data = f.read()
+        data = DataFile.model_validate_json(data)
+        return StitchSummary.model_validate(data.data)
 
-def dataviz_pipeline(data_path: Path) -> None:
-    """Runs entire data visualization pipeline on saved data."""
+    @staticmethod
+    def _run_embedding_viz(stitch_summary: StitchSummary) -> None:
+        # Get example embeddings
+        embeddings_dict = create_example_embeddings()
 
-    stitch_summary = _load_data_as_stitch_summary(data_path=data_path)
-    anal_dump(stitch_summary, "test_visualize_embeddings")
+        # Reduce dimensionality
+        reduced_embeddings = reduce_embeddings_dimensionality(embeddings_dict)
 
-    # Get example embeddings
-    embeddings_dict = create_example_embeddings()
+        fig = visualize_embeddings(reduced_embeddings)
 
-    # Reduce dimensionality
-    reduced_embeddings = reduce_embeddings_dimensionality(embeddings_dict)
+        save_figure(fig, "test_visualize_embeddings")
 
-    # Create and save visualization
-    fig = visualize_embeddings(reduced_embeddings)
-    save_figure(fig, "test_visualize_embeddings")
+    @staticmethod
+    def _run_heatmap_viz(stitch_summary: StitchSummary) -> None:
+        matrix = rng.random((10, 10))
+        fig = visualize_heatmap(matrix=matrix)
+        save_figure(fig, "test_heatmap")
 
-    fig = visualize_heatmap(matrix=rng.random((10, 10)))
-    save_figure(fig, "test_heatmap")
+    @staticmethod
+    def run(data_path: Path) -> None:
+        """Runs entire data visualization pipeline on saved data."""
+
+        stitch_summary = DataVizPipeline._load_data_as_stitch_summary(data_path=data_path)
+        anal_dump(stitch_summary, "test_visualize_embeddings")
+
+        DataVizPipeline._run_embedding_viz(stitch_summary)
+        DataVizPipeline._run_heatmap_viz(stitch_summary)
 
 
 def main() -> None:
     """Runs dataviz pipeline with default config."""
     data_path = PROJ_ROOT / "data" / "example_stitch_summary.json"
-    dataviz_pipeline(data_path)
+    DataVizPipeline.run(data_path)
 
 
 if __name__ == "__main__":

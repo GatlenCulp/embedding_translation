@@ -76,8 +76,14 @@ def visualize_embeddings(
     :rtype: go.Figure
     """
     dimensions = 2
-    if not embeddings_dict or not all(len(embed) == dimensions for embed in embeddings_dict.values()):
-        raise ValueError
+    if not embeddings_dict:
+        err_msg = f"Expected non-empty embeddings dict, got {embeddings_dict=}"
+        raise ValueError(err_msg)
+    ex_embeds = next(iter(embeddings_dict.values()))
+    ex_embed = ex_embeds[0]
+    if len(ex_embed) != dimensions:
+        err_msg = f"Expected {dimensions=}, got {len(ex_embed)=}"
+        raise ValueError(err_msg)
     # Set default config if none provided
     if config is None:
         config = {
@@ -91,6 +97,7 @@ def visualize_embeddings(
         width=config.get("width", 800),
         height=config.get("height", 600),
     )
+
 
 def _iris_example() -> None:
     """Run example visualization using iris dataset."""
