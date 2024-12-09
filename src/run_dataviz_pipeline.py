@@ -25,7 +25,11 @@ For each experiment:
 
 from pathlib import Path
 
+from src.schema.mock.embeddings_dict import create_example_embeddings
+from src.schema.training_schemas import StitchSummary
 from src.viz.dimensionality_reduction import visualize_embeddings
+from src.viz.plot_heatmap import visualize_heatmap
+from src.viz.save_figure import save_figure
 
 
 PROJ_ROOT = Path(__file__).parent.parent
@@ -33,8 +37,8 @@ PROJ_ROOT = Path(__file__).parent.parent
 
 def dataviz_pipeline(data_path: Path) -> None:
     """Runs entire data visualization pipeline on saved data."""
-    embeddings_dict = {}
-    visualize_embeddings(embeddings_dict=embeddings_dict)
+
+    visualize_embeddings(embeddings_dict=create_example_embeddings())
 
 
 def main() -> None:

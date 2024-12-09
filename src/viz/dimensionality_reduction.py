@@ -94,7 +94,7 @@ def _visualize_embedding_translations(
 
 def visualize_embeddings(
     embeddings_dict: dict[str, np.ndarray],
-    config: dict = None,
+    config: dict | None = None,
 ) -> tuple[go.Figure, go.Figure]:
     """Create visualizations for arbitrary embedding spaces.
 
