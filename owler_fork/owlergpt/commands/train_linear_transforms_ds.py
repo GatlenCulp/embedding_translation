@@ -81,26 +81,33 @@ def get_train_test_set_ids(
     train_test_split: float = 0.8,
 ) -> Tuple[List[str], List[str]]:
     # Get all record IDs from one of the collections
+    print("Getting the initial record ids...")
     collection1 = chroma_client.get_collection(collections[0])
+    print("> Filtering by record type...")
     records = collection1.get(
         # {"record_id": ids[i], "record_text": text_chunks[i], "record_type": record_type} = metadata per record
         where={"record_type": {"$in": record_types}}
     )
     # Get record_ids from metadata since that's where they are stored
+    print("> Getting record ids from metadata...")
     _ = [record["record_id"] for record in records["metadatas"]]
+    print("> Setting record ids...")
     collection_record_ids = set(_)
     assert len(collection_record_ids) == len(_)  # all shud be unique or we die
 
-    for collection_name in collections:
+    for collection_name in tqdm(collections, desc="Verifying all collections have the same record IDs..."):
         collection = chroma_client.get_collection(collection_name)
         records = collection.get(where={"record_type": {"$in": record_types}})
         record_ids = set([record["record_id"] for record in records["metadatas"]])
         assert record_ids == collection_record_ids  # if not all are same record id i cry a river
 
     # random split ftw
+    print("Getting the splits (I'm no acrobat doe)")
+    print("> Shuffling...")
     collection_record_ids = list(collection_record_ids)
     rng = np.random.default_rng(42)
     rng.shuffle(collection_record_ids)
+    print("> Splitting...")
     num_train = int(train_test_split * len(collection_record_ids))
     train_ids = collection_record_ids[:num_train]
     test_ids = collection_record_ids[num_train:]
@@ -180,7 +187,11 @@ def create_train_test_datasets(
     test_dataset = StitchingDataset(source_collection, target_collection, test_ids)
     return train_dataset, test_dataset
 
-
+# TODO(Adriano) get more dank by training multiple of these dummies at once, check this out
+# 10 vectors = 1 vector 10 times long cat cat cat cat cat cat cat cat cat cat
+# then you do mse on the entire damn thing because thats the same as mse seperately
+# then you get 10x boost on H100 cuz its a husky Bpu (based process unit)
+# embrace husky bpu
 class LinearTransformTrainer:
     def __init__(
         self,
@@ -333,9 +344,33 @@ def train_linear_transforms_dataset() -> None:
         settings=chromadb.Settings(anonymized_telemetry=False),
     )
     selected_folder = get_selected_folder(environ)
+    # get rid of ultra_debug_small collections
+    collections_who_most_die = [collection for collection in chroma_client.list_collections() if "ultra_debug_small" in collection.name]
+    print(f"Deleting {len(collections_who_most_die)} collections")
+    print("  " + "\n  ".join(collection.name for collection in collections_who_most_die))
+    click.confirm("Continue?", abort=True)
+    for collection in collections_who_most_die:
+        chroma_client.delete_collection(collection.name)
+    
     collections: List[str] = get_chroma_collections(chroma_client, selected_folder)
+    SHRINK_COLLECTIONS_FOR_TESTING = True # comment/uncomment
+    if SHRINK_COLLECTIONS_FOR_TESTING:
+        # small collection => good testing
+        small_subset_data = [collection.get(limit=100) for collection in collections]
+        new_collections = [chromadb.Collection(name=f"ultra_debug_small_{collection.name}") for collection in collections]
+        for new_collection, subset_data in zip(new_collections, small_subset_data):
+            new_collection.add(
+                embeddings=subset_data['embeddings'],
+                documents=subset_data['documents'],
+                metadatas=subset_data['metadatas'],
+                ids=subset_data['ids']
+            )
+        assert len(collections) == len(new_collections)
+        assert all(nc.name == f"small_{c.name}" for nc, c in zip(new_collections, collections))
+        collections = new_collections
     print(f"Found {len(collections)} collections")
     # We are only training on the documents right now
+    print("Fetching train/test set IDs... and making sure this shit aint too sussy backa (hella viz in there too nw, tqdm, and even print statements)")
     train_set_ids, test_set_ids = get_train_test_set_ids(
         chroma_client, collections, record_types=["document"]
     )
@@ -394,6 +429,8 @@ def train_linear_transforms_dataset() -> None:
         # 1. Save pair info as JSON using pydantic model
         pair_info_path = subfolder / "pair_info.json"
         with open(pair_info_path, "w") as f:
+            # chunk size alwasys 256
+            # all dat shit is default AF
             f.write(StitchPair(source=pair[0], target=pair[1]).model_dump_json(indent=4))
 
         # 1.5 Setup wandb
