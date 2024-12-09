@@ -1,0 +1,52 @@
+models:
+  - name: t5-small
+    type: t5
+    model_id: t5-small
+    embedding_dim: 512
+  - name: gpt2
+    type: gpt
+    model_id: gpt2
+    embedding_dim: 768
+  - name: all-mpnet-base-v2
+    type: other
+    model_id: sentence-transformers/all-mpnet-base-v2
+    embedding_dim: 768
+
+transcoders:
+  # Identity function example
+  - num_layers: -1
+    rank_proportions: [1.0]
+    input_dim: 512
+    output_dim: 512
+
+  # Linear function example
+  - num_layers: 0
+    rank_proportions: [1.0]
+    input_dim: 512
+    output_dim: 512
+
+  # Single hidden layer MLP with 8x expansion
+  - num_layers: 1
+    rank_proportions: [8.0, 0.125]  # Expands by 8x then contracts back
+    input_dim: 512
+    output_dim: 512
+
+  # Two hidden layer MLP with 32x expansion
+  - num_layers: 2
+    rank_proportions: [8.0, 4.0, 0.03125]  # 8x -> 32x -> back to 1x
+    input_dim: 512
+    output_dim: 512
+
+datasets:
+  - name: msmarco
+    train_path: data/msmarco/train.jsonl
+    test_path: data/msmarco/test.jsonl
+  - name: nq
+    train_path: data/nq/train.jsonl
+    test_path: data/nq/test.jsonl
+
+k_values: [1, 5, 10]
+seed: 42
+batch_size: 32
+num_epochs: 10
+learning_rate: 1e-4

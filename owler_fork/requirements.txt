@@ -1,0 +1,8 @@
+# Just the missing requirements from before; I'm using conda instead of poetry because
+# poetry isn't really adding anything here and then it's harder to run with the
+# ipykernel
+ipython
+ipykernel
+datasets
+pydantic
+wandb
