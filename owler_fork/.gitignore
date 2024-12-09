@@ -15,3 +15,6 @@ _*/
 .idea
 wandb/
 *deleteme*.py
+**/*deleteme*.py
+*deleteme*
+**/*deleteme*

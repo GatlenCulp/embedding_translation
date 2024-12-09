@@ -145,6 +145,7 @@ class OriginalIngestion:
 
     @staticmethod
     def create_collection(
+        chroma_client: Optional[PersistentClient],
         vector_dataset_path: str,
         selected_folders: List[str],
         tokens_per_chunk: int,
@@ -182,10 +183,23 @@ class OriginalIngestion:
         # 0. Create Chroma Client
         if log:
             print("Creating collection")
-        chroma_client = PersistentClient(
-            path=vector_dataset_path,
-            settings=Settings(anonymized_telemetry=False),
-        )
+        if chroma_client is None:
+            chroma_client = PersistentClient(
+                path=vector_dataset_path,
+                settings=Settings(anonymized_telemetry=False),
+            )
+        else:
+            # wtf? "._identifier?" cmon man, it came from here
+            # ```
+            # In [4]: chroma_client.__dict__
+            # Out[4]: 
+            # {'_identifier': './hi',
+            # 'tenant': 'default_tenant',
+            # 'database': 'default_database',
+            # '_admin_client': <chromadb.api.client.AdminClient at 0x125a90050>,
+            # '_server': <chromadb.api.segment.SegmentAPI at 0x11586e6d0>}
+            # ```
+            assert chroma_client._identifier == vector_dataset_path
         admin_client = AdminClient.from_system(chroma_client._system)
 
         # 1. Create databases
