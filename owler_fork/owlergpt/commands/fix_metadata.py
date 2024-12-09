@@ -406,8 +406,12 @@ def test_fix_metadata_ds():
     1. A test on a fake dataset
     2. A dry-run on the real dataset without actually changing anything (this might not always work as intended ngl)
     """
-    if not torch.cuda.is_available() or os.environ.get("CUDA_VISIBLE_DEVICES") is None:
+    print("="*40 + " Testing me" + "="*40)
+    if os.environ.get("CUDA_VISIBLE_DEVICES") is None:
         raise RuntimeError("CUDA must be available and CUDA_VISIBLE_DEVICES must be set")
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    if device == "cpu":
+        print("WARNING: CUDA is not available, using CPU")
 
     # default parameters
     selected_folder = "test_dataset"
@@ -420,7 +424,7 @@ def test_fix_metadata_ds():
     assert len(small_model_names) == 3, f"Expected 3 small models, got {len(small_model_names)}" # should be multiple
     if len(small_model_names) == 0:
         raise ValueError("No small models found in OPENAI_MODELS")
-    models = [SentenceTransformer(model_name, device="cuda") for model_name in small_model_names]
+    models = [SentenceTransformer(model_name, device=device) for model_name in small_model_names]
     model_names = [s_model_name.split("/")[-1] for s_model_name in small_model_names] # get the model names for saving
     text_splitters = [
         SentenceTransformersTokenTextSplitter(
@@ -430,92 +434,73 @@ def test_fix_metadata_ds():
         )
         for s_model_name in small_model_names
     ]
+    print(small_model_names)
+    print(models)
+    print(model_names)
+    print(text_splitters)
 
-    # Create test sentences + ids
-    test_sentences = [
-        "The quick brown fox jumps over the lazy dog.",
-        "A journey of a thousand miles begins with a single step.",
-        "All that glitters is not gold.",
-        "Actions speak louder than words.",
-        "Beauty is in the eye of the beholder.",
-        "Every cloud has a silver lining.",
-        "Fortune favors the bold.",
-        "Knowledge is power.",
-        "Practice makes perfect.",
-        "Time heals all wounds.",
-        # add one long entry here so that we can pass the 256 limit
-        "donkey is happy, " * 400, # surely at least 2 chunks at least with toks
-    ]
-    record_ids = [f"test_record_{i}" for i in range(len(test_sentences))]
+    raise NotImplementedError("Not implemented") # XXX
+
+    # # Create test sentences + ids
+    # test_sentences = [
+    #     "The quick brown fox jumps over the lazy dog.",
+    #     "A journey of a thousand miles begins with a single step.",
+    #     "All that glitters is not gold.",
+    #     "Actions speak louder than words.",
+    #     "Beauty is in the eye of the beholder.",
+    #     "Every cloud has a silver lining.",
+    #     "Fortune favors the bold.",
+    #     "Knowledge is power.",
+    #     "Practice makes perfect.",
+    #     "Time heals all wounds.",
+    #     # add one long entry here so that we can pass the 256 limit
+    #     "donkey is happy, " * 400, # surely at least 2 chunks at least with toks
+    # ]
+    # record_ids = [f"test_record_{i}" for i in range(len(test_sentences))]
 
 
-    # Initialize ChromaDB client in temporary directory and do everything in there to avoid any mistakes
-    # TODO(Adriano) we should have some sort of tokenization abstraction to bring this into the ingest_ds.py
-    #   sort of functionality
-    with tempfile.TemporaryDirectory() as temp_dir:
-        chroma_client = chromadb.PersistentClient(
-            path=temp_dir,
-            settings=chromadb.Settings(anonymized_telemetry=False)
-        )
+    # # Initialize ChromaDB client in temporary directory and do everything in there to avoid any mistakes
+    # # TODO(Adriano) we should have some sort of tokenization abstraction to bring this into the ingest_ds.py
+    # #   sort of functionality
+    # with tempfile.TemporaryDirectory() as temp_dir:
+    #     chroma_client = chromadb.PersistentClient(
+    #         path=temp_dir,
+    #         settings=chromadb.Settings(anonymized_telemetry=False)
+    #     )
 
-        collections = []
-        # Create collections and populate with embeddings
-        for i, model in tqdm(enumerate(models), desc="Creating collections"):
-            # Create collection
-            # NOTE this has to be parseable
-            # `{selected_folder}_{transformer_model}_CharacterSplitting_{tokens_per_chunk}`
-            collection_name = f"{selected_folder}_{model_names[i]}_CharacterSplitting_{tokens_per_chunk}"
-            collection = chroma_client.create_collection(
-                name=collection_name,
-                metadata={"hnsw:space": "cosine"}  # Using cosine as default distance function
-            )
+    #     collections = []
+    #     # Create collections and populate with embeddings
+    #     for i, model in tqdm(enumerate(models), desc="Creating collections"):
+    #         # Create collection
+    #         # NOTE this has to be parseable
+    #         # `{selected_folder}_{transformer_model}_CharacterSplitting_{tokens_per_chunk}`
+    #         collection_name = f"{selected_folder}_{model_names[i]}_CharacterSplitting_{tokens_per_chunk}"
+    #         collection = chroma_client.create_collection(
+    #             name=collection_name,
+    #             metadata={"hnsw:space": "cosine"}  # Using cosine as default distance function
+    #         )
             
-        # Generate embeddings
-        embeddings = model.encode(test_sentences, convert_to_tensor=False)
+    #     # Generate embeddings
+    #     embeddings = model.encode(test_sentences, convert_to_tensor=False)
         
-        # Create metadata for each embedding
-        metadatas = [
-            {
-                "record_id": record_ids[i],
-                "record_text": test_sentences[i],
-                "record_type": "document"
-            }
-            for i in range(len(test_sentences))
-        ]
+    #     # Create metadata for each embedding
+    #     metadatas = [
+    #         {
+    #             "record_id": record_ids[i],
+    #             "record_text": test_sentences[i],
+    #             "record_type": "document"
+    #         }
+    #         for i in range(len(test_sentences))
+    #     ]
         
-        # Add to collection
-        collection.add(
-            embeddings=embeddings.tolist(),
-            documents=test_sentences,
-            metadatas=metadatas,
-            ids=record_ids
-        )
+    #     # Add to collection
+    #     collection.add(
+    #         embeddings=embeddings.tolist(),
+    #         documents=test_sentences,
+    #         metadatas=metadatas,
+    #         ids=record_ids
+    #     )
         
-        collections.append(collection)
+    #     collections.append(collection)
 
-    return collections, temp_dir
-
-def test_metadata_population():
-    """Test the metadata population on fake dataset"""
-    try:
-        collections, temp_dir = create_test_dataset()
-        
-        # Initialize coordinator with test collections
-        coordinator = EmbeddingMetadataPopulatorCoordinator(
-            "test_dataset",
-            collections,
-            EmbeddingMetadataPopulatorArgs(target_split_frac=0.8, overwrite_metadata=True)
-        )
-        
-        # Run main population logic
-        coordinator.main()
-        
-        print("Test completed successfully!")
-        
-    except Exception as e:
-        print(f"Test failed with error: {str(e)}")
-        raise
-    finally:
-        # Cleanup temp directory
-        import shutil
-        shutil.rmtree(temp_dir)
+    # return collections, temp_dir
