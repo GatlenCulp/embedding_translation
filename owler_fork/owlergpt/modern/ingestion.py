@@ -5,8 +5,8 @@ import cohere
 from typing import List, Literal, Optional, Dict, Tuple, Any
 from sentence_transformers import SentenceTransformer
 from langchain.text_splitter import SentenceTransformersTokenTextSplitter, TokenTextSplitter
+import chromadb
 from chromadb import PersistentClient, Settings
-from chromadb.collection import Collection
 from chromadb.api.client import AdminClient
 from chromadb.config import DEFAULT_TENANT
 from chromadb.db.base import UniqueConstraintError
@@ -20,6 +20,64 @@ from owlergpt.modern.collection_utils import OPENAI_MODELS, COHERE_MODELS
 import yaml
 
 
+from datasets import load_dataset
+import json
+from typing import List, Dict, Any
+import os
+from pathlib import Path
+
+
+# TODO(Adriano) also add a HF method? Maybe convert into HF dataset instead?
+# Arguana example
+# {
+#   "_id": "test-environment-aeghhgwpe-pro02b",
+#   "title": "animals environment general health health general weight philosophy ethics",
+#   "text": "You don\u2019t have to be vegetarian to be green... Many special environments have been created by ...08"
+# }
+class StringsToJSONDataset:
+    """Creates a JSONDataset from a list of strings by writing them to a JSONL file."""
+
+    def __init__(self, output_path: str | Path):
+        """
+        Args:
+            output_path: Path where the JSONL file will be written
+        """
+        self.output_path = Path(output_path)
+        self.output_path.mkdir(parents=True, exist_ok=True)
+        self.queries_output_path = Path(output_path) / "queries.jsonl"
+        self.corpus_output_path = Path(output_path) / "corpus.jsonl"
+
+    def create_dataset(self, texts: List[str], queries: List[str]) -> None:
+        """
+        Creates a JSONL file from list of strings that can be loaded by JSONDataset.
+
+        Args:
+            texts: List of text strings to convert
+            record_type: Type of records ("document" or "query")
+        """
+        assert self.output_path.exists(), f"Output path {self.output_path} does not exist"
+        for output_path, records in [
+            (self.queries_output_path, queries),
+            (self.corpus_output_path, texts),
+        ]:
+            records: List[Dict[str, Any]] = []
+            for i, text in enumerate(texts):
+                record = {
+                    # Look at arguana example above, all MTEB datasets SEEM to be like this
+                    "_id": f"text_{i}",
+                    "title": f"text_{i}",
+                    "text": text,
+                }
+                records.append(record)
+
+            # Write records to JSONL file
+            assert not output_path.exists(), f"Output path {output_path} already exists"
+            assert output_path.parent.exists(), f"Output path parent {output_path.parent} does not exist"
+            with open(output_path, "w") as f:
+                for record in records:
+                    f.write(json.dumps(record) + "\n")
+
+
 class OriginalIngestion:
     """
     A static class to provide support for (a lot of) the original ingestion logic. This allows
@@ -29,7 +87,7 @@ class OriginalIngestion:
 
     @staticmethod
     def __create_split_embedding_models(
-        model_name: str, parallelism_batch_size: int
+        model_name: str, parallelism_batch_size: int = 1
     ) -> List[SentenceTransformer]:
         return [
             SentenceTransformer(
@@ -37,7 +95,7 @@ class OriginalIngestion:
                 device=os.environ["VECTOR_SEARCH_SENTENCE_TRANSFORMER_DEVICE"],
             )
             for _ in range(parallelism_batch_size)
-        ]  # XXX
+        ]
 
     @staticmethod
     def __get_splitter_and_model(
@@ -91,17 +149,18 @@ class OriginalIngestion:
         selected_folders: List[str],
         tokens_per_chunk: int,
         chunk_overlap: int,
+        normalize_embeddings: bool,
         model_name: str,
         batch_size: int,
         dataset_folder_path: str,
         vector_search_chunk_prefix: str,
         vector_search_distance_function: str,
-        record_type: Literal["query", "document"],
         log: bool = True,
         # none => get from environ
         openai_key: Optional[str] = None,
         cohere_key: Optional[str] = None,
-    ) -> Tuple[PersistentClient, Collection]:
+        num_workers: int = 4,
+    ) -> Tuple[PersistentClient, chromadb.Collection]:
         if log:
             print("Getting text_splitter, transformer_model, client")
         text_splitter, transformer_model, client = OriginalIngestion.__get_splitter_and_model(
@@ -176,17 +235,19 @@ class OriginalIngestion:
         print(f"Processing dataset {selected_folders[0]}")
         total_records = 0
         total_embeddings = 0
-        batch_size = batch_size
 
         # Process the batch of documents
         # NOTE: single
+        json_dataset_path = os.path.join(dataset_folder_path, selected_folders[0])
+        if log:
+            print(f"Processing dataset {json_dataset_path}")
         for filename in ["corpus.jsonl", "queries.jsonl"]:
             if filename == "queries.jsonl":
                 record_type = "query"  # <---- imporant NOTE
             else:
                 record_type = "document"
             dataset = JSONDataset(
-                os.path.join(dataset_folder_path, selected_folders[0], filename),
+                (Path(json_dataset_path) / filename).as_posix(),
                 text_splitter,
                 model_name,
                 tokens_per_chunk,
@@ -195,7 +256,7 @@ class OriginalIngestion:
                 record_type,
             )
             dataloader = DataLoader(
-                dataset, batch_size=batch_size, collate_fn=collate_fn, num_workers=4
+                dataset, batch_size=batch_size, collate_fn=collate_fn, num_workers=num_workers
             )
             total_records += dataset.__len__()
             for documents, ids, text_chunks in tqdm(
