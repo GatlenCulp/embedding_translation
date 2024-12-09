@@ -9,7 +9,9 @@ from datetime import datetime
 from typing import Any
 from typing import Literal
 
-from pydantic import BaseModel, computed_field, Field
+from pydantic import BaseModel
+from pydantic import Field
+from pydantic import computed_field
 
 
 ################################ INGEST, EVAL, TRAIN SCHEMAS ################################
@@ -101,6 +103,7 @@ class EmbeddingDatasetInformation(BaseModel):
     2. Optionally stitch training; if not stitch-trained then it'll be None.
     (by having both of these infos we can trace exactly what went into this training run/experiment).
     """
+
     @computed_field
     @property
     def name(self) -> str:
@@ -108,10 +111,11 @@ class EmbeddingDatasetInformation(BaseModel):
         name = "EmbeddingDatasetInformation("
         f"embedding_model={self.embedding_model_type}/{self.embedding_model_name}, "
         f"text_dataset={self.text_dataset_source}/{self.text_dataset_name}, "
+        f"stitch_model={self.stitch_model_name}"
         ")"
         return name
 
-    # Embedding model
+    # Embedding model space information
     embedding_model_name: str
     embedding_model_type: Literal["openai", "huggingface"]
     embedding_dimension: int
@@ -130,7 +134,10 @@ class EmbeddingDatasetInformation(BaseModel):
     collections_filepath: str | None = None
 
     # Gatlen Proposed
-    stitched: bool = False
+    stitch_model_name: str | None = Field(
+        default=None,
+        description="The model name of the stitch used to produce this dataset if not source.",
+    )
 
     # Note: Should maybe also label which stitch model this was generated from if any.
 
@@ -162,7 +169,7 @@ class EmbeddingDatasetInformation(BaseModel):
 
 
 class ExperimentConfig(BaseModel):
-    """Configuration for a single stitch model training run."""
+    """Configuration for a single stitch model training or testing run."""
 
     @computed_field
     @property
@@ -178,17 +185,24 @@ class ExperimentConfig(BaseModel):
 
     # Dataset config
     dataset_name: str  # e.g. "HotPotQA"
-    dataset_split: Literal["train", "test"] = "train"
+    dataset_split: Literal["train", "test"] = Field(
+        default="train", description="Whether this is a training or testing experiment."
+    )
     dataset_train_test_split_frac: float = 0.8
     dataset_size: int
 
-    # Source/Target embedding models
+    # Source/Target embedding datasets
+    # (should both be only training/testing depeneding on above)
     source: EmbeddingDatasetInformation
     target: EmbeddingDatasetInformation
 
     # Architecture config
-    architecture: Literal["affine"] = "affine"  # <--- which class
-    architecture_config: dict[str, Any] | None = None  # <--- which kwargs for class
+    architecture: Literal["affine"] = Field(
+        default="affine", description="The class of architecture"
+    )
+    architecture_config: dict[str, Any] | None = Field(
+        default=None, description="The kwargs for the architecture class"
+    )
 
 
 ################################ DEBUGGING SCHEMAS ################################
@@ -236,52 +250,6 @@ class TrainStatus(BaseModel):
     storage_info: dict[str, Any] | None = None
 
 
-################################ VIZ (INTERFACE) SCHEMAS ################################
-
-
-class DatasetEvaluation(BaseModel):
-    """Model to store info about how well EmbeddingDatasets perform.
-
-    This is for either stitched datasets or source datasets
-    """
-
-    # XXX - store information about how well datasets perform, i.e. whether they get the
-    # desired document in the top k when we have labels
-
-
-# XXX - gatlen
-# 1. Kernel: idea is to sample n random datapoints and then just visualize a
-#   similarity matrix (takes in chromaDB collection, entry type,
-#   and what sort of similarity function to use). -> np table is output -> viz np table
-# 2. CKA: calculate the kernel of the entire dataset for two matching datasets
-#   (i.e. same text_dataset_name but different models) then
-#   dot product it or something idk (it's defined somewhere - you find how different
-#   the mega-tables are)
-# 3. Rank: idk read owler_fork (basically it takes in a chromadb collection, and then
-#   it calculates some wierd function of the top k results being compared
-#    between one collection and another collection on the queries w.r.t.
-#   the texts/documents; same for jaccard - basically read `owler_fork` and you will
-#    iterate for different topk values and calculate some function of the IDs and
-#   ranks of those topk results.
-# 4. umap (do pca and tsne too maybe a couple times to be safe): just get all the
-#   embeddings and umap this shit (then you need to color-code them
-#    or partition them based on some sort of semantic classifier of your choice
-# (i.e. you can manually classify documents using an LLM) and then
-#    just color the UMAP)
-
-
-class SimilarityMatrixDatasetEvaluation(BaseModel):
-    """Represents the results from performing a similarity matrix eval on a dataset."""
-
-    dataset_id: EmbeddingDatasetInformation
-
-
-class DatasetComparisonEvaluation(BaseModel):
-    """Comparison between different datasets."""
-
-    # XXX - store information about how datasets store and query differently like cka, top k difference, etc...
-
-
 class StitchEvaluation(BaseModel):
     """When training a stitch. Single "snapshot" of how good it was at a point in time.
 
@@ -303,3 +271,90 @@ class StitchEvaluationLog(BaseModel):
     """When training a stitch. Timeseries of snapshots."""
 
     evaluations: list[StitchEvaluation]
+
+
+################################ FINAL DATAVIZ SCHEMA ################################
+
+
+class StitchSummary(BaseModel):
+    """This is the sum of information needed for analysis.
+
+    Contains summary info of training a stitch model with a given:
+    - Training with Architecture
+    - On a source embedding dataset (derived from a text dataset)
+    - To a target dataset
+    - The resulting stitched embeddings
+    - Training Data/Results
+    """
+
+    @computed_field
+    @property
+    def name(self) -> str:
+        """Generate a descriptive name for the stitch summary."""
+        return (
+            f"StitchSummary("
+            f"experiment={self.experiment_config.name}, "
+            f"epochs={self.train_status.num_epochs}"
+            ")"
+        )
+
+    ### EXTRACT SUMMARY DATA ###
+    @computed_field
+    @property
+    def text_dataset_name(self) -> str:
+        """Extract dataset name from experiment config."""
+        return self.experiment_config.dataset_name
+
+    @computed_field
+    @property
+    def source_embedding_model_name(self) -> str:
+        """Extract source model name from experiment config."""
+        return self.experiment_config.source.embedding_model_name
+
+    @computed_field
+    @property
+    def target_embedding_model_name(self) -> str:
+        """Extract target model name from experiment config."""
+        return self.experiment_config.target.embedding_model_name
+
+    @computed_field
+    @property
+    def architecture(self) -> Literal["affine"]:
+        """Extracts the architecture class name."""
+        return self.experiment_config.architecture
+
+    @computed_field
+    @property
+    def architecture_config(self) -> dict[str, Any] | None:
+        """Extracts the architecture class config."""
+        return self.experiment_config.architecture_config
+
+    ### TRAINING STITCH ###
+
+    # Training Experiment Configuration
+    training_experiment_config: ExperimentConfig = Field(
+        description="The inputs for training the stitch."
+    )
+    train_settings: TrainSettings = Field(description="The settings used to train the stitch.")
+
+    # Training Results
+    training_evaluation_log: StitchEvaluationLog = Field(
+        description="Epoch-by-epoch WandB-style evaluations."
+    )
+    train_status_final: TrainStatus = Field(description="The stitch save location and other info.")
+    train_stitch_embeddings: EmbeddingDatasetInformation = Field(
+        description="The stitch embeddings resulting from feeding the original training embeddings through stitch model"
+    )
+
+    ### TESTING STITCH ###
+
+    # Test Experiment Configuration (source = resulting stitched embeddings)
+    test_experiment_config: ExperimentConfig = Field(
+        description="The setup for the test experiment on witheld text data."
+    )
+    test_evaluation_log: StitchEvaluationLog = Field(
+        description="No-epoch WandB-style evaluation on the test data. Just MSE and such."
+    )
+    test_stitch_embeddings: EmbeddingDatasetInformation = Field(
+        description="The stitch embeddings resulting from feeding the original test embeddings through stitch model"
+    )
