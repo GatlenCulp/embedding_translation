@@ -3,7 +3,20 @@ import os
 from dotenv import load_dotenv
 from flask import Flask
 
-from owlergpt import utils
+from owler_fork.owlergpt import utils
+
+from owler_fork.owlergpt.modern.schemas import (
+    ExperimentConfig,
+    EmbeddingMetadata,
+    IngestionSettings,
+    EvaluationSettings,
+    TrainSettings,
+    EmbeddingDatasetInformation,
+    TrainStatus,
+    StitchEvaluation,
+    StitchEvaluationLog,
+    StitchSummary,
+)
 
 
 load_dotenv()

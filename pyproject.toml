@@ -11,6 +11,8 @@ dependencies = [
     "numpy<2.0.0",
     "kaleido",
     "chromadb",
+    "flask",
+    "cohere",
 ]
 
 [tool.poetry]
@@ -19,7 +21,7 @@ name = "embedding-translation"
 version = "0.0"
 description = "A final project for MIT's Deep Learning class"
 
-packages = [{ include = "src" }]
+packages = [{ include = "src" }, { include = "owler_fork" }]
 
 license = "MIT"
 authors = ["Gatlen Culp, Adriano Hernandez <GatlenCulp@gmail.com>"]
@@ -41,6 +43,8 @@ classifiers = [
 
 
 [tool.poetry.dependencies]
+
+python = ">=3.11,<3.13"
 
 # === Core Framework Dependencies ===
 typer = "^0.15.1"     # Modern CLI framework (built on Click/Pydantic)
@@ -129,12 +133,12 @@ pytest-cases = "^3.8.6"        # Better parameterization
 pytest-playwright = "^0.6.2"   # Browser testing
 
 # === Code Quality ===
-ruff = "^22.1"          # Fast linter & formatter
+ruff = "*"          # Fast linter & formatter
 pyright = "^1.1.390"    # Static type checker
 bandit = "^1.8.0"       # Security Linter
 pydoclint = "*"         # Docstring linter
 hypothesis = "^6.122.1" # Property-based testing
-pyinstrument = "^0.4.0" # Profiling tool with GUI and well maintained
+pyinstrument = "*" # Profiling tool with GUI and well maintained
 taplo = "^0.9.3"        # TOML linting and formatting
 
 # === Documentation ===
