@@ -10,6 +10,7 @@ dependencies = [
     "umap-learn",
     "numpy<2.0.0",
     "kaleido",
+    "chromadb",
 ]
 
 [tool.poetry]
