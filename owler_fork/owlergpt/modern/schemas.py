@@ -16,7 +16,9 @@ from pydantic import BaseModel
 
 
 class EmbeddingMetadata(BaseModel):
-    """Every embedding in a ChromaDB collection has a metadata object that explains
+    """ChromaDB embedding metadata.
+
+    Every embedding in a ChromaDB collection has a metadata object that explains
     basically whether its a query or a document.
     """
 
@@ -31,13 +33,16 @@ class EmbeddingMetadata(BaseModel):
 
 
 class IngestionSettings(BaseModel):
-    """Equivalent to owler's .env file."""
+    """Equivalent to owler's .env file.
+
+    Used to define how to process the ingestion of the textual data into chromaDB
+    """
 
     chunk_size: int = 256
     device: str | None = None  # does not matter
     distance_function: str | None = None  # does not matter
     normalize_embeddings: bool | None = None  # does not matter
-    # TODO(Adriano): in the future we will want to try passing this through a model before
+    # TODO(Adriano) in the future we will want to try passing this through a model before
     chunk_preprocessing_mode: Literal["add_prefix"] = "add_prefix"
     query_preprocessing_mode: Literal["add_prefix"] = "add_prefix"
     chunk_prefix: str = (
@@ -80,7 +85,9 @@ class TrainSettings(BaseModel):
 
 
 class EmbeddingDatasetInformation(BaseModel):
-    """The core unit of our analysis is an EMBEDDING DATASET which is associated primarily
+    """EmbeddingDataset info for Stitched or Non-Stitched Embeddings.
+
+    The core unit of our analysis is an EMBEDDING DATASET which is associated primarily
     with a MODEL and an actual dataset (i.e. text). We do the following to embedding datasets:
     1. We create them from textual datasets
     2. We create them from other textual datasets
@@ -113,6 +120,8 @@ class EmbeddingDatasetInformation(BaseModel):
     dataset_filepath: str | None = None
     collections_filepath: str | None = None
 
+    # Note: Should maybe also label which stitch model this was generated from if any.
+
     # XXX -adriano
     # 1. make dataset and dataloader for chromadb activations for layers if not available
     # 2. make good way of storing this shit in folders
@@ -141,7 +150,17 @@ class EmbeddingDatasetInformation(BaseModel):
 
 
 class ExperimentConfig(BaseModel):
-    """Configuration for a single embedding translation experiment."""
+    """Configuration for a single stitch model training run."""
+
+    @property
+    def name(self) -> str:
+        """Generate a descriptive name for the stitch model training."""
+        name = "Stitch("
+        f"dataset={self.dataset_name} ({self.dataset_size} points), "
+        f"architecture={self.architecture} (config={self.architecture_config})"
+        f"source={self.source.embedding_model_name}, "
+        f"target={self.target.embedding_model_name}, "
+        return name
 
     # Dataset config
     dataset_name: str  # e.g. "HotPotQA"
@@ -163,8 +182,12 @@ class ExperimentConfig(BaseModel):
 
 # XXX subject to change
 class TrainStatus(BaseModel):
-    """TrainStatus is a file that should ONLY get updated at the START and END of training and is used primarily
-    to track the status of the training. At the same time, you should, during training, be logging i.e. to a .log
+    """Used to track whether training finished and where.
+
+    TrainStatus is a file that should ONLY get updated at the
+    START and END of training and is used primarily
+    to track the status of the training. At the same time,
+    you should, during training, be logging i.e. to a .log
     file or some other file, with any intermediate results you might care about.
 
     XXX maybe actually store per checkpoint or smth idk?
@@ -203,24 +226,46 @@ class TrainStatus(BaseModel):
 
 
 class DatasetEvaluation(BaseModel):
-    pass  # XXX - store information about how well datasets perform, i.e. whether they get the desired document in the top k when we have labels
+    """Model to store info about how well EmbeddingDatasets perform.
+
+    This is for either stitched datasets or source datasets
+    """
+
+    # XXX - store information about how well datasets perform, i.e. whether they get the
+    # desired document in the top k when we have labels
 
 
 # XXX - gatlen
-# 1. Kernel: idea is to sample n random datapoints and then just visualize a similarity matrix (takes in chromaDB collection, entry type,
+# 1. Kernel: idea is to sample n random datapoints and then just visualize a
+#   similarity matrix (takes in chromaDB collection, entry type,
 #   and what sort of similarity function to use). -> np table is output -> viz np table
-# 2. CKA: calculate the kernel of the entire dataset for two matching datasets (i.e. same text_dataset_name but different models) then
-#   dot product it or something idk (it's defined somewhere - you find how different the mega-tables are)
-# 3. Rank: idk read owler_fork (basically it takes in a chromadb collection, and then it calculates some wierd function of the top k results being compared
-#    between one collection and another collection on the queries w.r.t. the texts/documents; same for jaccard - basically read `owler_fork` and you will
-#    iterate for different topk values and calculate some function of the IDs and ranks of those topk results.
-# 4. umap (do pca and tsne too maybe a couple times to be safe): just get all the embeddings and umap this shit (then you need to color-code them
-#    or partition them based on some sort of semantic classifier of your choice (i.e. you can manually classify documents using an LLM) and then
+# 2. CKA: calculate the kernel of the entire dataset for two matching datasets
+#   (i.e. same text_dataset_name but different models) then
+#   dot product it or something idk (it's defined somewhere - you find how different
+#   the mega-tables are)
+# 3. Rank: idk read owler_fork (basically it takes in a chromadb collection, and then
+#   it calculates some wierd function of the top k results being compared
+#    between one collection and another collection on the queries w.r.t.
+#   the texts/documents; same for jaccard - basically read `owler_fork` and you will
+#    iterate for different topk values and calculate some function of the IDs and
+#   ranks of those topk results.
+# 4. umap (do pca and tsne too maybe a couple times to be safe): just get all the
+#   embeddings and umap this shit (then you need to color-code them
+#    or partition them based on some sort of semantic classifier of your choice
+# (i.e. you can manually classify documents using an LLM) and then
 #    just color the UMAP)
 
 
-class DatasetComparison(BaseModel):
-    pass  # XXX - store information about how datasets store and query differently like cka, top k difference, etc...
+class SimilarityMatrixDatasetEvaluation(BaseModel):
+    """Represents the results from performing a similarity matrix eval on a dataset."""
+
+    dataset_id: EmbeddingDatasetInformation
+
+
+class DatasetComparisonEvaluation(BaseModel):
+    """Comparison between different datasets."""
+
+    # XXX - store information about how datasets store and query differently like cka, top k difference, etc...
 
 
 class StitchEvaluation(BaseModel):
