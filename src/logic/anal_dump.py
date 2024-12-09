@@ -1,18 +1,20 @@
-"""Dumps any given datastructure to a json file.
+"""Dumps any given datastructure to a json file using Pydantic.
 
 Description: Provides functionality to serialize and save Python objects to JSON files
-with configurable settings and proper type handling. Includes support for common
+using Pydantic for validation and serialization. Includes support for common
 Python types like datetime, Path objects, and NumPy arrays.
 """
 
-import json
-from collections.abc import Callable
 from datetime import datetime
 from pathlib import Path
 from typing import Any
 
 import numpy as np
 from loguru import logger
+from pydantic import BaseModel
+from pydantic import ConfigDict
+from pydantic import Field
+from pydantic import field_serializer
 
 from src.utils.general_setup import setup
 
@@ -20,107 +22,104 @@ from src.utils.general_setup import setup
 setup("anal_dump")
 
 
-def _json_serializer(obj: Any) -> Any:
-    """Custom JSON serializer for handling special Python types.
+class DataDump(BaseModel):
+    """Pydantic model for data serialization."""
 
-    :param Any obj: Object to serialize
-    :return: JSON serializable representation of the object
-    :rtype: Any
-    """
-    if isinstance(obj, datetime):
-        return obj.isoformat()
-    if isinstance(obj, Path):
-        return str(obj)
-    if isinstance(obj, np.ndarray):
-        return obj.tolist()
-    if isinstance(obj, (np.int64, np.int32)):
-        return int(obj)
-    if isinstance(obj, (np.float64, np.float32)):
-        return float(obj)
-    raise TypeError(f"Object of type {type(obj)} is not JSON serializable")
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    name: str = Field(description="Name of this piece of data")
+
+    # Metadata fields
+    created_at: datetime = Field(
+        default_factory=datetime.utcnow, description="UTC timestamp when the dump was created"
+    )
+    version: str = Field(default="1.0.0", description="Version of the data format")
+    description: str | None = Field(
+        default=None, description="Optional description of the data dump"
+    )
+
+    # Original data field
+    data: Any = Field(description="Data to be serialized")
+
+    additional_fields: dict[str, Any] | None = None
+
+    @field_serializer("data")
+    def serialize_data(self, v: Any) -> Any:
+        """Custom serializer for handling special Python types."""
+        if isinstance(v, np.ndarray):
+            return v.tolist()
+        if isinstance(v, (np.int64, np.int32)):
+            return int(v)
+        if isinstance(v, (np.float64, np.float32)):
+            return float(v)
+        return v
+
+    @field_serializer("created_at")
+    def serialize_datetime(self, v: datetime) -> str:
+        """Serialize datetime to ISO format string."""
+        return v.isoformat()
 
 
-def _save_json(
-    data: Any,
-    filepath: Path,
+def anal_dump(
+    data: BaseModel,
+    filename: str | Path,
+    output_dir: str | Path = "data/anal",
     indent: int = 2,
-    serializer: Callable = _json_serializer,
 ) -> Path:
-    """Save data as a JSON file.
+    """Save a Pydantic model as a JSON file."""
+    # Convert paths to Path objects
+    output_dir = Path(output_dir)
+    filename = Path(filename).stem
 
-    :param Any data: Data to save
-    :param Path filepath: Full path including filename and .json extension
-    :param int indent: Number of spaces for indentation
-    :param Callable serializer: Custom JSON serializer function
-    :return: Path to the saved JSON file
-    :rtype: Path
-    """
-    logger.info(f"Saving JSON to {filepath}")
+    # Generate file path
+    json_dir = output_dir
+    json_dir.mkdir(parents=True, exist_ok=True)
+    json_path = json_dir / f"{filename}.json"
+
+    # Convert the input model to a dictionary first
+    data_dict = {"data": data.model_dump()}
+    data = DataDump(name=filename, **data_dict)
 
     try:
-        with open(filepath, "w", encoding="utf-8") as f:
-            json.dump(
-                data,
-                f,
-                indent=indent,
-                default=serializer,
-                ensure_ascii=False,
-            )
-        logger.success(f"Successfully saved JSON to {filepath}")
+        # Save JSON file directly from the Pydantic model
+        logger.info(f"Saving JSON to {json_path}")
+        with json_path.open("w", encoding="utf-8") as f:
+            f.write(data.model_dump_json(indent=indent))
+        logger.success(f"Successfully saved JSON to {json_path}")
 
     except Exception as e:
         logger.error(f"Failed to save JSON: {e!s}")
         raise
 
-    return filepath
-
-
-def anal_dump(
-    data: Any,
-    filename: str | Path,
-    output_dir: str | Path = "data/dumps",
-    indent: int = 2,
-) -> Path:
-    """Save any data structure as a JSON file.
-
-    :param Any data: Data structure to save
-    :param str | Path filename: Name of the file without extension
-    :param str | Path output_dir: Directory to save the file in
-    :param int indent: Number of spaces for indentation
-    :return: Path to the saved JSON file
-    :rtype: Path
-    """
-    # Convert paths to Path objects
-    output_dir = Path(output_dir)
-    filename = Path(filename).stem  # Get filename without extension
-
-    # Create output directory if it doesn't exist
-    output_dir.mkdir(parents=True, exist_ok=True)
-
-    # Generate file path
-    json_path = output_dir / f"{filename}.json"
-
-    # Save JSON file
-    return _save_json(data, json_path, indent=indent)
+    return json_path
 
 
 def main() -> None:
-    """Run example data dumping."""
+    """Run example data dump."""
     logger.info("Starting example data dump")
 
-    # Example data structure with various types
-    example_data = {
-        "string": "Hello, World!",
-        "number": 42,
-        "float": 3.14159,
-        "list": [1, 2, 3],
-        "dict": {"a": 1, "b": 2},
-        "datetime": datetime.now(),
-        "path": Path("some/path"),
-        "numpy_array": np.array([1, 2, 3]),
-        "numpy_int": np.int64(42),
-        "numpy_float": np.float64(3.14159),
-    }
+    # Example Pydantic model
+    class ExampleModel(BaseModel):
+        """Example Pydantic model for demonstration."""
+
+        text_str: str
+        count: int
+        decimal: float
+        items: list
+        mapping: dict
+        datetime: datetime
+        path: Path
+
+    # Create example data with the Pydantic model
+    example_data = ExampleModel(
+        text_str="Hello, World!",
+        count=42,
+        decimal=3.14159,
+        items=[1, 2, 3],
+        mapping={"a": 1, "b": 2},
+        datetime=datetime.now(),
+        path=Path("some/path"),
+    )
 
     # Save the example data
     json_path = anal_dump(

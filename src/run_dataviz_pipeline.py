@@ -27,6 +27,7 @@ from pathlib import Path
 
 import numpy as np
 
+from src.logic.anal_dump import anal_dump
 from src.schema.mock.embeddings_dict import create_example_embeddings
 from src.schema.mock.stitch_summary import create_example_stitch_summary
 from src.schema.training_schemas import StitchSummary
@@ -50,6 +51,7 @@ def dataviz_pipeline(data_path: Path) -> None:
     """Runs entire data visualization pipeline on saved data."""
 
     stitch_summary = _load_data_as_stitch_summary(data_path=data_path)
+    anal_dump(stitch_summary, "test_visualize_embeddings")
     fig = visualize_embeddings(embeddings_dict=create_example_embeddings())
     save_figure(fig, "test_visualize_embeddings")
 

@@ -1,0 +1,22 @@
+{
+  "created_at": "2024-12-09T21:10:42.503207",
+  "version": "1.0.0",
+  "description": null,
+  "data": {
+    "text_str": "Hello, World!",
+    "count": 42,
+    "decimal": 3.14159,
+    "items": [
+      1,
+      2,
+      3
+    ],
+    "mapping": {
+      "a": 1,
+      "b": 2
+    },
+    "datetime": "2024-12-09T16:10:42.503073",
+    "path": "some/path"
+  },
+  "additional_fields": null
+}
