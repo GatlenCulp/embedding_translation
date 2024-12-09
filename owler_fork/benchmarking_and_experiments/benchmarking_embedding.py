@@ -1,3 +1,9 @@
+from __future__ import annotations
+"""
+The point of this file was that I was trying to get my embedding process to go faster by making
+better use of parallelization, batching, etc... In the end I didn't actually do it - adrianoh
+"""
+
 from typing import List
 import yaml
 from sentence_transformers import SentenceTransformer
