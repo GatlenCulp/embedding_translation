@@ -14,6 +14,9 @@ dependencies = [
     "flask",
     "cohere",
     "polyfactory",
+    "orjson>=3.10.12",
+    "bump-pydantic",
+    "safetensors>=0.4.5",
 ]
 
 [tool.poetry]

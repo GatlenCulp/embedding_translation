@@ -22,10 +22,12 @@ from src.utils.general_setup import setup
 setup("anal_dump")
 
 
-class DataDump(BaseModel):
+class DataFile(BaseModel):
     """Pydantic model for data serialization."""
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    pydantic_schema: str = Field(description="The pydantic schema that hte data is saved in")
 
     name: str = Field(description="Name of this piece of data")
 
@@ -78,7 +80,7 @@ def anal_dump(
 
     # Convert the input model to a dictionary first
     data_dict = {"data": data.model_dump()}
-    data = DataDump(name=filename, **data_dict)
+    data = DataFile(name=filename, pydantic_schema=data.__class__.__name__, **data_dict)
 
     try:
         # Save JSON file directly from the Pydantic model

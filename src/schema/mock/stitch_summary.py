@@ -140,6 +140,7 @@ def create_example_stitch_summary() -> StitchSummary:
 
 def main() -> None:
     mock_stitch_summary = create_example_stitch_summary()
+    StitchSummary.model_validate(mock_stitch_summary)
     print(mock_stitch_summary)
 
 

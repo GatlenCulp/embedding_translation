@@ -27,7 +27,9 @@ from pathlib import Path
 
 import numpy as np
 
+from src.logic.anal_dump import DataFile
 from src.logic.anal_dump import anal_dump
+from src.logic.reduce_embedding_dims import reduce_embeddings_dimensionality
 from src.schema.mock.embeddings_dict import create_example_embeddings
 from src.schema.mock.stitch_summary import create_example_stitch_summary
 from src.schema.training_schemas import StitchSummary
@@ -35,7 +37,6 @@ from src.utils.general_setup import setup
 from src.viz.dimensionality_reduction import visualize_embeddings
 from src.viz.plot_heatmap import visualize_heatmap
 from src.viz.save_figure import save_figure
-from src.logic.reduce_embedding_dims import reduce_embeddings_dimensionality
 
 
 setup("run_dataviz_pipeline")
@@ -45,7 +46,12 @@ rng = np.random.default_rng()
 
 
 def _load_data_as_stitch_summary(data_path: Path) -> StitchSummary:
-    return create_example_stitch_summary()
+    """Load JSON data from path and convert to StitchSummary."""
+    with data_path.open() as f:
+        data = f.read()
+    data = DataFile.model_validate_json(data)
+    data = StitchSummary.model_(data.data)
+    return data
 
 
 def dataviz_pipeline(data_path: Path) -> None:
@@ -70,7 +76,7 @@ def dataviz_pipeline(data_path: Path) -> None:
 
 def main() -> None:
     """Runs dataviz pipeline with default config."""
-    data_path = PROJ_ROOT / "data" / "data.json"
+    data_path = PROJ_ROOT / "data" / "example_stitch_summary.json"
     dataviz_pipeline(data_path)
 
 

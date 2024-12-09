@@ -3,9 +3,7 @@
 import numpy as np
 import plotly.express as px
 import pytest
-from plotly.graph_objects import Figure
 
-from src.logic.reduce_embedding_dims import reduce_embeddings_dimensionality
 from src.viz.dimensionality_reduction import visualize_embeddings
 
 

@@ -1,5 +1,7 @@
 {
-  "created_at": "2024-12-09T21:10:42.503207",
+  "pydantic_schema": "ExampleModel",
+  "name": "example_dump",
+  "created_at": "2024-12-09T22:22:08.896857",
   "version": "1.0.0",
   "description": null,
   "data": {
@@ -15,7 +17,7 @@
       "a": 1,
       "b": 2
     },
-    "datetime": "2024-12-09T16:10:42.503073",
+    "datetime": "2024-12-09T17:22:08.896760",
     "path": "some/path"
   },
   "additional_fields": null
