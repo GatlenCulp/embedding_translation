@@ -349,25 +349,34 @@ def train_linear_transforms_dataset() -> None:
     print(f"Deleting {len(collections_who_most_die)} collections")
     print("  " + "\n  ".join(collection.name for collection in collections_who_most_die))
     click.confirm("Continue?", abort=True)
-    for collection in collections_who_most_die:
+    for collection in tqdm(list(collections_who_most_die), desc="Deleting collections"):
         chroma_client.delete_collection(collection.name)
     
     collections: List[str] = get_chroma_collections(chroma_client, selected_folder)
     SHRINK_COLLECTIONS_FOR_TESTING = True # comment/uncomment
     if SHRINK_COLLECTIONS_FOR_TESTING:
+        print("TIME TO SHRINK ---- we musT DESCEND into the QUANTUM REALM....;;;::::::>>>>>>>>.......````")
         # small collection => good testing
-        small_subset_data = [collection.get(limit=100) for collection in collections]
+        print("------- [quantum enabled] getting collection objs")
+        collection_objs = [chroma_client.get_collection(collection) for collection in collections]
+        limit = 1
+        print(f"------- [quantum enabled] getting small subset data (limit={limit})")
+        small_subset_data = [collection_obj.get(limit=limit) for collection_obj in tqdm(collection_objs, desc="Getting small subset data")]
+        print("------- [quantum enabled] creating new collections")
         new_collections = [chromadb.Collection(name=f"ultra_debug_small_{collection.name}") for collection in collections]
-        for new_collection, subset_data in zip(new_collections, small_subset_data):
+        print("------- [quantum enabled] adding small subset data to new collections")
+        for new_collection, subset_data in tqdm(list(zip(new_collections, small_subset_data)), desc="Adding small subset data to new collections"):
             new_collection.add(
                 embeddings=subset_data['embeddings'],
                 documents=subset_data['documents'],
                 metadatas=subset_data['metadatas'],
                 ids=subset_data['ids']
             )
+        print("[quantum enabled] sans dat")
         assert len(collections) == len(new_collections)
         assert all(nc.name == f"small_{c.name}" for nc, c in zip(new_collections, collections))
-        collections = new_collections
+        print("[quantum enabled] replac ->>>> our journey is complete [returning <<>> to MACROSCOPIC world]........ | E X  P   A    N     D || |  |   |    |     |")
+        collections = new_collections # replace ftw
     print(f"Found {len(collections)} collections")
     # We are only training on the documents right now
     print("Fetching train/test set IDs... and making sure this shit aint too sussy backa (hella viz in there too nw, tqdm, and even print statements)")
