@@ -13,6 +13,7 @@ dependencies = [
     "chromadb",
     "flask",
     "cohere",
+    "polyfactory",
 ]
 
 [tool.poetry]
