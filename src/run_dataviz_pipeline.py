@@ -24,14 +24,17 @@ For each experiment:
 """
 
 from pathlib import Path
+
 import numpy as np
 
 from src.schema.mock.embeddings_dict import create_example_embeddings
+from src.schema.mock.stitch_summary import create_example_stitch_summary
 from src.schema.training_schemas import StitchSummary
 from src.utils.general_setup import setup
 from src.viz.dimensionality_reduction import visualize_embeddings
 from src.viz.plot_heatmap import visualize_heatmap
 from src.viz.save_figure import save_figure
+
 
 setup("run_dataviz_pipeline")
 
@@ -39,9 +42,14 @@ PROJ_ROOT = Path(__file__).parent.parent
 rng = np.random.default_rng()
 
 
+def _load_data_as_stitch_summary(data_path: Path) -> StitchSummary:
+    return create_example_stitch_summary()
+
+
 def dataviz_pipeline(data_path: Path) -> None:
     """Runs entire data visualization pipeline on saved data."""
 
+    stitch_summary = _load_data_as_stitch_summary(data_path=data_path)
     fig = visualize_embeddings(embeddings_dict=create_example_embeddings())
     save_figure(fig, "test_visualize_embeddings")
 

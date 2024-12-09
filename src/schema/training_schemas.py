@@ -299,74 +299,79 @@ class StitchSummary(BaseModel):
     6. The trained stitch model dump
     """
 
-    @computed_field
+    @computed_field(repr=True)
     @property
     def name(self) -> str:
         """Generate a descriptive name for the stitch summary."""
         return (
             f"StitchSummary("
-            f"experiment={self.experiment_config.name}, "
-            f"epochs={self.train_status.num_epochs}"
+            f"experiment={self.training_experiment_config.name}, "
+            f"epochs={self.train_status_final.num_epochs}"
             ")"
         )
 
     ### EXTRACT SUMMARY DATA ###
-    @computed_field
+    @computed_field(repr=False)
     @property
     def text_dataset_name(self) -> str:
         """Extract dataset name from experiment config."""
-        return self.experiment_config.dataset_name
+        return self.training_experiment_config.dataset_name
 
-    @computed_field
+    @computed_field(repr=False)
     @property
     def source_embedding_model_name(self) -> str:
         """Extract source model name from experiment config."""
-        return self.experiment_config.source.embedding_model_name
+        return self.training_experiment_config.source.embedding_model_name
 
-    @computed_field
+    @computed_field(repr=False)
     @property
     def target_embedding_model_name(self) -> str:
         """Extract target model name from experiment config."""
-        return self.experiment_config.target.embedding_model_name
+        return self.training_experiment_config.target.embedding_model_name
 
-    @computed_field
+    @computed_field(repr=False)
     @property
     def architecture(self) -> Literal["affine"]:
         """Extracts the architecture class name."""
-        return self.experiment_config.architecture
+        return self.training_experiment_config.architecture
 
-    @computed_field
+    @computed_field(repr=False)
     @property
     def architecture_config(self) -> dict[str, Any] | None:
         """Extracts the architecture class config."""
-        return self.experiment_config.architecture_config
+        return self.training_experiment_config.architecture_config
 
     ### TRAINING STITCH ###
 
     # Training Experiment Configuration
     training_experiment_config: ExperimentConfig = Field(
-        description="The inputs for training the stitch."
+        description="The inputs for training the stitch.", repr=False
     )
-    train_settings: TrainSettings = Field(description="The settings used to train the stitch.")
+    train_settings: TrainSettings = Field(
+        description="The settings used to train the stitch.", repr=False
+    )
 
     # Training Results
     training_evaluation_log: StitchEvaluationLog = Field(
-        description="Epoch-by-epoch WandB-style evaluations."
+        description="Epoch-by-epoch WandB-style evaluations.", repr=False
     )
     train_status_final: TrainStatus = Field(description="The stitch save location and other info.")
     train_stitch_embeddings: EmbeddingDatasetInformation = Field(
-        description="The stitch embeddings resulting from feeding the original training embeddings through stitch model"
+        description="The stitch embeddings resulting from feeding the original training embeddings through stitch model",
+        repr=False,
     )
 
     ### TESTING STITCH ###
 
     # Test Experiment Configuration (source = resulting stitched embeddings)
     test_experiment_config: ExperimentConfig = Field(
-        description="The setup for the test experiment on witheld text data."
+        description="The setup for the test experiment on witheld text data.", repr=False
     )
     test_evaluation_log: StitchEvaluationLog = Field(
-        description="No-epoch WandB-style evaluation on the test data. Just MSE and such."
+        description="No-epoch WandB-style evaluation on the test data. Just MSE and such.",
+        repr=False,
     )
     test_stitch_embeddings: EmbeddingDatasetInformation = Field(
-        description="The stitch embeddings resulting from feeding the original test embeddings through stitch model"
+        description="The stitch embeddings resulting from feeding the original test embeddings through stitch model",
+        repr=False,
     )
