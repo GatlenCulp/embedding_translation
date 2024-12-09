@@ -1,7 +1,11 @@
-"""Generates example StitchSummary."""
+"""Generates example StitchSummary and corresponding mock safetensor files."""
 
 from datetime import datetime
+from pathlib import Path
 
+from loguru import logger
+
+from src.schema.mock.safe_tensor import generate_mock_safetensor
 from src.schema.training_schemas import EmbeddingDatasetInformation
 from src.schema.training_schemas import ExperimentConfig
 from src.schema.training_schemas import IngestionSettings
@@ -10,10 +14,24 @@ from src.schema.training_schemas import StitchEvaluationLog
 from src.schema.training_schemas import StitchSummary
 from src.schema.training_schemas import TrainSettings
 from src.schema.training_schemas import TrainStatus
+from src.utils.general_setup import setup
 
 
-def create_example_stitch_summary() -> StitchSummary:
-    # Create mock embedding dataset info
+rng = setup("stitch_summary")
+
+
+def create_example_stitch_summary(
+    base_path: str | Path = "data/embeddings", create_safetensors: bool = True
+) -> StitchSummary:
+    """Create a mock StitchSummary and generate corresponding safetensor files.
+
+    :param base_path: Base directory for storing mock embedding files
+    :return: Populated StitchSummary with valid file paths
+    """
+    base_path = Path(base_path)
+    base_path.mkdir(parents=True, exist_ok=True)
+
+    # Create mock embedding dataset info with actual files
     source_embeddings = EmbeddingDatasetInformation(
         embedding_model_name="text-embedding-ada-002",
         embedding_model_type="openai",
@@ -21,9 +39,17 @@ def create_example_stitch_summary() -> StitchSummary:
         text_dataset_name="hotpotqa",
         chromadb_collection_name="hotpotqa_source_embeddings",
         ingestion_settings=IngestionSettings(),
-        dataset_filepath="/path/to/source/embeddings.jsonl",
-        collections_filepath="/path/to/source/collections",
+        dataset_filepath=str(base_path / "source_embeddings.safetensors"),
+        collections_filepath=str(base_path / "source_collections"),
     )
+
+    if create_safetensors:
+        # Generate source embeddings file
+        generate_mock_safetensor(
+            shape=(1000, 1536),  # 1000 embeddings of dimension 1536
+            output_path=source_embeddings.dataset_filepath,
+            tensor_names=["embeddings"],
+        )
 
     target_embeddings = EmbeddingDatasetInformation(
         embedding_model_name="instructor-xl",
@@ -32,11 +58,19 @@ def create_example_stitch_summary() -> StitchSummary:
         text_dataset_name="hotpotqa",
         chromadb_collection_name="hotpotqa_target_embeddings",
         ingestion_settings=IngestionSettings(),
-        dataset_filepath="/path/to/target/embeddings.jsonl",
-        collections_filepath="/path/to/target/collections",
+        dataset_filepath=str(base_path / "target_embeddings.safetensors"),
+        collections_filepath=str(base_path / "target_collections"),
     )
 
-    # Create mock stitched embeddings
+    if create_safetensors:
+        # Generate target embeddings file
+        generate_mock_safetensor(
+            shape=(1000, 768),  # 1000 embeddings of dimension 768
+            output_path=target_embeddings.dataset_filepath,
+            tensor_names=["embeddings"],
+        )
+
+    # Create mock stitched embeddings with actual files
     stitched_train_embeddings = EmbeddingDatasetInformation(
         embedding_model_name="text-embedding-ada-002",
         embedding_model_type="openai",
@@ -44,10 +78,18 @@ def create_example_stitch_summary() -> StitchSummary:
         text_dataset_name="hotpotqa",
         chromadb_collection_name="hotpotqa_stitched_train",
         ingestion_settings=IngestionSettings(),
-        dataset_filepath="/path/to/stitched/train_embeddings.jsonl",
-        collections_filepath="/path/to/stitched/train_collections",
+        dataset_filepath=str(base_path / "stitched_train_embeddings.safetensors"),
+        collections_filepath=str(base_path / "stitched_train_collections"),
         stitch_model_name="stitch_ada002_to_instructor",
     )
+
+    if create_safetensors:
+        # Generate stitched train embeddings file
+        generate_mock_safetensor(
+            shape=(1000, 768),  # 1000 embeddings of dimension 768
+            output_path=stitched_train_embeddings.dataset_filepath,
+            tensor_names=["embeddings"],
+        )
 
     stitched_test_embeddings = EmbeddingDatasetInformation(
         embedding_model_name="text-embedding-ada-002",
@@ -56,10 +98,18 @@ def create_example_stitch_summary() -> StitchSummary:
         text_dataset_name="hotpotqa",
         chromadb_collection_name="hotpotqa_stitched_test",
         ingestion_settings=IngestionSettings(),
-        dataset_filepath="/path/to/stitched/test_embeddings.jsonl",
-        collections_filepath="/path/to/stitched/test_collections",
+        dataset_filepath=str(base_path / "stitched_test_embeddings.safetensors"),
+        collections_filepath=str(base_path / "stitched_test_collections"),
         stitch_model_name="stitch_ada002_to_instructor",
     )
+
+    if create_safetensors:
+        # Generate stitched test embeddings file
+        generate_mock_safetensor(
+            shape=(200, 768),  # 200 test embeddings of dimension 768
+            output_path=stitched_test_embeddings.dataset_filepath,
+            tensor_names=["embeddings"],
+        )
 
     # Create mock experiment configs
     train_experiment = ExperimentConfig(
@@ -139,9 +189,9 @@ def create_example_stitch_summary() -> StitchSummary:
 
 
 def main() -> None:
-    mock_stitch_summary = create_example_stitch_summary()
+    mock_stitch_summary = create_example_stitch_summary(create_safetensors=True)
     StitchSummary.model_validate(mock_stitch_summary)
-    print(mock_stitch_summary)
+    logger.info(mock_stitch_summary)
 
 
 if __name__ == "__main__":
