@@ -75,6 +75,9 @@ def visualize_embeddings(
     :return: Plotly figure with embedding visualization
     :rtype: go.Figure
     """
+    dimensions = 2
+    if not embeddings_dict or not all(len(embed) == dimensions for embed in embeddings_dict.values()):
+        raise ValueError
     # Set default config if none provided
     if config is None:
         config = {

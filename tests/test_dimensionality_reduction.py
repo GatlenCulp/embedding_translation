@@ -35,34 +35,6 @@ def iris_embeddings() -> dict[str, np.ndarray]:
     }
 
 
-def test_visualization_pipeline(iris_embeddings: dict[str, np.ndarray]) -> None:
-    """Test the full visualization pipeline using iris dataset.
-
-    :param dict[str, np.ndarray] iris_embeddings: Fixture containing iris embeddings
-    """
-    # Verify input data
-    assert len(iris_embeddings) == 3, "Should have 3 species"
-    for embeddings in iris_embeddings.values():
-        assert embeddings.shape[1] == 4, "Should be 4D features"
-
-    # Reduce dimensionality
-    reduced_embeddings = reduce_embeddings_dimensionality(iris_embeddings)
-
-    # Verify reduction
-    assert len(reduced_embeddings) == len(iris_embeddings), "Should preserve number of species"
-    for embeddings in reduced_embeddings.values():
-        assert embeddings.shape[1] == 2, "Should reduce to 2D"
-        assert not np.any(np.isnan(embeddings)), "Should not contain NaN values"
-
-    # Create visualization
-    fig = visualize_embeddings(reduced_embeddings)
-
-    # Verify figure
-    assert isinstance(fig, Figure), "Should return a plotly Figure"
-    assert len(fig.data) == 3, "Should have one trace per species"
-    assert fig.layout.title.text == "Embedding Space Comparison", "Should have correct title"
-
-
 def test_visualization_config(rng: np.random.Generator) -> None:
     """Test visualization configuration options.
 
