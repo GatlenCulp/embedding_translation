@@ -17,7 +17,13 @@ class SimilarityMatrixEvaluation(BaseModel):
     """
 
     # Data Source
-    dataset: EmbeddingDatasetInformation = Field(description="stitched or non-stitched dataset")
+    test_dataset: EmbeddingDatasetInformation = Field(description="stitched or non-stitched testing dataset")
+
+    @model_validator(mode="after")
+    def validate_dataset_is_test(self) -> "SimilarityMatrixPairwiseEvaluation":
+        """Validate that this is a test dataset."""
+        # TODO: Write this
+        return self
 
     # Sampled Source Items
     record_ids: list[str] = Field(

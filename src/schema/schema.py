@@ -36,21 +36,3 @@ class DatasetEvaluation(BaseModel):
     top_k_metrics: dict[int, float]  # Maps k -> score for different k values
     label_accuracy: float  # How often desired document appears in results
     query_performance: dict[str, float]  # Maps query_id -> relevance score
-
-
-
-class SimilarityMatrixEvaluation(BaseModel):
-    """Represents the results from performing a similarity matrix eval on a dataset.
-
-    Evaluates similarity between n random datapoints using specified similarity function.
-    """
-
-    dataset: EmbeddingDatasetInformation
-    similarity_matrix: list[list[float]] = Field(description="n x n matrix of similarity scores")
-    sample_size: int = Field(description="n samples chosen")
-    record_ids: list[str] = Field(description="List of n record ids used for comparison")
-    similarity_function: Literal["normalized_dot_product", "cosine_distance"] = Field(description="Name of similarity function used")
-
-
-class SimilarityMatrixPairwaseEvaluation(BaseModel):
-    """Comparison metrics between different Similarity Matrix Evaluations."""

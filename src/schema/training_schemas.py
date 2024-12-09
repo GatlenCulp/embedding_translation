@@ -97,7 +97,7 @@ class EmbeddingDatasetInformation(BaseModel):
 
     This object is SERIALIZEABLE and can be put into ChromaDB metadata AND it can alsobe stored in
     a JSON seperately.
-    
+
     GATLEN NOTE: This does NOT represent the embeddings themselves, but rather
         where the embeddings are stored.
 
