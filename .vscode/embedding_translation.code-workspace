@@ -19,8 +19,8 @@
 			"**/.ruby-lsp": true,
 			"**/.pytest_cache": true,
 			"**/docker": true,
-			"**/venv": true,
-			"**/tests": true,
+			"**/venv": false,
+			"**/tests": false,
 			"**/scripts": true,
 			"**/logs": false,
 			"**/.github": true,
@@ -33,13 +33,12 @@
 			"requirements.txt": true,
 			"LICENSE.md": true,
 			"CHANGELOG.md": true,
-			// LaTeX
 			"**/*.aux": true,
 			"**/*.fdb_latexmk": true,
 			"**/*.fls": true,
 			"**/*.bbl": true,
 			"**/*.out": true,
-			"**/*.synctex.gz*": true,
+			"**/*.synctex.gz*": true
 		},
 		"explorerExclude.backup": {},
 	}

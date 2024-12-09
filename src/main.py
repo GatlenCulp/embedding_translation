@@ -1,5 +1,3 @@
-'''
-main.py
-'''
+"""main.py"""
 
 print("Hello world!")
