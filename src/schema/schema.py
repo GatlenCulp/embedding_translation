@@ -24,15 +24,15 @@ from src.schema.training_schemas import (
 
 
 
-class DatasetEvaluation(BaseModel):
-    """Model to store info about how well EmbeddingDatasets perform.
+# class DatasetEvaluation(BaseModel):
+#     """Model to store info about how well EmbeddingDatasets perform.
 
-    This is for either stitched datasets or source datasets.
+#     This is for either stitched datasets or source datasets.
 
-    1. Sample n random datapoints
-    2. Generate similarity matrix of these datapoints
-    """
-    test_dataset: EmbeddingDatasetInformation = Field(description="")
-    top_k_metrics: dict[int, float]  # Maps k -> score for different k values
-    label_accuracy: float  # How often desired document appears in results
-    query_performance: dict[str, float]  # Maps query_id -> relevance score
+#     1. Sample n random datapoints
+#     2. Generate similarity matrix of these datapoints
+#     """
+#     test_dataset: EmbeddingDatasetInformation = Field(description="")
+#     top_k_metrics: dict[int, float]  # Maps k -> score for different k values
+#     label_accuracy: float  # How often desired document appears in results
+#     query_performance: dict[str, float]  # Maps query_id -> relevance score

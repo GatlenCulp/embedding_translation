@@ -1,5 +1,7 @@
 """Represents the comparative statistics for semantic search.
 
+Exists to see whether semantic search results are preserved by stitching.
+
 Uses (kNNs) with stitch and source embeddings to compare accuracy.
 """
 
@@ -8,7 +10,6 @@ from typing import Literal
 from pydantic import BaseModel
 from pydantic import Field
 from pydantic import computed_field
-from pydantic import model_validator
 
 from src.schema.training_schemas import EmbeddingDatasetInformation
 
@@ -46,5 +47,8 @@ class SemanticSearchEvaluation(BaseModel):
 
 class SemanticSearchPairwiseEvaluation(BaseModel):
     """Represents the comparative statistics for semantic search."""
-    target_semantic_search: SemanticSearchEvaluation = Field(description="The target semantic search")
+
+    target_semantic_search: SemanticSearchEvaluation = Field(
+        description="The target semantic search"
+    )
     # Okay I should really just build stuff.
