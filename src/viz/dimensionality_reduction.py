@@ -11,15 +11,16 @@ import plotly.express as px
 import plotly.graph_objects as go
 from loguru import logger
 
-from src.transforms.reduce_embedding_dims import reduce_embeddings_dimensionality
+from src.logic.reduce_embedding_dims import reduce_embeddings_dimensionality
 from src.utils.general_setup import setup
+from src.viz.save_figure import save_figure
 
 
 setup("dimensionality_reduction")
 
 
 # %% Visualization function
-def plot_embedding_spaces(
+def _plot_embedding_spaces(
     projection_dict: dict[str, np.ndarray],
     width: int = 800,
     height: int = 600,
@@ -65,7 +66,7 @@ def plot_embedding_spaces(
 
 
 # %% Combined function for backwards compatibility
-def visualize_embedding_translations(
+def _visualize_embedding_translations(
     embeddings_dict: dict[str, np.ndarray],
     random_state: int = 42,
     n_neighbors: int = 15,
@@ -88,11 +89,58 @@ def visualize_embedding_translations(
         n_neighbors=n_neighbors,
         min_dist=min_dist,
     )
-    return plot_embedding_spaces(projections)
+    return _plot_embedding_spaces(projections)
 
 
-def main() -> None:
-    """Runs example translation using iris dataset."""
+def visualize_embeddings(
+    embeddings_dict: dict[str, np.ndarray],
+    config: dict = None,
+) -> tuple[go.Figure, go.Figure]:
+    """Create visualizations for arbitrary embedding spaces.
+
+    :param dict[str, np.ndarray] embeddings_dict: Dictionary mapping embedding names to arrays
+    :param dict config: Configuration for visualization parameters (optional)
+    :return: Tuple of (combined method figure, separate method figure)
+    :rtype: tuple[go.Figure, go.Figure]
+    """
+    # Set default config if none provided
+    if config is None:
+        config = {
+            "random_state": 42,
+            "n_neighbors": 15,
+            "min_dist": 0.1,
+            "width": 800,
+            "height": 600,
+        }
+
+    logger.info("Creating visualizations...")
+
+    # Method 1: Combined
+    fig1 = _visualize_embedding_translations(
+        embeddings_dict,
+        random_state=config.get("random_state", 42),
+        n_neighbors=config.get("n_neighbors", 15),
+        min_dist=config.get("min_dist", 0.1),
+    )
+
+    # Method 2: Separate
+    projections = reduce_embeddings_dimensionality(
+        embeddings_dict,
+        random_state=config.get("random_state", 42),
+        n_neighbors=config.get("n_neighbors", 15),
+        min_dist=config.get("min_dist", 0.1),
+    )
+    fig2 = _plot_embedding_spaces(
+        projections,
+        width=config.get("width", 800),
+        height=config.get("height", 600),
+    )
+
+    return fig1, fig2
+
+
+def _iris_example() -> None:
+    """Run example visualization using iris dataset."""
     logger.info("Starting example with iris dataset")
 
     # Load iris data
@@ -101,22 +149,26 @@ def main() -> None:
 
     # Create mock embedding spaces
     embeddings_dict = {
-        species: features[iris_df.species == species].values for species in iris_df.species.unique()
+        species: features[iris_df.species == species].to_numpy()
+        for species in iris_df.species.unique()
     }
     logger.info(f"Created embeddings for {len(embeddings_dict)} species")
 
-    # Method 1: Combined
-    logger.info("Testing combined method...")
-    fig1 = visualize_embedding_translations(embeddings_dict)
-    fig1.show()
+    # Create visualizations
+    fig1, fig2 = visualize_embeddings(embeddings_dict)
 
-    # Method 2: Separate
-    logger.info("Testing separate methods...")
-    projections = reduce_embeddings_dimensionality(embeddings_dict)
-    fig2 = plot_embedding_spaces(projections)
+    # Display and save figures
+    fig1.show()
     fig2.show()
+    save_figure(fig1, "iris_embeddings_combined")
+    save_figure(fig2, "iris_embeddings_separate")
 
     logger.success("Example completed successfully")
+
+
+def main() -> None:
+    """Run the iris example."""
+    _iris_example()
 
 
 # %% Example usage

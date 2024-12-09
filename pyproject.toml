@@ -8,7 +8,8 @@ dependencies = [
     "scikit-learn",
     "tokenize-rt",
     "umap-learn",
-    "numpy<2.0.0"
+    "numpy<2.0.0",
+    "kaleido",
 ]
 
 [tool.poetry]
@@ -107,6 +108,7 @@ chime = "^0.7.0"        # Audio notifications for long-running tasks
 
 # -- Data Visualization --
 plotly = "^5.24.1"     # Interactive visualization library
+# pip install kaleido good for static images with plotly
 # dash = "^2.18.2"       # Web-based analytics applications
 # jupyterlab = "^4.3.2"  # Modern notebook interface and IDE
 
