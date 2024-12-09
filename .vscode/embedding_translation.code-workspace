@@ -20,7 +20,7 @@
 			"**/.pytest_cache": true,
 			"**/docker": true,
 			"**/venv": false,
-			"**/tests": true,
+			"**/tests": false,
 			"**/scripts": true,
 			"**/logs": false,
 			"**/.github": true,
