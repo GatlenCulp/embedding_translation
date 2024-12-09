@@ -1,8 +1,10 @@
 from __future__ import annotations
-from typing import List
+from typing import List, Tuple
 from pathlib import Path
 import torch
 import click
+import os
+import gc
 import safetensors
 import json
 from torch.utils.data import DataLoader
@@ -22,44 +24,6 @@ DATASETS = [
     "scidocs", # 25K
     "nfcorpus" # 5K
 ]
-
-def process_model(args):
-    transformer, dataset, device_id = args
-    transformer = transformer.to(f"cuda:{device_id}")
-    
-    embeddings = []
-    ids = []
-    documents = []
-    batch_size = 1024  # Adjust based on GPU memory
-    
-    dataloader = DataLoader(dataset, batch_size=batch_size, collate_fn=collate_fn)
-    for batch in tqdm(dataloader, desc=f"Embedding on GPU {device_id}"):
-        docs, these_ids, text_chunks = batch
-        assert len(these_ids) == len(text_chunks)
-        ids.extend(these_ids)
-        with torch.cuda.device(device_id):
-            emb = transformer.encode(text_chunks, normalize_embeddings=True, convert_to_tensor=True)
-            embeddings.append(emb)
-        documents.extend(docs)
-    
-    return torch.cat(embeddings), ids, documents
-
-def parallel_embed(transformers, datasets):
-    num_gpus = torch.cuda.device_count()
-    print(f"Using {num_gpus} GPUs")
-    
-    # Create chunks of work based on available GPUs
-    chunks = []
-    for i, (transformer, dataset) in enumerate(zip(transformers, datasets)):
-        device_id = i % num_gpus
-        chunks.append((transformer, dataset, device_id))
-    
-    # Use multiprocessing to distribute work across GPUs
-    with mp.Pool(num_gpus) as pool:
-        results = list(pool.imap(process_model, chunks))
-    
-    # Return results as a list of tuples
-    return results
 
 # In your main code:
 # results = parallel_embed(transformers, datasets)
@@ -90,7 +54,7 @@ class SingletonInjestor:
         self.normalize_embeddings = False
         self.batch_size = 1024 # try to be realllly fast
         self._text_splitters = [
-            SentenceTransformersTokenTextSplitter(
+            lambda: SentenceTransformersTokenTextSplitter(
                 model_name=m,
                 chunk_size=self.chunk_size,
                 chunk_overlap=self.chunk_overlap,
@@ -99,12 +63,12 @@ class SingletonInjestor:
         # owler fork / datasets / scidocs / corpus.jsonl
         datasets_path = Path(__file__).parent.parent.parent / "datasets" / "scidocs"
         self._transformers = [
-            SentenceTransformer(m, device="cpu") for m in tqdm(NON_OPENAI_MODELS, desc="Creating transformers") # fmt: skip
+            lambda: SentenceTransformer(m, device="cpu") for m in tqdm(NON_OPENAI_MODELS, desc="Creating transformers") # fmt: skip
         ]
         self._datasets_corpus = [
-            JSONDataset(
+            lambda: JSONDataset(
                 path=datasets_path / "corpus.jsonl",
-                splitter=self._text_splitters[i],
+                splitter=self._text_splitters[i](),
                 model_name=NON_OPENAI_MODELS[i],
                 chunk_size=self.chunk_size,
                 chunk_overlap=self.chunk_overlap,
@@ -112,18 +76,14 @@ class SingletonInjestor:
             ) for i in trange(len(NON_OPENAI_MODELS), desc="Creating datasets")
         ]
         self._datasets_query = [
-            JSONDataset(
+            lambda: JSONDataset(
                 path=datasets_path / "queries.jsonl",
-                splitter=self._text_splitters[i],
+                splitter=self._text_splitters[i](),
                 model_name=NON_OPENAI_MODELS[i],
                 chunk_size=self.chunk_size,
                 chunk_overlap=self.chunk_overlap,
                 record_type="query"
             ) for i in trange(len(NON_OPENAI_MODELS), desc="Creating datasets")
-        ]
-        self.text_splitters: List[List[SentenceTransformersTokenTextSplitter]] = [
-            self._text_splitters[1:],
-            [self._text_splitters[0]]
         ]
         self.datasets_corpus: List[List[JSONDataset]] = [
             self._datasets_corpus[1:],
@@ -142,8 +102,51 @@ class SingletonInjestor:
             [NON_OPENAI_MODELS[0]]
         ]
         self.device = device
+        
+    @staticmethod
+    def __process_single_model(args: Tuple[SentenceTransformer, JSONDataset, int]) -> Tuple[torch.Tensor, List[str], List[str]]:
+        transformer, dataset, device_id = args
+        transformer = transformer.to(f"cuda:{device_id}")
+        
+        embeddings = []
+        ids = []
+        documents = []
+        batch_size = 1024  # Adjust based on GPU memory
+        
+        dataloader = DataLoader(dataset, batch_size=batch_size, collate_fn=collate_fn)
+        for batch in tqdm(dataloader, desc=f"Embedding on GPU {device_id}"):
+            docs, these_ids, text_chunks = batch
+            assert len(these_ids) == len(text_chunks)
+            ids.extend(these_ids)
+            with torch.cuda.device(device_id):
+                emb = transformer.encode(text_chunks, normalize_embeddings=True, convert_to_tensor=True)
+                embeddings.append(emb)
+            documents.extend(docs)
+        
+        return torch.cat(embeddings), ids, documents
+
+    @staticmethod
+    def __parallel_embed(transformers: List[SentenceTransformer], datasets: List[JSONDataset]):
+        if "CUDA_VISIBLE_DEVICES" in os.environ:
+            raise ValueError("CUDA_VISIBLE_DEVICES should not be set just to be save")
+        num_gpus = torch.cuda.device_count()
+        print(f"Using {num_gpus} GPUs")
+        
+        # Create chunks of work based on available GPUs
+        chunks = []
+        for i, (transformer, dataset) in enumerate(zip(transformers, datasets)):
+            device_id = i % num_gpus
+            chunks.append((transformer, dataset, device_id))
+        
+        # Use multiprocessing to distribute work across GPUs
+        with mp.Pool(num_gpus) as pool:
+            results = list(pool.imap(SingletonInjestor.__process_single_model, chunks))
+        
+        # Return results as a list of tuples
+        return results
     
-    def ingest(self):
+    # XXX add serial vs parallel batch and then go to OH as this finishes to get the layers done
+    def ingest(selfm ):
         """
         Store outputs into a folder structure like:
         /<you should name your folder's parent>
@@ -170,11 +173,18 @@ class SingletonInjestor:
             ]:
                 subfolder = self.output_dir / datasets_type
                 subfolder.mkdir(parents=True, exist_ok=True)
-                for dataset, transformer, transformer_name in zip(
+                for dataset_func, transformer_func, transformer_name in zip(
                     datasets,
                     transformers,
                     transformer_names,
                 ):
+                    if not "mistral" in transformer_name.lower():
+                        continue # XXX
+                    # Only have exist within this scope to use memory efficiently
+                    dataset = dataset_func()
+                    transformer = transformer_func()
+
+                    # ...
                     transformer = transformer.to(self.device)
                     num_injestions_done += 1
                     # 1. Folder structure
@@ -202,6 +212,10 @@ class SingletonInjestor:
                     with open(subsubfolder / f"documents.jsonl", "w") as f:
                         json.dump({"documents": documents}, f)
                     transformer.cpu()
+                    del embeddings, storeme, ids, documents, dataset, batch
+                    gc.collect()
+                    torch.cuda.empty_cache()
+                    torch.cuda.synchronize()
 
 @current_app.cli.command("speed_injest")
 @click.option("--output", "-o", type=click.Path(), default=Path(__file__).parent.parent.parent / "data" / "embeddings")
