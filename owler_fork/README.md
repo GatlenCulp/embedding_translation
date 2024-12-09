@@ -1,6 +1,8 @@
 # What this is
 This is a copy from the paper below. the instructions recommend you use poetry. You can just use `conda` and it'll probably work better tbh, but whatever you like is OK. Note that this is modified and janky right now.
 
+Everything marked with `TODO` is something that should be done eventually. Everything marked with `XXX` is something that should be done ASAP (ideally before PR, but sometimes that is not actually done).
+
 # Beyond Benchmarks: Evaluating Embedding Model Similarity for Retrieval Augmented Generation Systems
 
 This repository contains the code for our paper at the IR-RAG workshop at SIGIR 2024 "Beyond Benchmarks: Evaluating

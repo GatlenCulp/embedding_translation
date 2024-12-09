@@ -111,6 +111,7 @@ def model2model_dimension(model_name: str) -> int:
         # NOTE: cohere may be supported in THE FUTURE
         raise ValueError(f"Unsupported model: {model_name}")
 
+# XXX use the defintive schema definitions (Etc...)
 class ModelInfo(BaseModel):
     model_name: str
     collection_name: str
