@@ -19,66 +19,7 @@ from pathlib import Path
 from uuid import uuid4
 from datetime import datetime
 from owlergpt.utils.cli_helpers import get_selected_folder, get_chroma_collections
-
-
-def parse_collection_name(collection_name: str) -> Tuple[str, str, int]:
-    """ Helper. """
-    # example: scidocs_e5-base-v2_CharacterSplitting_256
-    # NOTE that dataset name is selected_folder foldername
-    # From `collection_name = f"{selected_folder}_{transformer_model}_CharacterSplitting_{tokens_per_chunk}"`
-    # => <dataset_name>_<model_name>_CharacterSplitting_<chunk_size>
-    dataset_name, model_name, _, chunk_size = collection_name.split("_")
-    chunk_size = int(chunk_size)
-    return dataset_name, model_name, chunk_size
-
-def model2model_dimension(model_name: str) -> int:
-    """ Helper: get the size of the embedding dimension vector (1D, usually something like 768-4096). """
-    # Miscellaneous (HF)
-    if model_name == "SFR-Embedding-Mistral":
-        return 4096
-    elif model_name == "UAE-Large-V1":
-        return 1024
-    elif model_name == "mxbai-embed-large-v1":
-        return 1024
-    # BGE Models (HF)
-    elif model_name == "bge-base-en-v1.5":
-        return 768
-    elif model_name == "bge-large-en-v1.5":
-        return 1024
-    elif model_name == "bge-small-en-v1.5":
-        return 384
-    #  E5 Models (HF)
-    elif model_name == "e5-base-v2":
-        return 768
-    elif model_name == "e5-large-v2":
-        return 1024
-    elif model_name == "e5-small-v2":
-        return 384
-    # GTE Models (HF)
-    elif model_name == "gte-base":
-        return 768
-    elif model_name == "gte-large":
-        return 1024
-    elif model_name == "gte-small":
-        return 384
-    # GTR-T5 Models (HF)
-    elif model_name == "gtr-t5-base":
-        return 768
-    elif model_name == "gtr-t5-large":
-        return 768
-    # Sentence T5 (HF)
-    elif model_name == "sentence-t5-base":
-        return 768
-    elif model_name == "sentence-t5-large":
-        return 768
-    # OpenAI Models
-    elif model_name == "text-embedding-3-large":
-        return 3072
-    elif model_name == "text-embedding-3-small":
-        return 1536
-    else:
-        # NOTE: cohere may be supported in THE FUTURE
-        raise ValueError(f"Unsupported model: {model_name}")
+from owlergpt.modern.collection_utils import parse_collection_name, model2model_dimension
 
 # XXX use the defintive schema definitions (Etc...)
 class ModelInfo(BaseModel):

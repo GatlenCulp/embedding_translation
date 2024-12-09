@@ -21,7 +21,9 @@ class EmbeddingMetadata(BaseModel):
     basically whether its a query or a document.
     """
     record_id: str
-    record_text: str 
+    chunk_id: str
+    chunk_text: str
+    record_text: Optional[str] = None # <---- like never used tbh
     record_type: Literal["query", "document"]
     # TODO(Adriano) not everything should be train by default
     record_split: Literal["train", "test"] = "train"
@@ -32,16 +34,15 @@ class IngestionSettings(BaseModel):
     Equivalent to owler's .env file.
     """
     chunk_size: int = 256
-    device: str = "cpu"
-    distance_function: str = "cosine"  # https://docs.trychroma.com/usage-guide#changing-the-distance-function
-    normalize_embeddings: bool = True
+    device: Optional[str] = None # does not matter
+    distance_function: Optional[str] = None  # does not matter
+    normalize_embeddings: Optional[bool] = None  # does not matter
     # TODO(Adriano) in the future we will want to try passing this through a model before
     chunk_preprocessing_mode: Literal["add_prefix"] = "add_prefix"
     query_preprocessing_mode: Literal["add_prefix"] = "add_prefix"
     chunk_prefix: str = "passage: "  # Can be used to add prefix to text embeddings stored in vector store
     query_prefix: str = "query: "  # Can be used to add prefix to text embeddings used for semantic search
     chunk_overlap: int = 25  # Determines, for a given chunk of text, how many tokens must overlap with adjacent chunks.
-    n_results: int = 4  # How many entries should the vector search return?
     dataloader_batch_size: int = 32
     dataloader_num_workers: int = 4
 

@@ -4,4 +4,4 @@ from .move_collections import move_collections
 from .download_datasets import download_datasets
 from .train_linear_transforms_ds import train_linear_transforms_dataset
 from .model_sizes import model_sizes
-from .split_train_test_ds import split_train_test_ds
+from .fix_metadata import fix_metadata_ds, test_fix_metadata_ds
