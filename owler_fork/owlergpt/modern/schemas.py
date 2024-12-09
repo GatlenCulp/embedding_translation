@@ -1,64 +1,71 @@
+"""This is a definitive verison 1 for the schemas to how we store metadata about our experiments.
+
+This is a WIP. You can copy it to have interoperability.
+"""
+
 from __future__ import annotations
 
-"""
-This is a definitive verison 1 for the schemas to how we store metadata about our experiments. This is a WIP.
-You can copy it to have interoperability.
-"""
-
+from datetime import datetime
+from typing import Any
+from typing import Literal
 
 from pydantic import BaseModel
-from typing import Optional, Dict, Any, Literal, List
-from datetime import datetime
-from torch.utils.data import DataLoader, Dataset
-import torch
-import torch.nn as nn
+
 
 ################################ INGEST, EVAL, TRAIN SCHEMAS ################################
 
+
 class EmbeddingMetadata(BaseModel):
-    """
-    Every embedding in a ChromaDB collection has a metadata object that explains
+    """Every embedding in a ChromaDB collection has a metadata object that explains
     basically whether its a query or a document.
     """
+
     record_id: str
     chunk_id: str
     chunk_text: str
-    record_text: Optional[str] = None # <---- like never used tbh
+    record_text: str | None = None  # <---- like never used tbh
     record_type: Literal["query", "document"]
     # TODO(Adriano) not everything should be train by default
     record_split: Literal["train", "test"] = "train"
-    tags: Optional[Dict[str, str]] = {} # <---- should insert some meaning tags for umap cluster
+    tags: dict[str, str] | None = {}  # <---- should insert some meaning tags for umap cluster
+
 
 class IngestionSettings(BaseModel):
-    """
-    Equivalent to owler's .env file.
-    """
+    """Equivalent to owler's .env file."""
+
     chunk_size: int = 256
-    device: Optional[str] = None # does not matter
-    distance_function: Optional[str] = None  # does not matter
-    normalize_embeddings: Optional[bool] = None  # does not matter
-    # TODO(Adriano) in the future we will want to try passing this through a model before
+    device: str | None = None  # does not matter
+    distance_function: str | None = None  # does not matter
+    normalize_embeddings: bool | None = None  # does not matter
+    # TODO(Adriano): in the future we will want to try passing this through a model before
     chunk_preprocessing_mode: Literal["add_prefix"] = "add_prefix"
     query_preprocessing_mode: Literal["add_prefix"] = "add_prefix"
-    chunk_prefix: str = "passage: "  # Can be used to add prefix to text embeddings stored in vector store
-    query_prefix: str = "query: "  # Can be used to add prefix to text embeddings used for semantic search
+    chunk_prefix: str = (
+        "passage: "  # Can be used to add prefix to text embeddings stored in vector store
+    )
+    query_prefix: str = (
+        "query: "  # Can be used to add prefix to text embeddings used for semantic search
+    )
     chunk_overlap: int = 25  # Determines, for a given chunk of text, how many tokens must overlap with adjacent chunks.
     dataloader_batch_size: int = 32
     dataloader_num_workers: int = 4
 
+
 class EvaluationSettings(BaseModel):
-    """
-    Used at the evaluation stage.
-    """
+    """Used at the evaluation stage."""
+
     chunk_size: int = 256
     embedding_dimension: int = 1024
     mean_center: bool = False  # Mean-center embedding vectors before calculating similarity
     k_nn_metric: str = "cosine"  # Metric to use for calculating nearest neighbors for exact query, see sklearn.metrics.pairwise.distance_metrics for allowed values
-    k: int = 10  # The number of nearest neighbors to consider 
+    k: int = 10  # The number of nearest neighbors to consider
     baseline: bool = False  # Compute baseline scores
 
+
 class TrainSettings(BaseModel):
-    experiment_settings: ExperimentConfig # <--- arch, src, dest, etc...
+    """Train settings."""
+
+    experiment_settings: ExperimentConfig  # <--- arch, src, dest, etc...
 
     # Training config
     batch_size: int = 32
@@ -67,13 +74,13 @@ class TrainSettings(BaseModel):
 
     # Optimization
     optimizer: Literal["Adam"] = "Adam"
-    optimizer_kwargs: Optional[Dict[str, Any]] = {}
+    optimizer_kwargs: dict[str, Any] | None = {}
     loss_fn: Literal["MSE"] = "MSE"
-    loss_fn_kwargs: Optional[Dict[str, Any]] = {}
+    loss_fn_kwargs: dict[str, Any] | None = {}
+
 
 class EmbeddingDatasetInformation(BaseModel):
-    """
-    The core unit of our analysis is an EMBEDDING DATASET which is associated primarily
+    """The core unit of our analysis is an EMBEDDING DATASET which is associated primarily
     with a MODEL and an actual dataset (i.e. text). We do the following to embedding datasets:
     1. We create them from textual datasets
     2. We create them from other textual datasets
@@ -94,17 +101,17 @@ class EmbeddingDatasetInformation(BaseModel):
     embedding_dimension: int
 
     # Dataset + Index
-    text_dataset_name: str        # <--- all from HF (but locally stored as .jsonl)
+    text_dataset_name: str  # <--- all from HF (but locally stored as .jsonl)
     text_dataset_source: Literal["huggingface"] = "huggingface"
-    chromadb_collection_name: str # <--- refers to ChromaDB OBJECT name
+    chromadb_collection_name: str  # <--- refers to ChromaDB OBJECT name
 
     # Ingestion parameters
     ingestion_settings: IngestionSettings
-    stitch_train_settings: Optional[TrainSettings] = None
-    
+    stitch_train_settings: TrainSettings | None = None
+
     # Optional dataset + filepath
-    dataset_filepath: Optional[str] = None
-    collections_filepath: Optional[str] = None
+    dataset_filepath: str | None = None
+    collections_filepath: str | None = None
 
     # XXX -adriano
     # 1. make dataset and dataloader for chromadb activations for layers if not available
@@ -132,6 +139,7 @@ class EmbeddingDatasetInformation(BaseModel):
     #             mode=self.mode,
     #         )
 
+
 class ExperimentConfig(BaseModel):
     """Configuration for a single embedding translation experiment."""
 
@@ -147,15 +155,15 @@ class ExperimentConfig(BaseModel):
 
     # Architecture config
     architecture: Literal["affine"] = "affine"  # <--- which class
-    architecture_config: Optional[Dict[str, Any]] = None  # <--- which kwargs for class
+    architecture_config: dict[str, Any] | None = None  # <--- which kwargs for class
 
 
 ################################ DEBUGGING SCHEMAS ################################
 
+
 # XXX subject to change
 class TrainStatus(BaseModel):
-    """
-    TrainStatus is a file that should ONLY get updated at the START and END of training and is used primarily
+    """TrainStatus is a file that should ONLY get updated at the START and END of training and is used primarily
     to track the status of the training. At the same time, you should, during training, be logging i.e. to a .log
     file or some other file, with any intermediate results you might care about.
 
@@ -168,33 +176,35 @@ class TrainStatus(BaseModel):
     num_embeddings_trained_on_total: int = (
         -1
     )  # <--- may include some extra if we crashed partway through
-    train_info: Optional[Dict[str, Any]] = (
+    train_info: dict[str, Any] | None = (
         None  # <--- store any sort of kwargs you might want to store
     )
 
     # Status
     status: Literal["pending", "running", "completed", "failed"] = "pending"
-    error: Optional[str] = None
+    error: str | None = None
 
     # Linking to wandb
-    wandb_run_project: Optional[str] = None
-    wandb_run_name: Optional[str] = None
+    wandb_run_project: str | None = None
+    wandb_run_name: str | None = None
 
     # Timings
-    time_start: Optional[datetime] = None
-    time_end: Optional[datetime] = None
-    time_taken_sec: Optional[float] = None
-    time_taken_min: Optional[float] = None
-    time_taken_hr: Optional[str] = None
+    time_start: datetime | None = None
+    time_end: datetime | None = None
+    time_taken_sec: float | None = None
+    time_taken_min: float | None = None
+    time_taken_hr: str | None = None
 
     # storage
-    storage_info: Optional[Dict[str, Any]] = None
+    storage_info: dict[str, Any] | None = None
 
 
 ################################ VIZ (INTERFACE) SCHEMAS ################################
 
+
 class DatasetEvaluation(BaseModel):
-    pass # XXX - store information about how well datasets perform, i.e. whether they get the desired document in the top k when we have labels
+    pass  # XXX - store information about how well datasets perform, i.e. whether they get the desired document in the top k when we have labels
+
 
 # XXX - gatlen
 # 1. Kernel: idea is to sample n random datapoints and then just visualize a similarity matrix (takes in chromaDB collection, entry type,
@@ -208,27 +218,29 @@ class DatasetEvaluation(BaseModel):
 #    or partition them based on some sort of semantic classifier of your choice (i.e. you can manually classify documents using an LLM) and then
 #    just color the UMAP)
 
+
 class DatasetComparison(BaseModel):
-    pass # XXX - store information about how datasets store and query differently like cka, top k difference, etc...
+    pass  # XXX - store information about how datasets store and query differently like cka, top k difference, etc...
+
 
 class StitchEvaluation(BaseModel):
-    """
-    When training a stitch. Single "snapshot" of how good it was at a point in time.
+    """When training a stitch. Single "snapshot" of how good it was at a point in time.
 
     Should mirror what we see in wandb.
     """
-    # Timing info 
+
+    # Timing info
     epoch_num: int
     num_embeddings_evaluated: int
 
     # Evaluation info
     stitching_mse: float
     stitching_mae: float
-    stitching_additional_metrics: Optional[Dict[str, Any]] = {} # <--- if you want more data use this
+    stitching_additional_metrics: dict[str, Any] | None = {}  # <--- if you want more data use this
     evaluation_data_split: Literal["train", "test"] = "train"
 
+
 class StitchEvaluationLog(BaseModel):
-    """
-    When training a stitch. Timeseries of snapshots.
-    """
-    evaluations: List[StitchEvaluation]
+    """When training a stitch. Timeseries of snapshots."""
+
+    evaluations: list[StitchEvaluation]
