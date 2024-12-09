@@ -9,7 +9,7 @@ from datetime import datetime
 from typing import Any
 from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, computed_field, Field
 
 
 ################################ INGEST, EVAL, TRAIN SCHEMAS ################################
@@ -101,6 +101,15 @@ class EmbeddingDatasetInformation(BaseModel):
     2. Optionally stitch training; if not stitch-trained then it'll be None.
     (by having both of these infos we can trace exactly what went into this training run/experiment).
     """
+    @computed_field
+    @property
+    def name(self) -> str:
+        """Computes name for embedding dataset."""
+        name = "EmbeddingDatasetInformation("
+        f"embedding_model={self.embedding_model_type}/{self.embedding_model_name}, "
+        f"text_dataset={self.text_dataset_source}/{self.text_dataset_name}, "
+        ")"
+        return name
 
     # Embedding model
     embedding_model_name: str
@@ -119,6 +128,9 @@ class EmbeddingDatasetInformation(BaseModel):
     # Optional dataset + filepath
     dataset_filepath: str | None = None
     collections_filepath: str | None = None
+
+    # Gatlen Proposed
+    stitched: bool = False
 
     # Note: Should maybe also label which stitch model this was generated from if any.
 
@@ -152,6 +164,7 @@ class EmbeddingDatasetInformation(BaseModel):
 class ExperimentConfig(BaseModel):
     """Configuration for a single stitch model training run."""
 
+    @computed_field
     @property
     def name(self) -> str:
         """Generate a descriptive name for the stitch model training."""
@@ -160,6 +173,7 @@ class ExperimentConfig(BaseModel):
         f"architecture={self.architecture} (config={self.architecture_config})"
         f"source={self.source.embedding_model_name}, "
         f"target={self.target.embedding_model_name}, "
+        ")"
         return name
 
     # Dataset config
