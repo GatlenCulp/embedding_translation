@@ -59,8 +59,10 @@ class SingletonInjestor:
             self,
             output_dir: Path,
             device: str,
-            parallelize: bool = False
+            parallelize: bool = False,
+            dataset_chosen: str = "scidocs"
     ):
+        self.dataset_chosen = dataset_chosen
         self.parallelize = parallelize
         self.output_dir = output_dir
         self.chunk_size = 256
@@ -77,7 +79,7 @@ class SingletonInjestor:
             ) for m in tqdm(NON_OPENAI_MODELS, desc="Creating text splitters")
         ]
         # owler fork / datasets / scidocs / corpus.jsonl
-        datasets_path = Path(__file__).parent.parent.parent / "datasets" / "scidocs"
+        datasets_path = Path(__file__).parent.parent.parent / "datasets" / self.dataset_chosen
         self._transformers: List[Callable[[], SentenceTransformer]] = [
             lambda: SentenceTransformer(m, device="cpu") for m in tqdm(NON_OPENAI_MODELS, desc="Creating transformers") # fmt: skip
         ]
@@ -333,7 +335,8 @@ class SingletonInjestor:
 @click.option("--output", "-o", type=click.Path(), default=Path(__file__).parent.parent.parent / "data" / "embeddings")
 @click.option("--device", "-d", default="cuda:0")
 @click.option("--parallelize", "-p", is_flag=True, default=False)
-def main(output: str, device: str, parallelize: bool):
+@click.option("--dataset", "-da", default="scidocs")
+def main(output: str, device: str, parallelize: bool, dataset: str):
     """
     Commands to run (probably)
     `python3 owlergpt/commands/speed_injest.py -o /mnt/align3_drive/adrianoh/dl_final_project_embeddings/arguana -d cuda:0`
@@ -342,11 +345,12 @@ def main(output: str, device: str, parallelize: bool):
     `python3 owlergpt/commands/speed_injest.py -o /mnt/align3_drive/adrianoh/dl_final_project_embeddings/nfcorpus -d cuda:3`
     """
     # NOTE: not parallel since it's honestly easier to just run manually one per gpu
+    assert dataset in DATASETS
     start_time = time.time()
     click.echo(f"Output: {output}")
     click.echo(f"Device: {device}")
     click.echo("========== INITIALIZING INGESTOR ==========")
-    injestor = SingletonInjestor(Path(output), device, parallelize)
+    injestor = SingletonInjestor(Path(output), device, parallelize, dataset)
     click.echo("========== INGESTING DATASET ==========")
     injestor.ingest()
     click.echo("========== DONE INGESTING ==========")
