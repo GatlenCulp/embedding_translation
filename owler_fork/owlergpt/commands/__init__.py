@@ -7,3 +7,5 @@ from .model_sizes import model_sizes
 from .fix_metadata import fix_metadata_ds, test_fix_metadata_ds
 from .create_openai_embeddings import ingest_openai
 from .create_regular_embeddings import ingest_hf
+from .shrink_random_subset_of_dataset import shrink
+from .split_validation import split_validation

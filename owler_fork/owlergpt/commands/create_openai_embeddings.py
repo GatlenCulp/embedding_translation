@@ -45,7 +45,6 @@ def ingest_openai(dataset_path: Optional[str], output_path: Optional[str], regex
     dataset_path = Path(dataset_path)
 
     output_path = Path(output_path)
-    assert not output_path.exists() or (len(list(output_path.glob("*"))) == 0)
     output_path.mkdir(parents=True, exist_ok=True)
 
     print("Creating OpenAI client")
@@ -66,6 +65,9 @@ def ingest_openai(dataset_path: Optional[str], output_path: Optional[str], regex
     dataset_folders = [d for d in dataset_folders if re.match(regex_datasets, d.name) is not None]
     print("Filtered dataset folder (with regex):")
     print("  " + "  \n".join([d.as_posix() for d in dataset_folders]))
+    for dataset_folder in dataset_folders:
+        assert not (output_path / dataset_folder.name).exists() or (len(list((output_path / dataset_folder.name).glob("*"))) == 0), f"Dataset folder {dataset_folder.as_posix()} already exists"
+        (output_path / dataset_folder.name).mkdir(parents=True, exist_ok=True)
     print("Will go through dataset folders: ")
     print("  " + "  \n".join([d.as_posix() for d in dataset_folders]))
     #### FOR EACH DATASET ####
