@@ -383,6 +383,12 @@ class StitchSummary(BaseModel):
             return "one-layer"
         return self.architecture.lower()
 
+    @computed_field(repr=False, description="Extracted MSE from test eval")
+    @property
+    def test_mse(self) -> float:
+        """Extracted MSE from test eval."""
+        return self.test_evaluation_log.evaluations[0].stitching_mse
+
     ### TRAINING STITCH ###
 
     # Training Experiment Configuration
@@ -411,7 +417,7 @@ class StitchSummary(BaseModel):
     )
     test_evaluation_log: StitchEvaluationLog = Field(
         description="No-epoch WandB-style evaluation on the test data. Just MSE and such.",
-        repr=False,
+        repr=False # Expecting length to be 1!
     )
     test_stitch_embeddings: EmbeddingDatasetInformation = Field(
         description="The stitch embeddings resulting from feeding the original test embeddings through stitch model",

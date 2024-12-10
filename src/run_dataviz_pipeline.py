@@ -30,6 +30,8 @@ from typing import Any
 import numpy as np
 import safetensors.numpy
 from loguru import logger
+from rich.console import Console
+from rich.table import Table
 
 from src.logic.anal_dump import DataFile
 from src.logic.anal_dump import anal_dump
@@ -91,7 +93,7 @@ class DataVizPipeline:
 
     @staticmethod
     def _get_matrix_from_stich_summary(
-        stitch_summaries: list[StitchSummary], stitch_fn: Callable[[StitchSummary], np.ndarray]
+        stitch_summaries: list[StitchSummary],
     ) -> tuple[list[list[Any]], list[str], list[str]]:
         """Matches stitch_summaries into a matrix, then calls stitch_fn on each.
 
@@ -120,16 +122,64 @@ class DataVizPipeline:
         for stitch in stitch_summaries:
             i = source_to_idx[stitch.source_embedding_model_name]
             j = target_to_idx[stitch.target_embedding_model_name]
-            matrix[i][j] = stitch_fn(stitch)
+            matrix[i][j] = stitch
+
+        def print_table() -> None:
+            # Create and print table
+            console = Console()
+            table = Table(title="Stitch Summary Matrix")
+
+            # Add header row with target model names
+            table.add_column("Source/Target")  # Corner cell
+            for target in target_models:
+                table.add_column(target)
+
+            # Add data rows
+            for i, source in enumerate(source_models):
+                row_data = [str(cell) for cell in matrix[i]]
+                table.add_row(source, *row_data)
+
+            console.print(table)
+
+        print_table()
 
         return matrix, source_models, target_models
 
     @staticmethod
-    def _run_loss_viz(stitch_summary: StitchSummary) -> None:
-        logger.debug(f"Running _run_loss_viz with {stitch_summary.display_name}")
-        matrix = rng.random((10, 10))
-        fig = visualize_heatmap(matrix=matrix)
-        save_figure(fig, f"loss_viz_{stitch_summary.slug}")
+    def _apply_to_matrix(
+        matrix: list[list[Any]], fn: Callable[[StitchSummary], Any]
+    ) -> list[list[Any]]:
+        """Apply a function to each StitchSummary element in a matrix.
+
+        :param matrix: A 2D list containing StitchSummary objects or other values
+        :param fn: Function to apply to each StitchSummary object
+        :return: A new matrix with the function applied to StitchSummary elements
+        """
+        return [
+            [fn(element) if isinstance(element, StitchSummary) else element for element in row]
+            for row in matrix
+        ]
+
+    @staticmethod
+    def _run_loss_viz(
+        matrix: list[list[StitchSummary]], row_labels: list[str], col_labels: list[str], architecture: str | None = None
+    ) -> None:
+        shape = (len(row_labels), len(col_labels))
+        logger.debug(f"Running _run_loss_viz on {shape} matrix")
+        if architecture is None:
+            architecture = matrix[1][0].architecture_name
+        mse_matrix = DataVizPipeline._apply_to_matrix(matrix, lambda stitch: stitch.test_mse)
+        fig = visualize_heatmap(
+            matrix=mse_matrix,
+            config={
+                "row_labels": row_labels,
+                "col_labels": col_labels,
+                "title": f"MSE Losses (Architecture: {architecture})",
+                "xaxis_title": "Target Embedding Space",
+                "yaxis_title": "Starting Embedding Space",
+            },
+        )
+        save_figure(fig, f"loss_viz_{shape[0]}_by_{shape[1]}")
 
     @staticmethod
     def _run_isolated_eval(stitch_summary: StitchSummary) -> None:
@@ -144,13 +194,13 @@ class DataVizPipeline:
         stitch_summaries: list[StitchSummary] = [
             DataVizPipeline._load_data_as_stitch_summary(path) for path in paths_to_stitch_summaries
         ]
-        for stitch_summary in stitch_summaries:
-            # DataVizPipeline._run_isolated_eval(stitch_summary)
-            pass
+        # for stitch_summary in stitch_summaries:
+        #     DataVizPipeline._run_isolated_eval(stitch_summary)
+
         matrix, row_labels, col_labels = DataVizPipeline._get_matrix_from_stich_summary(
             stitch_summaries,
-            lambda stitch: stitch,  # Just pass the stitch summary itself
         )
+        DataVizPipeline._run_loss_viz(matrix, row_labels, col_labels)
 
 
 def main() -> None:

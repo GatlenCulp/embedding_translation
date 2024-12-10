@@ -19,10 +19,12 @@ def _plot_heatmap(
     color_scale: str = "Viridis",
     show_values: bool = True,
     value_format: str = ".2f",
+    xaxis_title: str | None = None,
+    yaxis_title: str | None = None,
 ) -> go.Figure:
     """Create a Plotly heatmap from a 2D array.
 
-    :param matrix: 2D numpy array of numerical values
+    :param matrix: 2D numpy array or list of lists with numerical values or None
     :param row_labels: Optional list of row labels
     :param col_labels: Optional list of column labels
     :param title: Plot title
@@ -31,15 +33,33 @@ def _plot_heatmap(
     :param color_scale: Colorscale for the heatmap (e.g. 'Viridis', 'Cividis')
     :param show_values: Whether to overlay cell values on the heatmap
     :param value_format: Format string for the displayed values
+    :param xaxis_title: Optional title for the x-axis
+    :param yaxis_title: Optional title for the y-axis
     :return: Plotly figure object
     """
     logger.info("Creating heatmap visualization...")
+
+    # Convert input to numpy array if it's a list
+    matrix = np.array(
+        matrix, dtype=object
+    )
+
+    # Create mask for None values
+    none_mask = matrix is None
+
+    # Convert None to np.nan for numerical operations
+    matrix = matrix.astype(float)
+    matrix[none_mask] = np.nan
 
     # Create text annotations for each cell if requested
     text_vals = None
     text_template = None
     if show_values:
-        text_vals = np.vectorize(lambda x: f"{x:{value_format}}")(matrix)
+
+        def format_value(x):
+            return "N/A" if np.isnan(x) else f"{x:{value_format}}"
+
+        text_vals = np.vectorize(format_value)(matrix)
         text_template = "%{text}"
 
     fig = go.Figure(
@@ -62,6 +82,8 @@ def _plot_heatmap(
         height=height,
         xaxis_nticks=len(col_labels) if col_labels else None,
         yaxis_nticks=len(row_labels) if row_labels else None,
+        xaxis_title=xaxis_title,
+        yaxis_title=yaxis_title,
     )
 
     logger.success("Heatmap created successfully")
@@ -102,6 +124,8 @@ def visualize_heatmap(
         color_scale=config.get("color_scale", "Viridis"),
         show_values=config.get("show_values", True),
         value_format=config.get("value_format", ".2f"),
+        xaxis_title=config.get("xaxis_title"),
+        yaxis_title=config.get("yaxis_title"),
     )
 
     return fig
