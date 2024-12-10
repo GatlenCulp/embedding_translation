@@ -16,7 +16,6 @@ from src.utils.general_setup import setup
 
 setup("reduce_embedding_dims")
 
-
 # %% Transformation functions
 def reduce_embeddings_dimensionality(
     embeddings_dict: dict[str, np.ndarray],

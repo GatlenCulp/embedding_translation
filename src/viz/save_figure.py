@@ -38,11 +38,13 @@ def _save_figure_html(
             full_html=True,
         )
         logger.success(f"Successfully saved HTML to {filepath}")
-        return filepath
 
     except Exception as e:
         logger.error(f"Failed to save HTML: {e!s}")
         raise
+
+    else:
+        return filepath
 
 
 def _save_figure_png(
@@ -72,18 +74,20 @@ def _save_figure_png(
             scale=scale,
         )
         logger.success(f"Successfully saved PNG to {filepath}")
-        return filepath
 
     except Exception as e:
         logger.error(f"Failed to save PNG: {e!s}")
         raise
+
+    else:
+        return filepath
 
 
 # %% Combined function
 def save_figure(
     fig: BaseFigure,
     filename: str | Path,
-    output_dir: str | Path = "figures",
+    output_dir: str | Path = "data/figs",
     width: int = 1200,
     height: int = 800,
     scale: float = 2.0,
@@ -103,12 +107,15 @@ def save_figure(
     output_dir = Path(output_dir)
     filename = Path(filename).stem  # Get filename without extension
 
-    # Create output directory if it doesn't exist
-    output_dir.mkdir(parents=True, exist_ok=True)
-
     # Generate file paths
-    html_path = output_dir / f"{filename}.html"
-    png_path = output_dir / f"{filename}.png"
+    html_dir = output_dir / "html"
+    png_dir = output_dir / "imgs"
+
+    html_dir.mkdir(parents=True, exist_ok=True)
+    png_dir.mkdir(parents=True, exist_ok=True)
+
+    html_path = html_dir / f"{filename}.html"
+    png_path = png_dir / f"{filename}.png"
 
     # Save both formats
     html_path = _save_figure_html(fig, html_path)
@@ -122,23 +129,13 @@ def main() -> None:
     logger.info("Starting example figure saving")
 
     # Create example figure
-    fig = go.Figure(data=[go.Scatter(x=[1, 2, 3], y=[4, 5, 6])], layout=dict(title="Example Plot"))
+    fig = go.Figure(data=[go.Scatter(x=[1, 2, 3], y=[4, 5, 6])], layout={"title": "Example Plot"})
 
     # Method 1: Combined
     logger.info("Testing combined method...")
     html_path, png_path = save_figure(
-        fig=fig, filename="example_plot_combined", output_dir="example_figures"
+        fig=fig, filename="example_plot_combined"
     )
-
-    # Method 2: Separate
-    logger.info("Testing separate methods...")
-    output_dir = Path("example_figures")
-    output_dir.mkdir(exist_ok=True)
-
-    html_path = _save_figure_html(fig, output_dir / "example_plot_separate.html")
-    png_path = _save_figure_png(fig, output_dir / "example_plot_separate.png")
-
-    logger.success("Example completed successfully")
 
 
 # %% Example usage

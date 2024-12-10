@@ -154,3 +154,6 @@ Some notation:
 3. For each of $Z$ embedding models and each of $D$ datasets, create $E = Z * D$ embedding datasets.
 4. For each of $A$ architectures and $\forall i, j \in \{1, ..., E\}, i \neq j$, train embedding translator $c^{A}_{i \to j}$ creating $A * E * (E - 1)$ translation embedding datasets
 5. Aaaaaa
+
+
+Kernel of $n$ (say $n = 10$) randomly selected text data points across all models

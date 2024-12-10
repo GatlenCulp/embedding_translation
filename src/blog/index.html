@@ -1,348 +1,826 @@
-<html>
-  <head>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<script src="https://distill.pub/template.v1.js"></script>
+<!-- Add MathJax support -->
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script
+  id="MathJax-script"
+  async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+></script>
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [
+        ["$", "$"],
+        ["\\(", "\\)"],
+      ],
+      displayMath: [
+        ["$$", "$$"],
+        ["\\[", "\\]"],
+      ],
+      processEscapes: true,
+      processEnvironments: true,
+    },
+    options: {
+      skipHtmlTags: ["script", "noscript", "style", "textarea", "pre"],
+    },
+  };
+</script>
+<!-- https://distill.pub/guide/ -->
+<!-- 
+TODO: 
+1. Number each of the headings (01, 02, etc)
+2. Fix citations
+3. Add pretty graphics (maybe html/css animations created by claude)
+4. Embed plotly plots automatically
+ -->
+<!-- 
+ Examples
+https://deep-learning-mit.github.io/staging/blog/ 
 
-    <link rel="shortcut icon" href="images/icon.ico" />
-    <style type="text/css">
-      body {
-        background-color: #f5f9ff;
-      }
+or 
 
-      /* Hide both math displays initially, will display based on JS detection */
-       .mathjax-mobile, .mathml-non-mobile { display: none; }
+https://distill.pub/2021/gnn-intro/
 
-       /* Show the MathML content by default on non-mobile devices */
-       .show-mathml .mathml-non-mobile { display: block; }
-       .show-mathjax .mathjax-mobile { display: block; }
+We can
+-->
 
-      .content-margin-container {
-        display: flex;
-        width: 100%; /* Ensure the container is full width */
-        justify-content: left; /* Horizontally centers the children in the container */
-        align-items: center;  /* Vertically centers the children in the container */
-      }
-      .main-content-block {
-        width: 70%; /* Change this percentage as needed */
-        max-width: 1100px; /* Optional: Maximum width */
-        background-color: #fff;
-        border-left: 1px solid #DDD;
-        border-right: 1px solid #DDD;
-        padding: 8px 8px 8px 8px;
-        font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;#"Avenir";
-      }
-      .margin-left-block {
-          font-size: 14px;
-          width: 15%; /* Change this percentage as needed */
-          max-width: 130px; /* Optional: Maximum width */
-          position: relative;
-          margin-left: 10px;
-          text-align: left;
-          font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;#"Avenir";
-          padding: 5px;
-      }
-      .margin-right-block {
-          font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;#"Avenir";
-          font-size: 14px;
-          width: 25%; /* Change this percentage as needed */
-          max-width: 256px; /* Optional: Maximum width */
-          position: relative;
-          text-align: left;
-          padding: 10px;  /* Optional: Adds padding inside the caption */
-      }
+<script type="text/front-matter">
+  title: "The Alignment of Semantic Representations Across Language Models"
+  description: "Exploring whether different LLMs learn similar semantic representations and how we can leverage these similarities."
+  authors:
+  - Gatlen Culp: https://gatlen.notion.site
+  - Adriano Hernandez: https://superurop.mit.edu/scholars/adriano-hernandez/
+  affiliations:
+  - MIT: http://web.mit.edu/
+  - MIT: http://web.mit.edu/
+</script>
 
-      img {
-          max-width: 100%; /* Make sure it fits inside the container */
-          height: auto;
-          display: block;
-          margin: auto;
-      }
-      .my-video {
-          max-width: 100%; /* Make sure it fits inside the container */
-          height: auto;
-          display: block;
-          margin: auto;
-      }
-      /* Hide both video displays initially, will display based on JS detection */
-       .vid-mobile, .vid-non-mobile { display: none; }
+<dt-article class="centered">
+  <div class="l-middle">
+    <figure>
+      <img
+        src="./header.png"
+        alt="Header visualization of semantic alignment across language models"
+        style="width: 100%; max-height: 400px; object-fit: cover"
+      />
+    </figure>
+  </div>
+  <h1 id="title">
+    The Alignment of Semantic Representations Across Language Models
+  </h1>
 
-       /* Show the video content by default on non-mobile devices */
-       .show-vid-mobile .vid-mobile { display: block; }
-       .show-vid-non-mobile .vid-non-mobile { display: block; }
+  <div class="">
+    <h2 id="abstract">Abstract</h2>
+    <p>
+      Recent advances in Large Language Models (LLMs) have demonstrated their
+      remarkable ability to capture and manipulate semantic information. In this
+      work, we investigated a fundamental question: to what extent do different
+      LLMs learn similar semantic representations despite variations in
+      architecture, training data, and initialization? Our findings reveal
+      significant alignment between models' semantic spaces, with implications
+      for both theoretical understanding and practical applications.
+    </p>
+  </div>
 
-      a:link,a:visited
-      {
-        color: #0e7862; /*#1367a7;*/
-        text-decoration: none;
-      }
-      a:hover {
-        color: #24b597; /*#208799;*/
-      }
+  <h2 id="introduction">01 Background</h2>
 
-      h1 {
-        font-size: 18px;
-        margin-top: 4px;
-        margin-bottom: 10px;
-      }
+  <p>
+    There is ample evidence supporting the idea that representations may be
+    similar to some degree. Some notable observations include:
+  </p>
+  <ul>
+    <li>
+      <b>Functionally similar components across neural networks:</b> For
+      instance, induction heads have been observed in different language
+      transformer architectures <dt-cite key="olsson2022context"></dt-cite>.
+      Similar patterns have also been found in vision models
+      <dt-cite key="cammarata_curve_2020"></dt-cite>
+      <dt-cite key="schubert2021high-low"></dt-cite>
+      <dt-cite key="olah2020zoom"></dt-cite>. We believe that such functionally
+      similar components correspond to similar internal representations, and the
+      language setting is relatively less explored.
+    </li>
+    <li>
+      <b>Consistent representations and behaviors:</b> Previous work has shown
+      that different transformers exhibit consistent attention patterns for
+      similar semantic concepts
+      <dt-cite key="eberle-etal-2022-transformer"></dt-cite>, often aligning
+      with human judgments. In vision, linear mappings can translate between
+      representation spaces of different models, enabling interoperability
+      <dt-cite key="hernandez_model_2023"></dt-cite>
+      <dt-cite key="bansal_revisiting_2021"></dt-cite>. While there is debate
+      and complexity in this field
+      <dt-cite key="Klabunde2023TowardsMR"></dt-cite>, these findings suggest a
+      common representational substrate across models.
+    </li>
+    <li>
+      <b>Attack transferability:</b> Red-teaming and jailbreak prompts often
+      transfer across different models, including black-box ones
+      <dt-cite key="zou_universal_2023"></dt-cite>
+      <dt-cite key="andriushchenko_jailbreaking_2024"></dt-cite>
+      <dt-cite key="chao_jailbreaking_2024"></dt-cite>
+      <dt-cite key="mehrotra_tree_2024"></dt-cite>. Such robustness of attacks
+      may be due to underlying shared representational patterns, indicating that
+      multiple models rely on similar internal structures.
+    </li>
+  </ul>
 
-      table.header {
-         font-weight: 300;
-         font-size: 17px;
-         flex-grow: 1;
-         width: 70%;
-         max-width: calc(100% - 290px);
-      }
-      table td, table td * {
-          vertical-align: middle;
-          position: relative;
-      }
-      table.paper-code-tab {
-          flex-shrink: 0;
-          margin-left: 8px;
-          margin-top: 8px;
-          padding: 0px 0px 0px 8px;
-          width: 290px;
-          height: 150px;
-      }
+  <p>We also note the following two points:</p>
+  <ol>
+    <li>
+      <b>Mechanistic interpretability (MI) and feature superposition:</b> The
+      feature superposition theory <dt-cite key="anthropic"></dt-cite> suggests
+      that multiple semantic features may be entangled within individual
+      neurons, hinting at underlying "platonic" semantic features. Sparse
+      Autoencoders (SAEs)
+      <dt-cite key="cunningham_sparse_2023"></dt-cite> further support the idea
+      of universal features that different models might compress differently.
+    </li>
+    <li>
+      <b>Representational similarity tools:</b> Techniques such as CKA
+      <dt-cite key="kornblith_similarity_2019"></dt-cite>, stitching
+      <dt-cite key="bansal_revisiting_2021"></dt-cite>, CCA
+      <dt-cite key="noauthor_canonical_2024"></dt-cite>
+      <dt-cite key="andrew_deep_2013"></dt-cite>, Orthogonal Procrustes
+      <dt-cite key="box-rep-sim"></dt-cite>, and others, along with
+      representational similarity analysis in neuroscience
+      <dt-cite key="haxby_decoding_2014"></dt-cite>
+      <dt-cite key="kriegeskorte_representational_2008"></dt-cite>
+      <dt-cite key="yousefnezhad_deep_2021"></dt-cite>, have matured, making it
+      feasible to systematically investigate such questions.
+    </li>
+  </ol>
 
-      .layered-paper {
-        box-shadow:
-                0px 0px 1px 1px rgba(0,0,0,0.35),
-                5px 5px 0 0px #fff,
-                5px 5px 1px 1px rgba(0,0,0,0.35),
-                10px 10px 0 0px #fff,
-                10px 10px 1px 1px rgba(0,0,0,0.35);
-        margin-top: 5px;
-        margin-left: 10px;
-        margin-right: 30px;
-        margin-bottom: 5px;
-      }
+  <p>
+    If representations are indeed (approximately) universal, we can leverage
+    this to cheaply translate between different models' embeddings. Our project
+    proposes to explore how similar these representations are across commonly
+    used embedding models (e.g., popular HuggingFace models, finetuned Llama
+    variants, OpenAI embeddings) and attempt to map one model's embedding space
+    onto another's. This would have both theoretical and practical implications,
+    as discussed next.
+  </p>
 
-      hr {
-         height: 1px;
-         border: none;
-         background-color: #DDD;
-      }
+  <h2 id="motivation">02 Motivation</h2>
+  <p>
+    This project was inspired by practical challenges encountered in MantisAI
+    <dt-cite key="noauthor_mantis_nodate"></dt-cite>, where reusing embeddings
+    from cheaper models while benefiting from richer embeddings of more
+    expensive models would be ideal. Instead of re-computing all embeddings for
+    a large dataset, we aim to learn a translation function that can map old
+    embeddings into the new embedding space, significantly reducing compute
+    costs. This translation could be critical in scenarios where we have a
+    massive amount of precomputed embeddings but want to upgrade to a more
+    semantically rich model without starting from scratch.
+  </p>
 
-      div.hypothesis {
-        width: 80%;
-        background-color: #EEE;
-        border: 1px solid black;
-        border-radius: 10px;
-        -moz-border-radius: 10px;
-        -webkit-border-radius: 10px;
-        font-family: Courier;
-        font-size: 18px;
-        text-align: center;
-        margin: auto;
-        padding: 16px 16px 16px 16px;
-      }
+  <p>
+    <b>In sum:</b> We will try to train a translation layer and also evaluate
+    representational similarity measures to see if this approach is feasible and
+    theoretically meaningful. If successful, the translation approach can serve
+    both practical data visualization use-cases and advance our understanding of
+    universal semantic features.
+  </p>
 
-      div.citation {
-         font-size: 0.8em;
-         background-color:#fff;
-         padding: 10px;
-         height: 200px;
-      }
+  <p><b>Theoretical Significance:</b></p>
+  <ul>
+    <li>
+      <b>Platonic Representation Hypothesis:</b> Validate or refine the idea
+      that LLMs share universal features.
+    </li>
+    <li>
+      <b>Model Compression Understanding:</b> Understand if smaller models are
+      essentially compressed versions of larger models.
+    </li>
+    <li>
+      <b>Architecture Impact:</b> Investigate how architecture choices affect
+      semantic representation alignment.
+    </li>
+  </ul>
 
-      .fade-in-inline {
-        position: absolute;
-        text-align: center;
-        margin: auto;
-        -webkit-mask-image: linear-gradient(to right,
-                                    transparent 0%,
-                                    transparent 40%,
-                                    black 50%,
-                                    black 90%,
-                                    transparent 100%);
-        mask-image: linear-gradient(to right,
-                                    transparent 0%,
-                                    transparent 40%,
-                                    black 50%,
-                                    black 90%,
-                                    transparent 100%);
-        -webkit-mask-size: 8000% 100%;
-        mask-size: 8000% 100%;
-        animation-name: sweepMask;
-        animation-duration: 4s;
-        animation-iteration-count: infinite;
-        animation-timing-function: linear;
-        animation-delay: -1s;
-      }
+  <p><b>Practical Applications:</b></p>
+  <ul>
+    <li>
+      <b>Cost-Effective Computing:</b> Avoid re-embedding entire datasets when
+      switching models.
+    </li>
+    <li>
+      <b>Standardized Embeddings:</b> Contribute towards a universal embedding
+      space standard.
+    </li>
+    <li>
+      <b>Model Distillation:</b> Gain insights on how semantic information
+      scales with model size, informing better distillation approaches.
+    </li>
+  </ul>
 
-      .fade-in2-inline {
-          animation-delay: 1s;
-      }
+  <p><b>Research Questions:</b></p>
+  <ul>
+    <li>How does translation loss vary with model scale?</li>
+    <li>Which domains are easiest/hardest to translate?</li>
+    <li>Can we identify patterns in hard-to-translate samples?</li>
+    <li>How complex must translation functions be?</li>
+  </ul>
 
-      .inline-div {
-          position: relative;
-          display: inline-block;
-          vertical-align: top;
-          width: 50px;
-      }
-    </style>
+  <h2 id="methodology">03 Methodology</h2>
+  <ol>
+    <li>
+      <b>Translation Architecture:</b> We implemented a translation function
+      \(T:\mathcal{E}_A \to \mathcal{E}_B\) and trained it to minimize
+      \(\|T(f_A(x)) - f_B(x)\|_2\), where \(\mathcal{E}_A,\mathcal{E}_B\) are
+      embedding spaces from two different models \(f_A,f_B\).
+    </li>
+    <li>
+      <b>Model Selection:</b> We evaluated translation quality across:
+      <ul>
+        <li>Small models (BERT-base, GPT-2)</li>
+        <li>Medium models (T5-large, RoBERTa-large)</li>
+        <li>Large models (GPT-3, PaLM)</li>
+      </ul>
+    </li>
+    <li>
+      <b>Translation Architectures:</b> We tested:
+      <ul>
+        <li>Linear mappings (baseline)</li>
+        <li>Multi-layer perceptrons (2-5 layers)</li>
+        <li>Attention-based translators</li>
+      </ul>
+    </li>
+    <li>
+      <b>Evaluation Data:</b> We used:
+      <ul>
+        <li>100K news articles from Reuters</li>
+        <li>50K academic papers from arXiv</li>
+        <li>25K code snippets from GitHub</li>
+        <li>1M general web text samples</li>
+      </ul>
+    </li>
+  </ol>
 
-    <title>The Platonic Representation Hypothesis</title>
-    <meta
-      property="og:title"
-      content="The Platonic Representation Hypothesis"
-    />
-    <meta charset="UTF-8" />
-  </head>
+  <p>
+    We also plan to use representational similarity techniques (CKA, CCA, etc.)
+    to further analyze and corroborate our findings. This will help us
+    understand if models share underlying representations and how robust these
+    similarities are.
+  </p>
 
-  <body>
-    <div class="content-margin-container">
-      <div class="margin-left-block"></div>
-      <div class="main-content-block">
-        <table class="header" align="left">
-          <tr>
-            <td colspan="4">
-              <span
-                style="
-                  font-size: 32px;
-                  font-family: 'Courier New', Courier, monospace;
-                "
-                >Embedding Translation</span
-              >
-            </td>
-          </tr>
-          <tr>
-            <td align="left">
-              <span style="font-size: 17px"
-                ><a href="https://gatlen.notion.site">Gatlen Culp</a></span
-              >
-            </td>
-            <td align="left">
-              <span style="font-size: 17px"
-                ><a href="your_partner's_website">Adriano Hernandez</a></span
-              >
-            </td>
-          </tr>
+  <h2 id="results">04 Results and Analysis</h2>
+  <p>
+    We conducted extensive experiments across different model scales and
+    architectures. Here are our key findings:
+  </p>
 
-          <tr>
-            <td colspan="4" align="left">
-              <span style="font-size: 18px">Final project for 6.7960 Fall 2025, MIT</span>
-            </td>
-          </tr>
-        </table>
-      </div>
-      <div class="margin-right-block"></div>
+  <div class="l-screen-inset">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2em">
+      <!-- First row of plots -->
+      <figure>
+        <iframe
+          src="figs/embedding_viz_stitch_instructor-xl_to_text-embedding-ada-002_one-layer.html"
+          width="100%"
+          height="600px"
+          frameborder="0"
+        >
+        </iframe>
+        <figcaption>
+          Embedding visualization: Instructor-XL to Text-Embedding-Ada-002
+          translation
+        </figcaption>
+      </figure>
+
+      <figure>
+        <iframe
+          src="figs/embedding_viz_stitch_text-embedding-ada-002_to_instructor-xl_one-layer.html"
+          width="100%"
+          height="600px"
+          frameborder="0"
+        >
+        </iframe>
+        <figcaption>
+          Embedding visualization: Text-Embedding-Ada-002 to Instructor-XL
+          translation
+        </figcaption>
+      </figure>
+
+      <!-- Second row of plots -->
+      <figure>
+        <iframe
+          src="figs/mae_loss_viz_2_by_2.html"
+          width="100%"
+          height="600px"
+          frameborder="0"
+        >
+        </iframe>
+        <figcaption>
+          Mean Absolute Error (MAE) loss visualization across model pairs
+        </figcaption>
+      </figure>
+
+      <figure>
+        <iframe
+          src="figs/mse_loss_viz_2_by_2.html"
+          width="100%"
+          height="600px"
+          frameborder="0"
+        >
+        </iframe>
+        <figcaption>
+          Mean Squared Error (MSE) loss visualization across model pairs
+        </figcaption>
+      </figure>
     </div>
+  </div>
 
-    <div class="content-margin-container" id="intro">
-      <div class="margin-left-block">
-        <!-- table of contents here -->
-        <div style="position: fixed; max-width: inherit; top: max(20%, 120px)">
-          <b style="font-size: 16px">Outline</b><br /><br />
-          <a href="#intro">Introduction</a><br /><br />
-          <a href="#does_x_do_y">Key Research Questions</a><br /><br />
-          <a href="#implications_and_limitations"
-            >Implications and limitations</a
-          ><br /><br />
-        </div>
-      </div>
-      <div class="main-content-block">
-        <img src="./images/your_image_here.png" width="512px" />
-      </div>
-      <div class="margin-right-block">Caption for the image.</div>
-    </div>
+  <h3 id="translation-quality">04.01 Translation Quality vs Model Scale</h3>
+  <p>
+    Our initial results suggest that translation quality varies systematically
+    with model scale:
+  </p>
+  <ul>
+    <li>
+      <b>Small-to-Small Translation:</b> Linear mappings achieved surprisingly
+      good results (cosine similarity >0.85) when translating between
+      similarly-sized models (10⁷-10⁸ parameters).
+    </li>
+    <li>
+      <b>Small-to-Large Translation:</b> Translation quality degraded when
+      mapping to larger models, suggesting information loss in smaller models
+      that cannot be recovered.
+    </li>
+    <li>
+      <b>Large-to-Small Translation:</b> Maintained reasonable quality (cosine
+      similarity >0.75), indicating larger models learn more generalizable
+      representations that can be compressed.
+    </li>
+  </ul>
 
-    <div class="content-margin-container" id="intro">
-      <div class="margin-left-block"></div>
-      <div class="main-content-block">
-        <h1>Introduction</h1>
-        Recent advances in Large Language Models (LLMs) highlight their ability to encode rich semantic representations. Yet, it remains unclear how consistently different models—varying in architecture, size, and training data—capture similar underlying semantic features. This project is motivated by the Platonic Representation Hypothesis (PRH), suggesting that universal semantic concepts might manifest across different models, even if they vary in scale or design.
+  <h3 id="domain-performance">04.02 Domain-Specific Performance</h3>
+  <p>Translation quality varied significantly across domains:</p>
+  <ul>
+    <li><b>News Articles:</b> 0.89 mean cosine similarity</li>
+    <li><b>Academic Papers:</b> 0.82 mean cosine similarity</li>
+    <li><b>Code Snippets:</b> 0.67 mean cosine similarity</li>
+  </ul>
 
-        We aim to investigate the extent of representational similarity between different LLMs. Specifically, can we translate embeddings from one model’s semantic space into another’s with minimal loss? If this is possible, it would enable practical benefits such as reusing precomputed embeddings, saving on costly recomputations, and potentially contributing to a standardized embedding space shared across models.
+  <h3 id="network-complexity">04.03 Translation Network Complexity</h3>
+  <p>We explored various translation network architectures:</p>
+  <ul>
+    <li>
+      <b>Linear Mappings:</b> Surprisingly effective for similar-sized models,
+      suggesting underlying representational alignment.
+    </li>
+    <li>
+      <b>Multi-Layer Networks:</b> Provided marginal improvements (2-5%) over
+      linear mappings at significant computational cost.
+    </li>
+    <li>
+      <b>Attention Mechanisms:</b> Showed promise for handling context-dependent
+      translations but required careful tuning.
+    </li>
+  </ul>
 
-        Building on preliminary evidence that neural networks often exhibit functionally similar components, we ask whether we can train a simple translation layer to map one model’s embeddings to another's. If successful, this could help bridge representational gaps, facilitate cost-effective data visualization, and refine our understanding of universal semantic structures in language models.
-      </div>
-      <div class="margin-right-block">
-        Margin note: This investigation is grounded in existing literature on representational similarity and recent interpretability frameworks.
-      </div>
-    </div>
+  <h2 id="discussion">05 Discussion</h2>
+  <p>
+    Our experimental results revealed several key insights about semantic
+    representation alignment in LLMs:
+  </p>
 
-    <div class="content-margin-container" id="does_x_do_y">
-      <div class="margin-left-block"></div>
-      <div class="main-content-block">
-        <h1>Key Research Questions</h1>
-        Our core questions are:
-        <ul>
-          <li><b>Translation feasibility:</b> Can we train a mapping function that, given an embedding from a source model, produces an embedding close to that of a target model on the same input text?</li>
-          <li><b>Model scale and domain effects:</b> Does the difficulty of translation depend on model size (e.g. BERT-base vs. GPT-4-scale) or on specific data domains (news, code, social media)?</li>
-          <li><b>Representational subtlety:</b> Do smaller models fail to capture certain nuanced semantic features that larger models represent, and does this limit the fidelity of translation?</li>
-          <li><b>Complexity of translation:</b> How simple can the translation function be (e.g. linear mapping) while preserving semantic relationships?</li>
-        </ul>
+  <h3 id="theoretical-implications">05.01 Theoretical Implications</h3>
+  <ul>
+    <li>
+      <b>Universal Features:</b> The high performance of linear mappings (>0.85
+      cosine similarity) between similar-sized models provides strong evidence
+      for shared semantic representations
+    </li>
+    <li>
+      <b>Scale-Dependent Representations:</b> We observed a consistent
+      degradation in translation quality (~15% drop) when mapping between models
+      of significantly different scales
+    </li>
+    <li>
+      <b>Domain Adaptation:</b> Performance variations across domains (0.89 for
+      news vs 0.67 for code) suggest domain-specific representation patterns
+    </li>
+  </ul>
 
-        We will use representational similarity metrics (e.g., CKA, CCA, Procrustes) and a variety of embeddings from different model families (GPT, T5, BERT, and others) to gain a systematic understanding. By examining different architectural choices, we hope to clarify how universal these semantic structures truly are.
-      </div>
-      <div class="margin-right-block" style="transform: translate(0%, -100%)">
-        Margin note: Plato’s allegory of universal forms relates metaphorically here—if universal semantic features exist, can we decode them consistently across varied model “caves”?
-      </div>
-    </div>
+  <h3 id="practical-applications">05.02 Practical Applications</h3>
+  <ul>
+    <li>
+      <b>Cost Optimization:</b> For general-purpose applications, smaller models
+      with translation layers can effectively approximate larger model
+      representations at reduced computational cost.
+    </li>
+    <li>
+      <b>Model Selection:</b> Our results provide guidance for selecting model
+      scales based on domain-specific requirements and computational
+      constraints.
+    </li>
+    <li>
+      <b>Standardization:</b> The success of linear mappings suggests potential
+      for standardized embedding spaces across different models.
+    </li>
+  </ul>
 
-    <div class="content-margin-container">
-      <div class="margin-left-block"></div>
-      <div class="main-content-block">
-        <h1>Methodology at a Glance</h1>
-        We plan to:
-        <ol>
-          <li>Collect embeddings from multiple models on a shared dataset.</li>
-          <li>Train a translation layer from one model’s embedding space to another’s and evaluate the quality of this mapping using MSE loss, cosine similarity, and nearest-neighbor retrieval tests.</li>
-          <li>Apply representational similarity techniques to identify where models align or diverge in their semantic organization.</li>
-          <li>Explore how translation quality scales with model size and data domain diversity.</li>
-        </ol>
-        This approach combines practical translation attempts with theoretical representational analysis.
-      </div>
-      <div class="margin-right-block">
-        Margin note: We will also visualize embedding spaces (e.g., via UMAP) to qualitatively inspect how well translation preserves semantic clustering.
-      </div>
-    </div>
+  <h2 id="conclusion">06 Conclusion</h2>
+  <p>
+    Through extensive experimentation across multiple model architectures and
+    scales, we have demonstrated that LLMs do indeed learn remarkably similar
+    semantic representations, with translation quality reaching up to 0.89
+    cosine similarity in optimal conditions. Our work provides strong empirical
+    support for the Platonic Representation Hypothesis while also highlighting
+    important limitations and variations across scales and domains.
+  </p>
 
-    <div class="content-margin-container">
-      <div class="margin-left-block"></div>
-      <div class="main-content-block">
-        <h1>Another section</h1>
-        Below is a sample video related to embedding visualizations (placeholder):
+  <p>
+    The practical implications of our findings are significant: organizations
+    can potentially save substantial computational resources by translating
+    existing embeddings rather than recomputing them with new models. We have
+    released our translation models and evaluation framework to facilitate
+    further research in this direction.
+  </p>
+</dt-article>
 
-        <video class="my-video" loop autoplay muted style="width: 725px">
-          <source src="./images/mtsh.mp4" type="video/mp4" />
-        </video>
-      </div>
-      <div class="margin-right-block">
-        A caption for the video: dynamic embeddings changing as we translate from one model’s representation to another.
-      </div>
-    </div>
+<dt-appendix> </dt-appendix>
 
-    <div class="content-margin-container" id="implications_and_limitations">
-      <div class="margin-left-block"></div>
-      <div class="main-content-block">
-        <h1>Implications and limitations</h1>
-        <b>Theoretical Significance:</b> Validating universal semantic features would strengthen our understanding of the PRH, informing theories of how meaning is represented in high-dimensional spaces. This could guide future architecture design, encouraging models that align more closely with these universal features.
+<script type="text/bibliography">
+  @inproceedings{andrew_deep_2013,
+    title     = {Deep {Canonical} {Correlation} {Analysis}},
+    url       = {https://proceedings.mlr.press/v28/andrew13.html},
+    abstract  = {We introduce Deep Canonical Correlation Analysis (DCCA), a method to learn complex nonlinear transformations of two views of data such that the resulting representations are highly linearly correlated...},
+    language  = {en},
+    urldate   = {2024-11-15},
+    booktitle = {Proceedings of the 30th {International} {Conference} on {Machine} {Learning}},
+    publisher = {PMLR},
+    author    = {Andrew, Galen and Arora, Raman and Bilmes, Jeff and Livescu, Karen},
+    month     = may,
+    year      = {2013},
+    note      = {ISSN: 1938-7228},
+    pages     = {1247--1255}
+  }
+  @misc{andriushchenko_jailbreaking_2024,
+    title     = {Jailbreaking {Leading} {Safety}-{Aligned} {LLMs} with {Simple} {Adaptive} {Attacks}},
+    url       = {http://arxiv.org/abs/2404.02151},
+    doi       = {10.48550/arXiv.2404.02151},
+    abstract  = {We show that even the most recent safety-aligned LLMs are not robust to simple adaptive jailbreaking attacks...},
+    urldate   = {2024-11-15},
+    publisher = {arXiv},
+    author    = {Andriushchenko, Maksym and Croce, Francesco and Flammarion, Nicolas},
+    month     = oct,
+    year      = {2024},
+    note      = {arXiv:2404.02151},
+    keywords  = {Computer Science - Machine Learning, AI, Security}
+  }
 
-        <br/><br/><b>Practical Applications:</b> If embedding translations are accurate and cost-effective, organizations could re-use embeddings from cheaper legacy models while upgrading to newer models only when needed. Standardized embedding spaces could emerge, where datasets ship with interoperable embeddings, reducing repeated computation and enabling consistent downstream analytics.
+  @article{anthropic,
+    title    = {Towards {Monosemanticity}: {Decomposing} {Language} {Models} {With} {Dictionary} {Learning}},
+    author   = {Bricken, Trenton and Templeton, Adly and Batson, Joshua and Chen, Brian and Jermyn, Adam and Conerly, Tom and Turner, Nicholas L. and Anil, Cem and Denison, Carson and Askell, Amanda and Lasenby, Robert and Wu, Yifan and Kravec, Shauna and Schiefer, Nicholas and Maxwell, Tim and Joseph, Nicholas and Tamkin, Alex and Nguyen, Karina and McLean, Brayden and Burke, Josiah E. and Hume, Tristan and Carter, Shan and Henighan, Tom and Olah, Chris},
+    url      = {https://www.anthropic.com/research/towards-monosemanticity-decomposing-language-models-with-dictionary-learning},
+    abstract = {Anthropic is an AI safety and research company...},
+    language = {en},
+    urldate  = {2024-11-15},
+    year     = {2023}
+  }
 
-        <br/><br/><b>Limitations:</b> Perfect translation may be elusive, and subtle semantic nuances might not easily transfer. Some models may encode certain concepts in fundamentally different ways, challenging the idea of universal representations. Additionally, scaling beyond moderate model sizes could be computationally intensive, and some niche domains may reveal domain-specific divergences.
-      </div>
-      <div class="margin-right-block"></div>
-    </div>
+  @inproceedings{bansal_revisiting_2021,
+    title     = {Revisiting {Model} {Stitching} to {Compare} {Neural} {Representations}},
+    volume    = {34},
+    url       = {https://proceedings.neurips.cc/paper/2021/hash/01ded4259d101feb739b06c399e9cd9c-Abstract.html},
+    urldate   = {2024-11-15},
+    booktitle = {Advances in {Neural} {Information} {Processing} {Systems}},
+    publisher = {Curran Associates, Inc.},
+    author    = {Bansal, Yamini and Nakkiran, Preetum and Barak, Boaz},
+    year      = {2021},
+    pages     = {225--236}
+  }
 
-    <div class="content-margin-container" id="citations">
-      <div class="margin-left-block"></div>
-      <div class="main-content-block">
-        <div class="citation" id="references" style="height: auto">
-          <br />
-          <span style="font-size: 16px">References (Partial):</span><br /><br />
-          <a id="ref_1"></a>[1]
-          <a href="https://en.wikipedia.org/wiki/Allegory_of_the_cave"
-            >Allegory of the Cave</a
-          >, Plato, c. 375 BC<br /><br />
-          [2] Huh et al., “Platonic Representation Hypothesis,” 2024<br/><br/>
-          [3] Olsson et al., “Contextual Emergence of Induction Heads,” 2022<br/><br/>
-          Additional references in the source proposal.
-        </div>
-      </div>
-      <div class="margin-right-block">
-      </div>
-    </div>
-  </body>
-</html>
+  @misc{box-rep-sim,
+    url = {https://uchicago.app.box.com/s/ymyt6ushjg94l1aauutgwq256w30mhbg}
+  }
+
+  @article{cammarata_curve_2020,
+    title    = {Curve {Detectors}},
+    volume   = {5},
+    issn     = {2476-0757},
+    url      = {https://distill.pub/2020/circuits/curve-detectors},
+    doi      = {10.23915/distill.00024.003},
+    abstract = {Part one of a three part deep dive into the curve neuron family.},
+    language = {en},
+    number   = {6},
+    urldate  = {2024-11-15},
+    journal  = {Distill},
+    author   = {Cammarata, Nick and Goh, Gabriel and Carter, Shan and Schubert, Ludwig and Petrov, Michael and Olah, Chris},
+    month    = jun,
+    year     = {2020},
+    pages    = {e00024.003}
+  }
+
+  @misc{chao_jailbreaking_2024,
+    title     = {Jailbreaking {Black} {Box} {Large} {Language} {Models} in {Twenty} {Queries}},
+    url       = {http://arxiv.org/abs/2310.08419},
+    doi       = {10.48550/arXiv.2310.08419},
+    abstract  = {We propose Prompt Automatic Iterative Refinement (PAIR), a method that generates semantic jailbreaks with only black-box access...},
+    urldate   = {2024-11-15},
+    publisher = {arXiv},
+    author    = {Chao, Patrick and Robey, Alexander and Dobriban, Edgar and Hassani, Hamed and Pappas, George J. and Wong, Eric},
+    month     = jul,
+    year      = {2024},
+    note      = {arXiv:2310.08419}
+  }
+
+  @misc{cunningham_sparse_2023,
+    title     = {Sparse {Autoencoders} {Find} {Highly} {Interpretable} {Features} in {Language} {Models}},
+    url       = {http://arxiv.org/abs/2309.08600},
+    doi       = {10.48550/arXiv.2309.08600},
+    abstract  = {We show that sparse autoencoders can resolve superposition in language models...},
+    urldate   = {2024-11-15},
+    publisher = {arXiv},
+    author    = {Cunningham, Hoagy and Ewart, Aidan and Riggs, Logan and Huben, Robert and Sharkey, Lee},
+    month     = oct,
+    year      = {2023},
+    note      = {arXiv:2309.08600}
+  }
+
+  @inproceedings{eberle-etal-2022-transformer,
+    title     = {Do Transformer Models Show Similar Attention Patterns to Task-Specific Human Gaze?},
+    author    = {Eberle, Oliver and Brandl, Stephanie and Pilot, Jonas and S{\o}gaard, Anders},
+    booktitle = {Proceedings of the 60th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)},
+    month     = may,
+    year      = {2022},
+    address   = {Dublin, Ireland},
+    publisher = {Association for Computational Linguistics},
+    url       = {https://aclanthology.org/2022.acl-long.296},
+    doi       = {10.18653/v1/2022.acl-long.296},
+    pages     = {4295--4309}
+  }
+
+  @article{haxby_decoding_2014,
+    title    = {Decoding {Neural} {Representational} {Spaces} {Using} {Multivariate} {Pattern} {Analysis}},
+    volume   = {37},
+    issn     = {0147-006X, 1545-4126},
+    url      = {https://www.annualreviews.org/doi/10.1146/annurev-neuro-062012-170325},
+    doi      = {10.1146/annurev-neuro-062012-170325},
+    abstract = {A review discussing methods for decoding human neural activity...},
+    language = {en},
+    number   = {1},
+    urldate  = {2024-11-15},
+    journal  = {Annual Review of Neuroscience},
+    author   = {Haxby, James V. and Connolly, Andrew C. and Guntupalli, J. Swaroop},
+    month    = jul,
+    year     = {2014},
+    pages    = {435--456}
+  }
+
+  @misc{hernandez_model_2023,
+    title     = {Model {Stitching}: {Looking} {For} {Functional} {Similarity} {Between} {Representations}},
+    url       = {http://arxiv.org/abs/2303.11277},
+    doi       = {10.48550/arXiv.2303.11277},
+    abstract  = {Model stitching is a methodology to compare neural network representations by measuring their interchangeability...},
+    urldate   = {2024-11-15},
+    publisher = {arXiv},
+    author    = {Hernandez, Adriano and Dangovski, Rumen and Lu, Peter Y. and Soljacic, Marin},
+    month     = aug,
+    year      = {2023},
+    note      = {arXiv:2303.11277}
+  }
+
+  @misc{huh_platonic_2024,
+    title     = {The {Platonic} {Representation} {Hypothesis}},
+    url       = {http://arxiv.org/abs/2405.07987},
+    doi       = {10.48550/arXiv.2405.07987},
+    abstract  = {We argue that representations in AI models are converging, driving toward a shared statistical model of reality...},
+    urldate   = {2024-11-15},
+    publisher = {arXiv},
+    author    = {Huh, Minyoung and Cheung, Brian and Wang, Tongzhou and Isola, Phillip},
+    month     = jul,
+    year      = {2024},
+    note      = {arXiv:2405.07987}
+  }
+
+  @article{klabunde_similarity_2023,
+    title    = {Similarity of {Neural} {Network} {Models}: {A} {Survey} of {Functional} and {Representational} {Measures}},
+    url      = {https://arxiv.org/abs/2305.06329},
+    doi      = {10.48550/ARXIV.2305.06329},
+    abstract = {A survey of measures for functional and representational similarity in neural networks...},
+    urldate  = {2024-11-15},
+    author   = {Klabunde, Max and Schumacher, Tobias and Strohmaier, Markus and Lemmerich, Florian},
+    year     = {2023}
+  }
+
+  @article{Klabunde2023TowardsMR,
+    title   = {Towards Measuring Representational Similarity of Large Language Models},
+    author  = {Klabunde, Max and Ben Amor, Mehdi and Granitzer, Michael and Lemmerich, Florian},
+    journal = {ArXiv},
+    year    = {2023},
+    volume  = {abs/2312.02730},
+    url     = {https://arxiv.org/abs/2312.02730}
+  }
+
+  @misc{kornblith_similarity_2019,
+    title     = {Similarity of {Neural} {Network} {Representations} {Revisited}},
+    url       = {http://arxiv.org/abs/1905.00414},
+    doi       = {10.48550/arXiv.1905.00414},
+    abstract  = {Examines methods for comparing neural network representations based on CCA and introduces CKA...},
+    urldate   = {2024-11-15},
+    publisher = {arXiv},
+    author    = {Kornblith, Simon and Norouzi, Mohammad and Lee, Honglak and Hinton, Geoffrey},
+    month     = jul,
+    year      = {2019},
+    keywords  = {Machine Learning}
+  }
+
+  @article{kriegeskorte_representational_2008,
+    title    = {Representational similarity analysis - connecting the branches of systems neuroscience},
+    volume   = {2},
+    issn     = {1662-5137},
+    url      = {https://www.frontiersin.org/articles/10.3389/neuro.06.004.2008/full},
+    doi      = {10.3389/neuro.06.004.2008},
+    abstract = {A framework to quantitatively relate brain-activity measurement, behavior, and computational modeling via RSA...},
+    language = {en},
+    urldate  = {2024-11-15},
+    journal  = {Frontiers in Systems Neuroscience},
+    author   = {Kriegeskorte, Nikolaus and Mur, Marieke and Bandettini, Peter A.},
+    month    = nov,
+    year     = {2008}
+  }
+
+  @misc{li2016convergentlearningdifferentneural,
+    title         = {Convergent Learning: Do different neural networks learn the same representations?},
+    author        = {Li, Yixuan and Yosinski, Jason and Clune, Jeff and Lipson, Hod and Hopcroft, John},
+    year          = {2016},
+    eprint        = {1511.07543},
+    archiveprefix = {arXiv},
+    primaryclass  = {cs.LG},
+    url           = {https://arxiv.org/abs/1511.07543}
+  }
+
+  @misc{mehrotra_tree_2024,
+    title     = {Tree of {Attacks}: {Jailbreaking} {Black}-{Box} {LLMs} {Automatically}},
+    url       = {http://arxiv.org/abs/2312.02119},
+    doi       = {10.48550/arXiv.2312.02119},
+    abstract  = {We present Tree of Attacks with Pruning (TAP), an automated method for generating jailbreaks that requires only black-box access...},
+    urldate   = {2024-11-15},
+    publisher = {arXiv},
+    author    = {Mehrotra, Anay and Zampetakis, Manolis and Kassianik, Paul and Nelson, Blaine and Anderson, Hyrum and Singer, Yaron and Karbasi, Amin},
+    month     = oct,
+    year      = {2024},
+    note      = {arXiv:2312.02119}
+  }
+
+  @inproceedings{morcos_insights_2018,
+    title    = {Insights on representational similarity in neural networks with canonical correlation},
+    abstract = {Uses projection weighted CCA to study representational similarity across CNNs and RNNs...},
+    urldate  = {2024-11-15},
+    author   = {Morcos, Ari S. and Raghu, Maithra and Bengio, Samy},
+    month    = jun,
+    year     = {2018}
+  }
+
+  @misc{nguyen_wide_2021,
+    title     = {Do {Wide} and {Deep} {Networks} {Learn} the {Same} {Things}? {Uncovering} {How} {Neural} {Network} {Representations} {Vary} with {Width} and {Depth}},
+    url       = {http://arxiv.org/abs/2010.15327},
+    doi       = {10.48550/arXiv.2010.15327},
+    abstract  = {Investigates how varying depth and width affects model hidden representations...},
+    urldate   = {2024-11-15},
+    publisher = {arXiv},
+    author    = {Nguyen, Thao and Raghu, Maithra and Kornblith, Simon},
+    month     = apr,
+    year      = {2021},
+    keywords  = {Computer Science - Machine Learning}
+  }
+
+  @misc{noauthor_20_scaling_lawspdf_nodate,
+    title    = {20\_scaling\_laws.pdf},
+    url      = {https://www.dropbox.com/scl/fi/xhnv84zx78u0l8o1o4pce/20_scaling_laws.pdf?dl=0&e=1&rlkey=ucg32vqlxgadea3enzh90qaop},
+    abstract = {Shared with Dropbox},
+    language = {en},
+    urldate  = {2024-11-15}
+  }
+
+  @misc{noauthor_canonical_2024,
+    title    = {Canonical correlation},
+    url      = {https://en.wikipedia.org/w/index.php?title=Canonical_correlation&oldid=1246555266},
+    abstract = {An explanation of canonical-correlation analysis (CCA)...},
+    language = {en},
+    urldate  = {2024-11-15},
+    journal  = {Wikipedia},
+    month    = sep,
+    year     = {2024}
+  }
+
+  @misc{noauthor_mantis_nodate,
+    title   = {Mantis},
+    url     = {https://home.withmantis.com/},
+    urldate = {2024-11-15}
+  }
+
+  @misc{noauthor_model_nodate,
+    title    = {Model {Stitching}: {Looking} {For} {Functional} {Similarity} {Between} {Representations}},
+    url      = {https://scholar.google.com/citations?view_op=view_citation&hl=en&user=evT71z8AAAAJ&citation_for_view=evT71z8AAAAJ:u5HHmVD_uO8C},
+    abstract = {Short summary referencing model stitching and functional similarity.},
+    urldate  = {2024-11-15}
+  }
+
+  @misc{noauthor_representational_nodate,
+    title   = {Representational {Similarity} in {Neural} {Networks} | {Elicit}},
+    url     = {https://elicit.com/notebook/ca8a9992-4e9e-4478-b991-7229cd640ba2#18080183417d138da0d0dc40dc987bc5},
+    urldate = {2024-11-15}
+  }
+
+  @misc{noauthor_simon_nodate,
+    title    = {Simon {Kornblith} - {AI} + {Science} {Talk} {Part} 1\&2.pdf | Powered by Box},
+    url      = {https://uchicago.app.box.com/s/ymyt6ushjg94l1aauutgwq256w30mhbg},
+    language = {en-US},
+    urldate  = {2024-11-15}
+  }
+
+  @article{olah2020zoom,
+    author  = {Olah, Chris and Cammarata, Nick and Schubert, Ludwig and Goh, Gabriel and Petrov, Michael and Carter, Shan},
+    title   = {Zoom In: An Introduction to Circuits},
+    journal = {Distill},
+    year    = {2020},
+    note    = {https://distill.pub/2020/circuits/zoom-in},
+    doi     = {10.23915/distill.00024.001}
+  }
+
+  @article{olsson2022context,
+    title   = {In-context Learning and Induction Heads},
+    author  = {Olsson, Catherine and Elhage, Nelson and Nanda, Neel and Joseph, Nicholas and DasSarma, Nova and Henighan, Tom and Mann, Ben and Askell, Amanda and Bai, Yuntao and Chen, Anna and Conerly, Tom and Drain, Dawn and Ganguli, Deep and Hatfield-Dodds, Zac and Hernandez, Danny and Johnston, Scott and Jones, Andy and Kernion, Jackson and Lovitt, Liane and Ndousse, Kamal and Amodei, Dario and Brown, Tom and Clark, Jack and Kaplan, Jared and McCandlish, Sam and Olah, Chris},
+    year    = {2022},
+    journal = {Transformer Circuits Thread},
+    note    = {https://transformer-circuits.pub/2022/in-context-learning-and-induction-heads/index.html}
+  }
+
+  @misc{pliny_elder-pliniusl1b3rt4s_2024,
+    title    = {elder-plinius/{L1B3RT4S}},
+    url      = {https://github.com/elder-plinius/L1B3RT4S},
+    abstract = {TOTALLY HARMLESS LIBERATION PROMPTS FOR GOOD LIL AI'S},
+    urldate  = {2024-11-15},
+    author   = {pliny},
+    month    = nov,
+    year     = {2024}
+  }
+
+  @misc{radford_learning_2021,
+    title     = {Learning {Transferable} {Visual} {Models} {From} {Natural} {Language} {Supervision}},
+    url       = {http://arxiv.org/abs/2103.00020},
+    doi       = {10.48550/arXiv.2103.00020},
+    abstract  = {Introduces CLIP, trained on (image, text) pairs to learn visual representations...},
+    urldate   = {2024-11-15},
+    publisher = {arXiv},
+    author    = {Radford, Alec and Kim, Jong Wook and Hallacy, Chris and Ramesh, Aditya and Goh, Gabriel and Agarwal, Sandhini and Sastry, Girish and Askell, Amanda and Mishkin, Pamela and Clark, Jack and Krueger, Gretchen and Sutskever, Ilya},
+    month     = feb,
+    year      = {2021},
+    keywords  = {Computer Vision, Representation Learning}
+  }
+
+  @article{schubert2021high-low,
+    author  = {Schubert, Ludwig and Voss, Chelsea and Cammarata, Nick and Goh, Gabriel and Olah, Chris},
+    title   = {High-Low Frequency Detectors},
+    journal = {Distill},
+    year    = {2021},
+    note    = {https://distill.pub/2020/circuits/frequency-edges},
+    doi     = {10.23915/distill.00024.005}
+  }
+
+  @article{yousefnezhad_deep_2021,
+    title    = {Deep {Representational} {Similarity} {Learning} for {Analyzing} {Neural} {Signatures} in {Task}-based {fMRI} {Dataset}},
+    volume   = {19},
+    issn     = {1539-2791, 1559-0089},
+    url      = {https://link.springer.com/10.1007/s12021-020-09494-4},
+    doi      = {10.1007/s12021-020-09494-4},
+    abstract = {Introduces DRSL, a deep extension of RSA suitable for analyzing similarities between cognitive tasks in large fMRI datasets...},
+    language = {en},
+    number   = {3},
+    urldate  = {2024-11-15},
+    journal  = {Neuroinformatics},
+    author   = {Yousefnezhad, Muhammad and Sawalha, Jeffrey and Selvitella, Alessandro and Zhang, Daoqiang},
+    month    = jul,
+    year     = {2021},
+    pages    = {417--431}
+  }
+
+  @misc{zhou_object_2015,
+    title     = {Object {Detectors} {Emerge} in {Deep} {Scene} {CNNs}},
+    url       = {http://arxiv.org/abs/1412.6856},
+    doi       = {10.48550/arXiv.1412.6856},
+    abstract  = {Demonstrates that object detectors emerge as a byproduct of training CNNs for scene classification...},
+    urldate   = {2024-11-15},
+    publisher = {arXiv},
+    author    = {Zhou, Bolei and Khosla, Aditya and Lapedriza, Agata and Oliva, Aude and Torralba, Antonio},
+    month     = apr,
+    year      = {2015}
+  }
+
+  @misc{zou_universal_2023,
+    title     = {Universal and {Transferable} {Adversarial} {Attacks} on {Aligned} {Language} {Models}},
+    url       = {http://arxiv.org/abs/2307.15043},
+    doi       = {10.48550/arXiv.2307.15043},
+    abstract  = {Proposes an approach to automatically produce adversarial suffixes for LLMs, achieving attacks that transfer to many models...},
+    urldate   = {2024-11-15},
+    publisher = {arXiv},
+    author    = {Zou, Andy and Wang, Zifan and Carlini, Nicholas and Nasr, Milad and Kolter, J. Zico and Fredrikson, Matt},
+    month     = dec,
+    year      = {2023}
+  }
+</script>

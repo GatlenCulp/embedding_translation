@@ -11,7 +11,6 @@ import plotly.express as px
 import plotly.graph_objects as go
 from loguru import logger
 
-from src.logic.reduce_embedding_dims import reduce_embeddings_dimensionality
 from src.utils.general_setup import setup
 from src.viz.save_figure import save_figure
 
@@ -65,78 +64,39 @@ def _plot_embedding_spaces(
     return fig
 
 
-# %% Combined function for backwards compatibility
-def _visualize_embedding_translations(
+def visualize_embeddings(
     embeddings_dict: dict[str, np.ndarray],
-    random_state: int = 42,
-    n_neighbors: int = 15,
-    min_dist: float = 0.1,
+    config: dict | None = None,
 ) -> go.Figure:
-    """Create a 2D visualization of multiple embedding spaces with transition arrows.
+    """Create visualization for arbitrary embedding spaces.
 
-    :param dict[str, np.ndarray] embeddings_dict: Dictionary mapping embedding names to arrays
-    :param int random_state: Random seed for reproducibility
-    :param int n_neighbors: UMAP parameter for local neighborhood size
-    :param float min_dist: UMAP parameter for minimum distance between points
+    :param dict[str, np.ndarray] embeddings_dict: Dictionary of 2D embeddings
+    :param dict config: Configuration for visualization parameters (optional)
     :return: Plotly figure with embedding visualization
     :rtype: go.Figure
     """
-    logger.info("Starting combined visualization process")
-
-    projections = reduce_embeddings_dimensionality(
-        embeddings_dict,
-        random_state=random_state,
-        n_neighbors=n_neighbors,
-        min_dist=min_dist,
-    )
-    return _plot_embedding_spaces(projections)
-
-
-def visualize_embeddings(
-    embeddings_dict: dict[str, np.ndarray],
-    config: dict = None,
-) -> tuple[go.Figure, go.Figure]:
-    """Create visualizations for arbitrary embedding spaces.
-
-    :param dict[str, np.ndarray] embeddings_dict: Dictionary mapping embedding names to arrays
-    :param dict config: Configuration for visualization parameters (optional)
-    :return: Tuple of (combined method figure, separate method figure)
-    :rtype: tuple[go.Figure, go.Figure]
-    """
+    dimensions = 2
+    if not embeddings_dict:
+        err_msg = f"Expected non-empty embeddings dict, got {embeddings_dict=}"
+        raise ValueError(err_msg)
+    ex_embeds = next(iter(embeddings_dict.values()))
+    ex_embed = ex_embeds[0]
+    if len(ex_embed) != dimensions:
+        err_msg = f"Expected {dimensions=}, got {len(ex_embed)=}"
+        raise ValueError(err_msg)
     # Set default config if none provided
     if config is None:
         config = {
-            "random_state": 42,
-            "n_neighbors": 15,
-            "min_dist": 0.1,
             "width": 800,
             "height": 600,
         }
 
-    logger.info("Creating visualizations...")
-
-    # Method 1: Combined
-    fig1 = _visualize_embedding_translations(
+    logger.info("Creating visualization...")
+    return _plot_embedding_spaces(
         embeddings_dict,
-        random_state=config.get("random_state", 42),
-        n_neighbors=config.get("n_neighbors", 15),
-        min_dist=config.get("min_dist", 0.1),
-    )
-
-    # Method 2: Separate
-    projections = reduce_embeddings_dimensionality(
-        embeddings_dict,
-        random_state=config.get("random_state", 42),
-        n_neighbors=config.get("n_neighbors", 15),
-        min_dist=config.get("min_dist", 0.1),
-    )
-    fig2 = _plot_embedding_spaces(
-        projections,
         width=config.get("width", 800),
         height=config.get("height", 600),
     )
-
-    return fig1, fig2
 
 
 def _iris_example() -> None:
@@ -154,14 +114,12 @@ def _iris_example() -> None:
     }
     logger.info(f"Created embeddings for {len(embeddings_dict)} species")
 
-    # Create visualizations
-    fig1, fig2 = visualize_embeddings(embeddings_dict)
+    # Create visualization
+    fig = visualize_embeddings(embeddings_dict)
 
-    # Display and save figures
-    fig1.show()
-    fig2.show()
-    save_figure(fig1, "iris_embeddings_combined")
-    save_figure(fig2, "iris_embeddings_separate")
+    # Display and save figure
+    fig.show()
+    save_figure(fig, "iris_embeddings")
 
     logger.success("Example completed successfully")
 

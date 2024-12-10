@@ -1,5 +1,4 @@
-"""Contains schema for our project."""
-
+"""Contains schema for our project. Unused shit"""
 import importlib.util
 import sys
 from pathlib import Path
@@ -72,6 +71,5 @@ class SimilarityMatrixDatasetEvaluation(BaseModel):
 
 class DatasetComparisonEvaluation(BaseModel):
     """Comparison between different datasets."""
-
+    pass
     # XXX - store information about how datasets store and query differently like cka, top k difference, etc...
-

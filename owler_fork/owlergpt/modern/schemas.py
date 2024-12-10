@@ -44,7 +44,6 @@ class IngestionSettings(BaseModel):
     device: str | None = None  # does not matter
     distance_function: str | None = None  # does not matter
     normalize_embeddings: bool | None = None  # does not matter
-    # TODO(Adriano) in the future we will want to try passing this through a model before
     chunk_preprocessing_mode: Literal["add_prefix"] = "add_prefix"
     query_preprocessing_mode: Literal["add_prefix"] = "add_prefix"
     chunk_prefix: str = (

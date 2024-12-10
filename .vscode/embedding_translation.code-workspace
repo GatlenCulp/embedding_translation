@@ -29,7 +29,7 @@
 			".vscode": false,
 			".gitattributes": false,
 			".prettierrc": true,
-			"pytest.ini": true,
+			"pytest.ini": false,
 			"requirements.txt": true,
 			"LICENSE.md": true,
 			"CHANGELOG.md": true,
@@ -41,5 +41,15 @@
 			"**/*.synctex.gz*": true
 		},
 		"explorerExclude.backup": {},
+	},
+	"launch": {
+		"configurations": [
+			{
+				"type": "chrome",
+				"name": "http://127.0.0.1:4000/src/blog/index.html",
+				"request": "launch",
+				"url": "http://127.0.0.1:4000/src/blog/index.html"
+			}
+		]
 	}
 }
