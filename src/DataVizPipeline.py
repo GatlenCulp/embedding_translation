@@ -28,13 +28,14 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
-import safetensors.numpy
 from loguru import logger
 from rich.console import Console
 from rich.table import Table
 
 from src.logic.anal_dump import DataFile
-from src.logic.anal_dump import anal_dump
+from src.logic.knn_labeling import SemanticSearchEvaluation
+from src.logic.knn_labeling import create_semantic_search_evaluation
+from src.logic.load_embeddings import load_embeddings
 from src.logic.reduce_embedding_dims import reduce_embeddings_dimensionality
 from src.schema.training_schemas import StitchSummary
 from src.utils.general_setup import setup
@@ -63,8 +64,7 @@ class DataVizPipeline:
     @staticmethod
     def _load_embeddings(data_path: Path) -> dict[str, np.ndarray]:
         """Loads the embeddings from a safe tensor file."""
-        logger.debug(f"Loading {data_path} as embeddings...")
-        return safetensors.numpy.load_file(data_path)
+        return load_embeddings(data_path)
 
     @staticmethod
     def _run_embedding_viz(stitch_summary: StitchSummary) -> None:
@@ -162,7 +162,11 @@ class DataVizPipeline:
 
     @staticmethod
     def _run_mse_loss_viz(
-        matrix: list[list[StitchSummary]], row_labels: list[str], col_labels: list[str], architecture: str | None = None, epochs: int | None = None
+        matrix: list[list[StitchSummary]],
+        row_labels: list[str],
+        col_labels: list[str],
+        architecture: str | None = None,
+        epochs: int | None = None,
     ) -> None:
         shape = (len(row_labels), len(col_labels))
         logger.debug(f"Running _run_mse_loss_viz on {shape} matrix")
@@ -186,7 +190,11 @@ class DataVizPipeline:
 
     @staticmethod
     def _run_mae_loss_viz(
-        matrix: list[list[StitchSummary]], row_labels: list[str], col_labels: list[str], architecture: str | None = None, epochs: int | None = None
+        matrix: list[list[StitchSummary]],
+        row_labels: list[str],
+        col_labels: list[str],
+        architecture: str | None = None,
+        epochs: int | None = None,
     ) -> None:
         shape = (len(row_labels), len(col_labels))
         logger.debug(f"Running _run_mae_loss_viz on {shape} matrix")
@@ -207,12 +215,16 @@ class DataVizPipeline:
             },
         )
         save_figure(fig, f"mae_loss_viz_{shape[0]}_by_{shape[1]}")
-
 
     @staticmethod
     def _run_knn_accuracy_viz(
-        matrix: list[list[StitchSummary]], row_labels: list[str], col_labels: list[str], architecture: str | None = None, epochs: int | None = None
+        matrix: list[list[StitchSummary]],
+        row_labels: list[str],
+        col_labels: list[str],
+        architecture: str | None = None,
+        epochs: int | None = None,
     ) -> None:
+        # TODO: Finish
         shape = (len(row_labels), len(col_labels))
         logger.debug(f"Running _run_mae_loss_viz on {shape} matrix")
         representative_sample = matrix[1][0]
@@ -220,25 +232,26 @@ class DataVizPipeline:
             architecture = representative_sample.architecture_name
         if epochs is None:
             epochs = representative_sample.train_settings.num_epochs
-        mae_matrix = DataVizPipeline._apply_to_matrix(matrix, lambda stitch: stitch.test_mae)
+        knn_matrix: list[list[SemanticSearchEvaluation]] = DataVizPipeline._apply_to_matrix(
+            matrix,
+            lambda stitch: create_semantic_search_evaluation(
+                training_dataset=stitch.test_result, test_dataset=stitch.train_target, k=1
+            ),
+        )
+        closest_indices = DataVizPipeline._apply_to_matrix(
+            knn_matrix, lambda eval: eval.nearest_neighbors
+        )
         fig = visualize_heatmap(
-            matrix=mae_matrix,
+            matrix=closest_indices,
             config={
                 "row_labels": row_labels,
                 "col_labels": col_labels,
-                "title": f"MAE Losses (Architecture: {architecture} trained over {epochs})",
+                "title": f"kNN Accuracies w/ Using Original as Ground Truth (Architecture: {architecture} trained over {epochs})",
                 "xaxis_title": "Target Embedding Space",
                 "yaxis_title": "Starting Embedding Space",
             },
         )
         save_figure(fig, f"mae_loss_viz_{shape[0]}_by_{shape[1]}")
-
-
-    @staticmethod
-    def _run_isolated_eval(stitch_summary: StitchSummary) -> None:
-        anal_dump(stitch_summary, "test_visualize_embeddings")
-
-        DataVizPipeline._run_embedding_viz(stitch_summary)
 
     @staticmethod
     def run(paths_to_stitch_summaries: list[Path]) -> None:
@@ -248,13 +261,14 @@ class DataVizPipeline:
             DataVizPipeline._load_data_as_stitch_summary(path) for path in paths_to_stitch_summaries
         ]
         # for stitch_summary in stitch_summaries:
-        #     DataVizPipeline._run_isolated_eval(stitch_summary)
+        #     DataVizPipeline._run_embedding_viz(stitch_summary)
 
         matrix, row_labels, col_labels = DataVizPipeline._get_matrix_from_stich_summary(
             stitch_summaries,
         )
-        DataVizPipeline._run_mse_loss_viz(matrix, row_labels, col_labels)
-        DataVizPipeline._run_mae_loss_viz(matrix, row_labels, col_labels)
+        # DataVizPipeline._run_mse_loss_viz(matrix, row_labels, col_labels)
+        # DataVizPipeline._run_mae_loss_viz(matrix, row_labels, col_labels)
+        DataVizPipeline._run_knn_accuracy_viz(matrix, row_labels, col_labels)
 
 
 def main() -> None:

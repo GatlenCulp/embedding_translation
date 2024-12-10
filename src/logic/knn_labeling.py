@@ -3,6 +3,8 @@
 Description: Takes training and test datasets and performs k-nearest neighbors search
 to find the closest matches between them. Results are stored in a SemanticSearchEvaluation
 model for further analysis of semantic preservation during embedding translation.
+
+NOTE: HAS NOT BEEN CHECKED.
 """
 
 from typing import Literal
@@ -11,6 +13,8 @@ import numpy as np
 from loguru import logger
 from scipy.spatial.distance import cdist
 
+from src.logic.load_embeddings import load_embeddings
+from src.schema.SemanticSearch import EmbeddingDatasetInformation
 from src.schema.SemanticSearch import SemanticSearchEvaluation
 from src.utils.general_setup import setup
 
@@ -48,8 +52,8 @@ def find_k_nearest_neighbors(
 
 
 def create_semantic_search_evaluation(
-    training_dataset: dict,
-    test_dataset: dict,
+    training_dataset: EmbeddingDatasetInformation,
+    test_dataset: EmbeddingDatasetInformation,
     k: int = 1,
     distance_function: Literal["euclidean"] = "euclidean",
 ) -> SemanticSearchEvaluation:
@@ -65,13 +69,17 @@ def create_semantic_search_evaluation(
     logger.info("Starting semantic search evaluation...")
 
     # Extract embeddings and record IDs
-    training_embeddings = training_dataset["embeddings"]
-    test_embeddings = test_dataset["embeddings"]
-    training_record_ids = training_dataset["record_ids"]
-    test_record_ids = test_dataset["record_ids"]
+    training_embeddings = load_embeddings(training_dataset.dataset_filepath)["embeddings"]
+    test_embeddings = load_embeddings(test_dataset.dataset_filepath)["embeddings"]
+
+    training_embeddings_size = len(training_embeddings)
+    test_embeddings_size = len(test_embeddings)
+
+    training_record_ids = np.arange(training_embeddings_size)
+    test_record_ids = np.arange(start=training_embeddings_size, stop=test_embeddings_size)
 
     # Create mapping from record_id to label
-    training_labels_map = dict(zip(training_record_ids, training_dataset["labels"]))
+    training_labels_map = dict(zip(training_record_ids, training_record_ids))
 
     # Find nearest neighbors
     indices, distances = find_k_nearest_neighbors(
@@ -100,8 +108,8 @@ def create_semantic_search_evaluation(
     logger.success("Semantic search evaluation completed")
 
     return SemanticSearchEvaluation(
-        training_dataset=training_dataset["dataset_info"],
-        test_dataset=test_dataset["dataset_info"],
+        training_dataset=training_dataset,
+        test_dataset=test_dataset,
         distance_function=distance_function,
         k=k,
         nearest_neighbors=nearest_neighbors,
