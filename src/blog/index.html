@@ -112,6 +112,7 @@ We can
     significant alignment between models' semantic spaces, with implications for
     both theoretical understanding and practical applications.
   </p>
+  <!-- Honestly I don't know if this is such a great abstract. -->
 
   <h2 id="introduction">01 Background</h2>
   <!-- Think we maybe jumped into this a bit too soon
@@ -356,46 +357,63 @@ We can
   </ul>
 
   <h2 id="methodology">03 Methodology</h2>
+  <h3 id="methodology-overview">Overview</h3>
+
+  <p>
+    We systematically evaluated embedding translation across different model architectures, 
+    embedding spaces, and datasets. Our methodology follows a rigorous experimental setup:
+  </p>
+
   <ol>
     <li>
-      <b>Translation Architecture:</b> We implemented a translation function
-      \(T:\mathcal{E}_A \to \mathcal{E}_B\) and trained it to minimize
-      \(\|T(f_A(x)) - f_B(x)\|_2\), where \(\mathcal{E}_A,\mathcal{E}_B\) are
-      embedding spaces from two different models \(f_A,f_B\).
-    </li>
-    <li>
-      <b>Model Selection:</b> We evaluated translation quality across:
+      <h3 id="translation-architecture">Stitch Architecture</h3>
+      We implemented translation functions between embedding spaces, testing three key architectures:
       <ul>
-        <li>Small models (BERT-base, GPT-2)</li>
-        <li>Medium models (T5-large, RoBERTa-large)</li>
-        <li>Large models (GPT-3, PaLM)</li>
+        <li>Linear transformations (baseline)</li>
+        <li>Single-layer MLP</li> 
+        <li>Two-layer MLP 
+          <!-- TODO: Uncomment if we did this
+          
+          with varying hidden dimensions:
+          <ul>
+            <li>Full rank (matching input/output)</li>
+            <li>8x Full rank hidden dimensions</li>
+            <li>32x Full rank hidden dimensions</li>
+          </ul> -->
+        </li>
       </ul>
     </li>
+
     <li>
-      <b>Translation Architectures:</b> We tested:
+      <h3 id="model-selection">Model Selection</h3>
+      We evaluated translation quality across several foundation models:
       <ul>
-        <li>Linear mappings (baseline)</li>
-        <li>Multi-layer perceptrons (2-5 layers)</li>
-        <li>Attention-based translators</li>
+        <li>Small T5 model</li>
+        <li>Small Hugging Face models</li>
+        <li>GPT embeddings</li>
+        <li>Medium-sized models (e.g., Llama-base)</li>
       </ul>
     </li>
+
     <li>
-      <b>Evaluation Data:</b> We used:
+      <h3 id="evaluation-data">Evaluation Data</h3>
+      <p>
+        For each dataset, we used an 80-20 train/test split to evaluate performance.
+        Our evaluation pipeline included:
+      </p>
       <ul>
-        <li>100K news articles from Reuters</li>
-        <li>50K academic papers from arXiv</li>
-        <li>25K code snippets from GitHub</li>
-        <li>1M general web text samples</li>
+        <li>Training using MSE loss</li>
+        <li>Generating embeddings on test datasets</li>
+        <li>Creating UMAP visualizations with prompts/labels</li>
+        <li>Generating comparison tables for:
+          <ul>
+            <li>MSE across model pairs and ranks</li>
+            <li>k-NN edit distance metrics</li>
+          </ul>
+        </li>
       </ul>
     </li>
   </ol>
-
-  <p>
-    We also plan to use representational similarity techniques (CKA, CCA, etc.)
-    to further analyze and corroborate our findings. This will help us
-    understand if models share underlying representations and how robust these
-    similarities are.
-  </p>
 
   <h2 id="results">04 Results and Analysis</h2>
   <p>
