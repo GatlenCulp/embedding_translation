@@ -220,7 +220,9 @@
 
           <tr>
             <td colspan="4" align="left">
-              <span style="font-size: 18px">Final project for 6.7960 Fall 2025, MIT</span>
+              <span style="font-size: 18px"
+                >Final project for 6.7960 Fall 2025, MIT</span
+              >
             </td>
           </tr>
         </table>
@@ -250,14 +252,28 @@
       <div class="margin-left-block"></div>
       <div class="main-content-block">
         <h1>Introduction</h1>
-        Recent advances in Large Language Models (LLMs) highlight their ability to encode rich semantic representations. Yet, it remains unclear how consistently different models—varying in architecture, size, and training data—capture similar underlying semantic features. This project is motivated by the Platonic Representation Hypothesis (PRH), suggesting that universal semantic concepts might manifest across different models, even if they vary in scale or design.
-
-        We aim to investigate the extent of representational similarity between different LLMs. Specifically, can we translate embeddings from one model’s semantic space into another’s with minimal loss? If this is possible, it would enable practical benefits such as reusing precomputed embeddings, saving on costly recomputations, and potentially contributing to a standardized embedding space shared across models.
-
-        Building on preliminary evidence that neural networks often exhibit functionally similar components, we ask whether we can train a simple translation layer to map one model’s embeddings to another's. If successful, this could help bridge representational gaps, facilitate cost-effective data visualization, and refine our understanding of universal semantic structures in language models.
+        Recent advances in Large Language Models (LLMs) highlight their ability
+        to encode rich semantic representations. Yet, it remains unclear how
+        consistently different models—varying in architecture, size, and
+        training data—capture similar underlying semantic features. This project
+        is motivated by the Platonic Representation Hypothesis (PRH), suggesting
+        that universal semantic concepts might manifest across different models,
+        even if they vary in scale or design. We aim to investigate the extent
+        of representational similarity between different LLMs. Specifically, can
+        we translate embeddings from one model’s semantic space into another’s
+        with minimal loss? If this is possible, it would enable practical
+        benefits such as reusing precomputed embeddings, saving on costly
+        recomputations, and potentially contributing to a standardized embedding
+        space shared across models. Building on preliminary evidence that neural
+        networks often exhibit functionally similar components, we ask whether
+        we can train a simple translation layer to map one model’s embeddings to
+        another's. If successful, this could help bridge representational gaps,
+        facilitate cost-effective data visualization, and refine our
+        understanding of universal semantic structures in language models.
       </div>
       <div class="margin-right-block">
-        Margin note: This investigation is grounded in existing literature on representational similarity and recent interpretability frameworks.
+        Margin note: This investigation is grounded in existing literature on
+        representational similarity and recent interpretability frameworks.
       </div>
     </div>
 
@@ -267,16 +283,38 @@
         <h1>Key Research Questions</h1>
         Our core questions are:
         <ul>
-          <li><b>Translation feasibility:</b> Can we train a mapping function that, given an embedding from a source model, produces an embedding close to that of a target model on the same input text?</li>
-          <li><b>Model scale and domain effects:</b> Does the difficulty of translation depend on model size (e.g. BERT-base vs. GPT-4-scale) or on specific data domains (news, code, social media)?</li>
-          <li><b>Representational subtlety:</b> Do smaller models fail to capture certain nuanced semantic features that larger models represent, and does this limit the fidelity of translation?</li>
-          <li><b>Complexity of translation:</b> How simple can the translation function be (e.g. linear mapping) while preserving semantic relationships?</li>
+          <li>
+            <b>Translation feasibility:</b> Can we train a mapping function
+            that, given an embedding from a source model, produces an embedding
+            close to that of a target model on the same input text?
+          </li>
+          <li>
+            <b>Model scale and domain effects:</b> Does the difficulty of
+            translation depend on model size (e.g. BERT-base vs. GPT-4-scale) or
+            on specific data domains (news, code, social media)?
+          </li>
+          <li>
+            <b>Representational subtlety:</b> Do smaller models fail to capture
+            certain nuanced semantic features that larger models represent, and
+            does this limit the fidelity of translation?
+          </li>
+          <li>
+            <b>Complexity of translation:</b> How simple can the translation
+            function be (e.g. linear mapping) while preserving semantic
+            relationships?
+          </li>
         </ul>
 
-        We will use representational similarity metrics (e.g., CKA, CCA, Procrustes) and a variety of embeddings from different model families (GPT, T5, BERT, and others) to gain a systematic understanding. By examining different architectural choices, we hope to clarify how universal these semantic structures truly are.
+        We will use representational similarity metrics (e.g., CKA, CCA,
+        Procrustes) and a variety of embeddings from different model families
+        (GPT, T5, BERT, and others) to gain a systematic understanding. By
+        examining different architectural choices, we hope to clarify how
+        universal these semantic structures truly are.
       </div>
       <div class="margin-right-block" style="transform: translate(0%, -100%)">
-        Margin note: Plato’s allegory of universal forms relates metaphorically here—if universal semantic features exist, can we decode them consistently across varied model “caves”?
+        Margin note: Plato’s allegory of universal forms relates metaphorically
+        here—if universal semantic features exist, can we decode them
+        consistently across varied model “caves”?
       </div>
     </div>
 
@@ -287,14 +325,27 @@
         We plan to:
         <ol>
           <li>Collect embeddings from multiple models on a shared dataset.</li>
-          <li>Train a translation layer from one model’s embedding space to another’s and evaluate the quality of this mapping using MSE loss, cosine similarity, and nearest-neighbor retrieval tests.</li>
-          <li>Apply representational similarity techniques to identify where models align or diverge in their semantic organization.</li>
-          <li>Explore how translation quality scales with model size and data domain diversity.</li>
+          <li>
+            Train a translation layer from one model’s embedding space to
+            another’s and evaluate the quality of this mapping using MSE loss,
+            cosine similarity, and nearest-neighbor retrieval tests.
+          </li>
+          <li>
+            Apply representational similarity techniques to identify where
+            models align or diverge in their semantic organization.
+          </li>
+          <li>
+            Explore how translation quality scales with model size and data
+            domain diversity.
+          </li>
         </ol>
-        This approach combines practical translation attempts with theoretical representational analysis.
+        This approach combines practical translation attempts with theoretical
+        representational analysis.
       </div>
       <div class="margin-right-block">
-        Margin note: We will also visualize embedding spaces (e.g., via UMAP) to qualitatively inspect how well translation preserves semantic clustering.
+        Margin note: We will also visualize embedding spaces (e.g., via UMAP) to
+        qualitatively inspect how well translation preserves semantic
+        clustering.
       </div>
     </div>
 
@@ -302,14 +353,16 @@
       <div class="margin-left-block"></div>
       <div class="main-content-block">
         <h1>Another section</h1>
-        Below is a sample video related to embedding visualizations (placeholder):
+        Below is a sample video related to embedding visualizations
+        (placeholder):
 
         <video class="my-video" loop autoplay muted style="width: 725px">
           <source src="./images/mtsh.mp4" type="video/mp4" />
         </video>
       </div>
       <div class="margin-right-block">
-        A caption for the video: dynamic embeddings changing as we translate from one model’s representation to another.
+        A caption for the video: dynamic embeddings changing as we translate
+        from one model’s representation to another.
       </div>
     </div>
 
@@ -317,11 +370,25 @@
       <div class="margin-left-block"></div>
       <div class="main-content-block">
         <h1>Implications and limitations</h1>
-        <b>Theoretical Significance:</b> Validating universal semantic features would strengthen our understanding of the PRH, informing theories of how meaning is represented in high-dimensional spaces. This could guide future architecture design, encouraging models that align more closely with these universal features.
+        <b>Theoretical Significance:</b> Validating universal semantic features
+        would strengthen our understanding of the PRH, informing theories of how
+        meaning is represented in high-dimensional spaces. This could guide
+        future architecture design, encouraging models that align more closely
+        with these universal features.
 
-        <br/><br/><b>Practical Applications:</b> If embedding translations are accurate and cost-effective, organizations could re-use embeddings from cheaper legacy models while upgrading to newer models only when needed. Standardized embedding spaces could emerge, where datasets ship with interoperable embeddings, reducing repeated computation and enabling consistent downstream analytics.
+        <br /><br /><b>Practical Applications:</b> If embedding translations are
+        accurate and cost-effective, organizations could re-use embeddings from
+        cheaper legacy models while upgrading to newer models only when needed.
+        Standardized embedding spaces could emerge, where datasets ship with
+        interoperable embeddings, reducing repeated computation and enabling
+        consistent downstream analytics.
 
-        <br/><br/><b>Limitations:</b> Perfect translation may be elusive, and subtle semantic nuances might not easily transfer. Some models may encode certain concepts in fundamentally different ways, challenging the idea of universal representations. Additionally, scaling beyond moderate model sizes could be computationally intensive, and some niche domains may reveal domain-specific divergences.
+        <br /><br /><b>Limitations:</b> Perfect translation may be elusive, and
+        subtle semantic nuances might not easily transfer. Some models may
+        encode certain concepts in fundamentally different ways, challenging the
+        idea of universal representations. Additionally, scaling beyond moderate
+        model sizes could be computationally intensive, and some niche domains
+        may reveal domain-specific divergences.
       </div>
       <div class="margin-right-block"></div>
     </div>
@@ -336,12 +403,28 @@
           <a href="https://en.wikipedia.org/wiki/Allegory_of_the_cave"
             >Allegory of the Cave</a
           >, Plato, c. 375 BC<br /><br />
-          [2] Huh et al., “Platonic Representation Hypothesis,” 2024<br/><br/>
-          [3] Olsson et al., “Contextual Emergence of Induction Heads,” 2022<br/><br/>
+          [2] Huh et al., “Platonic Representation Hypothesis,” 2024<br /><br />
+          [3] Olsson et al., “Contextual Emergence of Induction Heads,” 2022<br /><br />
           Additional references in the source proposal.
         </div>
       </div>
+      <div class="margin-right-block"></div>
+    </div>
+
+    <div class="content-margin-container">
+      <div class="margin-left-block"></div>
+      <div class="main-content-block">
+        <h1>Results</h1>
+
+        <iframe
+          src="./figs/mse_loss_viz_2_by_2.html"
+          style="width: 100%; height: 600px; border: none"
+        >
+        </iframe>
+      </div>
       <div class="margin-right-block">
+        Caption: MSE loss visualization comparing embedding translations between
+        different models.
       </div>
     </div>
   </body>
