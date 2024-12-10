@@ -6,6 +6,7 @@
 .DS_Store
 chromadb/
 warcs/
+chunks/
 visualizations/
 poetry.lock
 runs/
