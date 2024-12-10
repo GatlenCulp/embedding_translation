@@ -6,6 +6,7 @@
 .DS_Store
 chromadb/
 warcs/
+chunks/
 visualizations/
 poetry.lock
 runs/
@@ -15,3 +16,6 @@ _*/
 .idea
 wandb/
 *deleteme*.py
+**/*deleteme*.py
+*delet*me*
+**/*delet*me*
