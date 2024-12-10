@@ -30,10 +30,8 @@
 <!-- https://distill.pub/guide/ -->
 <!-- 
 TODO: 
-1. Number each of the headings (01, 02, etc)
 2. Fix citations
 3. Add pretty graphics (maybe html/css animations created by claude)
-4. Embed plotly plots automatically
  -->
 <!-- 
  Examples
@@ -71,25 +69,53 @@ We can
     The Alignment of Semantic Representations Across Language Models
   </h1>
 
-  <div class="">
-    <h2 id="abstract">Abstract</h2>
-    <p>
-      Recent advances in Large Language Models (LLMs) have demonstrated their
-      remarkable ability to capture and manipulate semantic information. In this
-      work, we investigated a fundamental question: to what extent do different
-      LLMs learn similar semantic representations despite variations in
-      architecture, training data, and initialization? Our findings reveal
-      significant alignment between models' semantic spaces, with implications
-      for both theoretical understanding and practical applications.
-    </p>
+  <div
+    class="authors-section l-middle"
+    style="text-align: center; margin-top: 2em"
+  >
+    <div class="authors" style="margin-bottom: 1em">
+      <span style="font-size: 1.2em">
+        <a
+          href="https://gatlen.notion.site"
+          style="text-decoration: none; color: #333"
+          >Gatlen Culp</a
+        >
+        <span style="color: #666; margin: 0 0.5em">·</span>
+        <a
+          href="https://superurop.mit.edu/scholars/adriano-hernandez/"
+          style="text-decoration: none; color: #333"
+          >Adriano Hernandez</a
+        >
+      </span>
+    </div>
+
+    <div class="affiliations" style="color: #666; margin-bottom: 1em">
+      Massachusetts Institute of Technology
+    </div>
+
+    <div class="date-info" style="color: #888; font-size: 0.9em">
+      Published December 10th, 2024
+    </div>
   </div>
+
+  <h2 id="abstract">Abstract</h2>
+  <p>
+    Recent advances in Large Language Models (LLMs) have demonstrated their
+    remarkable ability to capture and manipulate semantic information. In this
+    work, we investigated a fundamental question: to what extent do different
+    LLMs learn similar semantic representations despite variations in
+    architecture, training data, and initialization? Our findings reveal
+    significant alignment between models' semantic spaces, with implications for
+    both theoretical understanding and practical applications.
+  </p>
 
   <h2 id="introduction">01 Background</h2>
 
   <p>
-    There is ample evidence supporting the idea that representations may be
+    There is ample evidence supporting the idea that text representations may be
     similar to some degree. Some notable observations include:
   </p>
+  <!-- TODO: Add icons or something but this onslaught of bullets is a lot -->
   <ul>
     <li>
       <b>Functionally similar components across neural networks:</b> For
@@ -125,10 +151,6 @@ We can
       may be due to underlying shared representational patterns, indicating that
       multiple models rely on similar internal structures.
     </li>
-  </ul>
-
-  <p>We also note the following two points:</p>
-  <ol>
     <li>
       <b>Mechanistic interpretability (MI) and feature superposition:</b> The
       feature superposition theory <dt-cite key="anthropic"></dt-cite> suggests
@@ -151,44 +173,55 @@ We can
       <dt-cite key="yousefnezhad_deep_2021"></dt-cite>, have matured, making it
       feasible to systematically investigate such questions.
     </li>
-  </ol>
+  </ul>
 
   <p>
     If representations are indeed (approximately) universal, we can leverage
-    this to cheaply translate between different models' embeddings. Our project
-    proposes to explore how similar these representations are across commonly
-    used embedding models (e.g., popular HuggingFace models, finetuned Llama
-    variants, OpenAI embeddings) and attempt to map one model's embedding space
-    onto another's. This would have both theoretical and practical implications,
-    as discussed next.
+    this to cheaply translate between different models' embeddings. In related
+    literature, this translation process is known as <b>stitching</b> and thus
+    it will be referred to as such for the remainder of this post.
+    <!-- TODO: @Adriano, explain a bit more -->
+
+    Our project proposes to explore how similar these representations are across
+    commonly used embedding models
+    <!-- (e.g., (TODO)) -->
+    and attempt to map one model's embedding space onto another's.
   </p>
 
   <h2 id="motivation">02 Motivation</h2>
+  <div class="l-page side">
+    <figure>
+      <img
+        src="./figs/mantis.gif"
+        alt="Exploring a dataset with MantisAI"
+        style="width: 100%; max-height: 400px; object-fit: cover"
+        frameborder="0"
+      />
+    </figure>
+    <figcaption>Exploring a dataset with MantisAI</figcaption>
+  </div>
+  <h3 id="origin">02.01 Origin</h3>
   <p>
-    This project was inspired by practical challenges encountered in MantisAI
-    <dt-cite key="noauthor_mantis_nodate"></dt-cite>, where reusing embeddings
-    from cheaper models while benefiting from richer embeddings of more
-    expensive models would be ideal. Instead of re-computing all embeddings for
-    a large dataset, we aim to learn a translation function that can map old
-    embeddings into the new embedding space, significantly reducing compute
-    costs. This translation could be critical in scenarios where we have a
-    massive amount of precomputed embeddings but want to upgrade to a more
-    semantically rich model without starting from scratch.
+    This project originated from challenges at
+    <a href="https://home.withmantis.com/">MantisAI</a>
+    <dt-cite key="noauthor_mantis_nodate"></dt-cite>, where we needed to
+    efficiently translate between different embedding models. Rather than
+    re-computing embeddings for large datasets when upgrading models, in
+    training an stitching model to map between embedding spaces, significantly
+    reducing computational overhead and compatability from one data
+    visualization workspace to another.
   </p>
 
-  <p>
-    <b>In sum:</b> We will try to train a translation layer and also evaluate
-    representational similarity measures to see if this approach is feasible and
-    theoretically meaningful. If successful, the translation approach can serve
-    both practical data visualization use-cases and advance our understanding of
-    universal semantic features.
-  </p>
-
-  <p><b>Theoretical Significance:</b></p>
+  <h3 id="theoretical-significance">02.02 Theoretical Significance</h3>
   <ul>
+    <!-- https://phillipi.github.io/prh/ -->
     <li>
-      <b>Platonic Representation Hypothesis:</b> Validate or refine the idea
-      that LLMs share universal features.
+      <b
+        ><a href="https://phillipi.github.io/prh/"
+          >Platonic Representation Hypothesis</a
+        >:</b
+      >
+      Validate or refine the idea that LLMs share universal features.
     </li>
     <li>
       <b>Model Compression Understanding:</b> Understand if smaller models are
