@@ -5,6 +5,7 @@ from pathlib import Path
 
 from loguru import logger
 
+from src.logic.anal_dump import anal_dump
 from src.schema.mock.safe_tensor import generate_mock_safetensor
 from src.schema.training_schemas import EmbeddingDatasetInformation
 from src.schema.training_schemas import ExperimentConfig
@@ -46,7 +47,10 @@ def create_example_stitch_summary(
     if create_safetensors:
         # Generate source embeddings file
         generate_mock_safetensor(
-            shape=(1000, 1536),  # 1000 embeddings of dimension 1536
+            shape=(
+                1000,
+                source_embeddings.embedding_dimension,
+            ),  # 1000 embeddings of dimension 1536
             output_path=source_embeddings.dataset_filepath,
             tensor_names=["embeddings"],
         )
@@ -65,7 +69,7 @@ def create_example_stitch_summary(
     if create_safetensors:
         # Generate target embeddings file
         generate_mock_safetensor(
-            shape=(1000, 768),  # 1000 embeddings of dimension 768
+            shape=(1000, target_embeddings.embedding_dimension),  # 1000 embeddings of dimension 768
             output_path=target_embeddings.dataset_filepath,
             tensor_names=["embeddings"],
         )
@@ -86,7 +90,10 @@ def create_example_stitch_summary(
     if create_safetensors:
         # Generate stitched train embeddings file
         generate_mock_safetensor(
-            shape=(1000, 768),  # 1000 embeddings of dimension 768
+            shape=(
+                1000,
+                stitched_train_embeddings.embedding_dimension,
+            ),  # 1000 embeddings of dimension 768
             output_path=stitched_train_embeddings.dataset_filepath,
             tensor_names=["embeddings"],
         )
@@ -106,7 +113,10 @@ def create_example_stitch_summary(
     if create_safetensors:
         # Generate stitched test embeddings file
         generate_mock_safetensor(
-            shape=(200, 768),  # 200 test embeddings of dimension 768
+            shape=(
+                200,
+                stitched_test_embeddings.embedding_dimension,
+            ),  # 200 test embeddings of dimension 768
             output_path=stitched_test_embeddings.dataset_filepath,
             tensor_names=["embeddings"],
         )
@@ -188,10 +198,17 @@ def create_example_stitch_summary(
     return mock_stitch_summary
 
 
-def main() -> None:
+def save_mock_stitch(suffix: str = "") -> None:
+    """Generates a mock StitchSummary to data using the name `{slug}{suffix}.json`."""
     mock_stitch_summary = create_example_stitch_summary(create_safetensors=True)
-    StitchSummary.model_validate(mock_stitch_summary)
-    logger.info(mock_stitch_summary)
+    validated_stitch_summary = StitchSummary.model_validate(mock_stitch_summary)
+    logger.info(validated_stitch_summary)
+    anal_dump(validated_stitch_summary, output_dir="data/stitch_summaries", filename=f"{validated_stitch_summary.slug}{suffix}")
+
+
+def main() -> None:
+    save_mock_stitch("_01")
+    save_mock_stitch("_02")
 
 
 if __name__ == "__main__":

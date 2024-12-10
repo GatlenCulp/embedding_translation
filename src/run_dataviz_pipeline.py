@@ -26,12 +26,12 @@ For each experiment:
 from pathlib import Path
 
 import numpy as np
+import safetensors.numpy
+from loguru import logger
 
 from src.logic.anal_dump import DataFile
 from src.logic.anal_dump import anal_dump
 from src.logic.reduce_embedding_dims import reduce_embeddings_dimensionality
-from src.schema.mock.embeddings_dict import create_example_embeddings
-from src.schema.mock.stitch_summary import create_example_stitch_summary
 from src.schema.training_schemas import StitchSummary
 from src.utils.general_setup import setup
 from src.viz.dimensionality_reduction import visualize_embeddings
@@ -50,44 +50,74 @@ class DataVizPipeline:
     @staticmethod
     def _load_data_as_stitch_summary(data_path: Path) -> StitchSummary:
         """Load JSON data from path and convert to StitchSummary."""
+        logger.debug(f"Loading {data_path} as summary...")
         with data_path.open() as f:
             data = f.read()
         data = DataFile.model_validate_json(data)
         return StitchSummary.model_validate(data.data)
 
     @staticmethod
+    def _load_embeddings(data_path: Path) -> dict[str, np.ndarray]:
+        """Loads the embeddings from a safe tensor file."""
+        logger.debug(f"Loading {data_path} as embeddings...")
+        return safetensors.numpy.load_file(data_path)
+
+    @staticmethod
     def _run_embedding_viz(stitch_summary: StitchSummary) -> None:
-        # Get example embeddings
-        embeddings_dict = create_example_embeddings()
+        logger.debug(f"Running _run_embedding_viz with {stitch_summary.display_name}")
+
+        # Get embeddings
+        test_stitch_embeddings_dataset = stitch_summary.test_stitch_embeddings
+        test_target_embeddings_dataset = stitch_summary.test_experiment_config.target
+
+        # Load embeddings
+        test_stitch_embeddings = DataVizPipeline._load_embeddings(
+            data_path=test_stitch_embeddings_dataset.dataset_filepath
+        )["embeddings"]
+        test_target_embeddings = DataVizPipeline._load_embeddings(
+            data_path=test_target_embeddings_dataset.dataset_filepath
+        )["embeddings"]
+
+        embeddings_dict = {"stitched": test_stitch_embeddings, "target": test_target_embeddings}
 
         # Reduce dimensionality
         reduced_embeddings = reduce_embeddings_dimensionality(embeddings_dict)
 
         fig = visualize_embeddings(reduced_embeddings)
 
-        save_figure(fig, "test_visualize_embeddings")
+        save_figure(fig, f"embedding_viz_{stitch_summary.slug}")
 
     @staticmethod
-    def _run_heatmap_viz(stitch_summary: StitchSummary) -> None:
+    def _run_loss_viz(stitch_summary: StitchSummary) -> None:
+        logger.debug(f"Running _run_loss_viz with {stitch_summary.display_name}")
         matrix = rng.random((10, 10))
         fig = visualize_heatmap(matrix=matrix)
-        save_figure(fig, "test_heatmap")
+        save_figure(fig, f"loss_viz_{stitch_summary.slug}")
 
     @staticmethod
-    def run(data_path: Path) -> None:
-        """Runs entire data visualization pipeline on saved data."""
-
-        stitch_summary = DataVizPipeline._load_data_as_stitch_summary(data_path=data_path)
+    def _run_single(path_to_stitch_summary: Path) -> None:
+        stitch_summary = DataVizPipeline._load_data_as_stitch_summary(
+            data_path=path_to_stitch_summary
+        )
         anal_dump(stitch_summary, "test_visualize_embeddings")
 
         DataVizPipeline._run_embedding_viz(stitch_summary)
-        DataVizPipeline._run_heatmap_viz(stitch_summary)
+        DataVizPipeline._run_loss_viz(stitch_summary)
+
+    @staticmethod
+    def run(paths_to_stitch_summaries: list[Path]) -> None:
+        """Runs entire data visualization pipeline on saved data."""
+        logger.info(f"Running DataViz pipeline with {len(paths_to_stitch_summaries)}")
+
+        for path_to_stitch_summary in paths_to_stitch_summaries:
+            DataVizPipeline._run_single(path_to_stitch_summary)
 
 
 def main() -> None:
     """Runs dataviz pipeline with default config."""
-    data_path = PROJ_ROOT / "data" / "example_stitch_summary.json"
-    DataVizPipeline.run(data_path)
+    stitch_summaries_dir = PROJ_ROOT / "data" / "stitch_summaries"
+    data_paths = list(stitch_summaries_dir.glob("*.json"))
+    DataVizPipeline.run(data_paths)
 
 
 if __name__ == "__main__":

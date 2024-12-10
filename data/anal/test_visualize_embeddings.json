@@ -1,7 +1,7 @@
 {
   "pydantic_schema": "StitchSummary",
   "name": "test_visualize_embeddings",
-  "created_at": "2024-12-09T22:50:25.414939",
+  "created_at": "2024-12-10T01:01:50.631801",
   "version": "1.0.0",
   "description": null,
   "data": {
@@ -31,8 +31,8 @@
           "dataloader_num_workers": 4
         },
         "stitch_train_settings": null,
-        "dataset_filepath": "/path/to/source/embeddings.jsonl",
-        "collections_filepath": "/path/to/source/collections",
+        "dataset_filepath": "data/embeddings/source_embeddings.safetensors",
+        "collections_filepath": "data/embeddings/source_collections",
         "stitch_model_name": null,
         "name": "EmbeddingDatasetInformation("
       },
@@ -57,8 +57,8 @@
           "dataloader_num_workers": 4
         },
         "stitch_train_settings": null,
-        "dataset_filepath": "/path/to/target/embeddings.jsonl",
-        "collections_filepath": "/path/to/target/collections",
+        "dataset_filepath": "data/embeddings/target_embeddings.safetensors",
+        "collections_filepath": "data/embeddings/target_collections",
         "stitch_model_name": null,
         "name": "EmbeddingDatasetInformation("
       },
@@ -95,8 +95,8 @@
             "dataloader_num_workers": 4
           },
           "stitch_train_settings": null,
-          "dataset_filepath": "/path/to/source/embeddings.jsonl",
-          "collections_filepath": "/path/to/source/collections",
+          "dataset_filepath": "data/embeddings/source_embeddings.safetensors",
+          "collections_filepath": "data/embeddings/source_collections",
           "stitch_model_name": null,
           "name": "EmbeddingDatasetInformation("
         },
@@ -121,8 +121,8 @@
             "dataloader_num_workers": 4
           },
           "stitch_train_settings": null,
-          "dataset_filepath": "/path/to/target/embeddings.jsonl",
-          "collections_filepath": "/path/to/target/collections",
+          "dataset_filepath": "data/embeddings/target_embeddings.safetensors",
+          "collections_filepath": "data/embeddings/target_collections",
           "stitch_model_name": null,
           "name": "EmbeddingDatasetInformation("
         },
@@ -261,8 +261,8 @@
         "dataloader_num_workers": 4
       },
       "stitch_train_settings": null,
-      "dataset_filepath": "/path/to/stitched/train_embeddings.jsonl",
-      "collections_filepath": "/path/to/stitched/train_collections",
+      "dataset_filepath": "data/embeddings/stitched_train_embeddings.safetensors",
+      "collections_filepath": "data/embeddings/stitched_train_collections",
       "stitch_model_name": "stitch_ada002_to_instructor",
       "name": "EmbeddingDatasetInformation("
     },
@@ -292,8 +292,8 @@
           "dataloader_num_workers": 4
         },
         "stitch_train_settings": null,
-        "dataset_filepath": "/path/to/source/embeddings.jsonl",
-        "collections_filepath": "/path/to/source/collections",
+        "dataset_filepath": "data/embeddings/source_embeddings.safetensors",
+        "collections_filepath": "data/embeddings/source_collections",
         "stitch_model_name": null,
         "name": "EmbeddingDatasetInformation("
       },
@@ -318,8 +318,8 @@
           "dataloader_num_workers": 4
         },
         "stitch_train_settings": null,
-        "dataset_filepath": "/path/to/target/embeddings.jsonl",
-        "collections_filepath": "/path/to/target/collections",
+        "dataset_filepath": "data/embeddings/target_embeddings.safetensors",
+        "collections_filepath": "data/embeddings/target_collections",
         "stitch_model_name": null,
         "name": "EmbeddingDatasetInformation("
       },
@@ -362,19 +362,22 @@
         "dataloader_num_workers": 4
       },
       "stitch_train_settings": null,
-      "dataset_filepath": "/path/to/stitched/test_embeddings.jsonl",
-      "collections_filepath": "/path/to/stitched/test_collections",
+      "dataset_filepath": "data/embeddings/stitched_test_embeddings.safetensors",
+      "collections_filepath": "data/embeddings/stitched_test_collections",
       "stitch_model_name": "stitch_ada002_to_instructor",
       "name": "EmbeddingDatasetInformation("
     },
-    "name": "StitchSummary(experiment=Stitch(, epochs=10)",
+    "display_name": "Stitch text-embedding-ada-002 to instructor-xl using One-Layer Architecture",
+    "slug": "stitch_text-embedding-ada-002_to_instructor-xl_one-layer",
     "text_dataset_name": "hotpotqa",
     "source_embedding_model_name": "text-embedding-ada-002",
     "target_embedding_model_name": "instructor-xl",
     "architecture": "affine",
     "architecture_config": {
       "bias": true
-    }
+    },
+    "architecture_name": "One-Layer",
+    "architecture_slug": "one-layer"
   },
   "additional_fields": null
 }

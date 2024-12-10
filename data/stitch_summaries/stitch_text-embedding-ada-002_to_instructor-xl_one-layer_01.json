@@ -1,0 +1,383 @@
+{
+  "pydantic_schema": "StitchSummary",
+  "name": "stitch_text-embedding-ada-002_to_instructor-xl_one-layer_01",
+  "created_at": "2024-12-10T00:51:10.065335",
+  "version": "1.0.0",
+  "description": null,
+  "data": {
+    "training_experiment_config": {
+      "dataset_name": "hotpotqa",
+      "dataset_split": "train",
+      "dataset_train_test_split_frac": 0.8,
+      "dataset_size": 1000,
+      "source": {
+        "embedding_model_name": "text-embedding-ada-002",
+        "embedding_model_type": "openai",
+        "embedding_dimension": 1536,
+        "text_dataset_name": "hotpotqa",
+        "text_dataset_source": "huggingface",
+        "chromadb_collection_name": "hotpotqa_source_embeddings",
+        "ingestion_settings": {
+          "chunk_size": 256,
+          "device": null,
+          "distance_function": null,
+          "normalize_embeddings": null,
+          "chunk_preprocessing_mode": "add_prefix",
+          "query_preprocessing_mode": "add_prefix",
+          "chunk_prefix": "passage: ",
+          "query_prefix": "query: ",
+          "chunk_overlap": 25,
+          "dataloader_batch_size": 32,
+          "dataloader_num_workers": 4
+        },
+        "stitch_train_settings": null,
+        "dataset_filepath": "data/embeddings/source_embeddings.safetensors",
+        "collections_filepath": "data/embeddings/source_collections",
+        "stitch_model_name": null,
+        "name": "EmbeddingDatasetInformation("
+      },
+      "target": {
+        "embedding_model_name": "instructor-xl",
+        "embedding_model_type": "huggingface",
+        "embedding_dimension": 768,
+        "text_dataset_name": "hotpotqa",
+        "text_dataset_source": "huggingface",
+        "chromadb_collection_name": "hotpotqa_target_embeddings",
+        "ingestion_settings": {
+          "chunk_size": 256,
+          "device": null,
+          "distance_function": null,
+          "normalize_embeddings": null,
+          "chunk_preprocessing_mode": "add_prefix",
+          "query_preprocessing_mode": "add_prefix",
+          "chunk_prefix": "passage: ",
+          "query_prefix": "query: ",
+          "chunk_overlap": 25,
+          "dataloader_batch_size": 32,
+          "dataloader_num_workers": 4
+        },
+        "stitch_train_settings": null,
+        "dataset_filepath": "data/embeddings/target_embeddings.safetensors",
+        "collections_filepath": "data/embeddings/target_collections",
+        "stitch_model_name": null,
+        "name": "EmbeddingDatasetInformation("
+      },
+      "architecture": "affine",
+      "architecture_config": {
+        "bias": true
+      },
+      "name": "Stitch("
+    },
+    "train_settings": {
+      "experiment_settings": {
+        "dataset_name": "hotpotqa",
+        "dataset_split": "train",
+        "dataset_train_test_split_frac": 0.8,
+        "dataset_size": 1000,
+        "source": {
+          "embedding_model_name": "text-embedding-ada-002",
+          "embedding_model_type": "openai",
+          "embedding_dimension": 1536,
+          "text_dataset_name": "hotpotqa",
+          "text_dataset_source": "huggingface",
+          "chromadb_collection_name": "hotpotqa_source_embeddings",
+          "ingestion_settings": {
+            "chunk_size": 256,
+            "device": null,
+            "distance_function": null,
+            "normalize_embeddings": null,
+            "chunk_preprocessing_mode": "add_prefix",
+            "query_preprocessing_mode": "add_prefix",
+            "chunk_prefix": "passage: ",
+            "query_prefix": "query: ",
+            "chunk_overlap": 25,
+            "dataloader_batch_size": 32,
+            "dataloader_num_workers": 4
+          },
+          "stitch_train_settings": null,
+          "dataset_filepath": "data/embeddings/source_embeddings.safetensors",
+          "collections_filepath": "data/embeddings/source_collections",
+          "stitch_model_name": null,
+          "name": "EmbeddingDatasetInformation("
+        },
+        "target": {
+          "embedding_model_name": "instructor-xl",
+          "embedding_model_type": "huggingface",
+          "embedding_dimension": 768,
+          "text_dataset_name": "hotpotqa",
+          "text_dataset_source": "huggingface",
+          "chromadb_collection_name": "hotpotqa_target_embeddings",
+          "ingestion_settings": {
+            "chunk_size": 256,
+            "device": null,
+            "distance_function": null,
+            "normalize_embeddings": null,
+            "chunk_preprocessing_mode": "add_prefix",
+            "query_preprocessing_mode": "add_prefix",
+            "chunk_prefix": "passage: ",
+            "query_prefix": "query: ",
+            "chunk_overlap": 25,
+            "dataloader_batch_size": 32,
+            "dataloader_num_workers": 4
+          },
+          "stitch_train_settings": null,
+          "dataset_filepath": "data/embeddings/target_embeddings.safetensors",
+          "collections_filepath": "data/embeddings/target_collections",
+          "stitch_model_name": null,
+          "name": "EmbeddingDatasetInformation("
+        },
+        "architecture": "affine",
+        "architecture_config": {
+          "bias": true
+        },
+        "name": "Stitch("
+      },
+      "batch_size": 32,
+      "learning_rate": 0.0001,
+      "num_epochs": 10,
+      "optimizer": "Adam",
+      "optimizer_kwargs": {},
+      "loss_fn": "MSE",
+      "loss_fn_kwargs": {}
+    },
+    "training_evaluation_log": {
+      "evaluations": [
+        {
+          "epoch_num": 0,
+          "num_embeddings_evaluated": 1000,
+          "stitching_mse": 0.5,
+          "stitching_mae": 0.4,
+          "stitching_additional_metrics": {},
+          "evaluation_data_split": "train"
+        },
+        {
+          "epoch_num": 1,
+          "num_embeddings_evaluated": 1000,
+          "stitching_mse": 0.46,
+          "stitching_mae": 0.37,
+          "stitching_additional_metrics": {},
+          "evaluation_data_split": "train"
+        },
+        {
+          "epoch_num": 2,
+          "num_embeddings_evaluated": 1000,
+          "stitching_mse": 0.42,
+          "stitching_mae": 0.34,
+          "stitching_additional_metrics": {},
+          "evaluation_data_split": "train"
+        },
+        {
+          "epoch_num": 3,
+          "num_embeddings_evaluated": 1000,
+          "stitching_mse": 0.38,
+          "stitching_mae": 0.31000000000000005,
+          "stitching_additional_metrics": {},
+          "evaluation_data_split": "train"
+        },
+        {
+          "epoch_num": 4,
+          "num_embeddings_evaluated": 1000,
+          "stitching_mse": 0.33999999999999997,
+          "stitching_mae": 0.28,
+          "stitching_additional_metrics": {},
+          "evaluation_data_split": "train"
+        },
+        {
+          "epoch_num": 5,
+          "num_embeddings_evaluated": 1000,
+          "stitching_mse": 0.3,
+          "stitching_mae": 0.25,
+          "stitching_additional_metrics": {},
+          "evaluation_data_split": "train"
+        },
+        {
+          "epoch_num": 6,
+          "num_embeddings_evaluated": 1000,
+          "stitching_mse": 0.26,
+          "stitching_mae": 0.22000000000000003,
+          "stitching_additional_metrics": {},
+          "evaluation_data_split": "train"
+        },
+        {
+          "epoch_num": 7,
+          "num_embeddings_evaluated": 1000,
+          "stitching_mse": 0.21999999999999997,
+          "stitching_mae": 0.19000000000000003,
+          "stitching_additional_metrics": {},
+          "evaluation_data_split": "train"
+        },
+        {
+          "epoch_num": 8,
+          "num_embeddings_evaluated": 1000,
+          "stitching_mse": 0.18,
+          "stitching_mae": 0.16000000000000003,
+          "stitching_additional_metrics": {},
+          "evaluation_data_split": "train"
+        },
+        {
+          "epoch_num": 9,
+          "num_embeddings_evaluated": 1000,
+          "stitching_mse": 0.14,
+          "stitching_mae": 0.13,
+          "stitching_additional_metrics": {},
+          "evaluation_data_split": "train"
+        }
+      ]
+    },
+    "train_status_final": {
+      "num_epochs": 10,
+      "num_embeddings_per_epoch": 1000,
+      "num_embeddings_trained_on_total": 10000,
+      "train_info": null,
+      "status": "completed",
+      "error": null,
+      "wandb_run_project": "stitch_training",
+      "wandb_run_name": "ada002_to_instructor_001",
+      "time_start": "2024-03-15T10:00:00",
+      "time_end": "2024-03-15T11:00:00",
+      "time_taken_sec": 3600.0,
+      "time_taken_min": 60.0,
+      "time_taken_hr": "1.0",
+      "storage_info": null
+    },
+    "train_stitch_embeddings": {
+      "embedding_model_name": "text-embedding-ada-002",
+      "embedding_model_type": "openai",
+      "embedding_dimension": 768,
+      "text_dataset_name": "hotpotqa",
+      "text_dataset_source": "huggingface",
+      "chromadb_collection_name": "hotpotqa_stitched_train",
+      "ingestion_settings": {
+        "chunk_size": 256,
+        "device": null,
+        "distance_function": null,
+        "normalize_embeddings": null,
+        "chunk_preprocessing_mode": "add_prefix",
+        "query_preprocessing_mode": "add_prefix",
+        "chunk_prefix": "passage: ",
+        "query_prefix": "query: ",
+        "chunk_overlap": 25,
+        "dataloader_batch_size": 32,
+        "dataloader_num_workers": 4
+      },
+      "stitch_train_settings": null,
+      "dataset_filepath": "data/embeddings/stitched_train_embeddings.safetensors",
+      "collections_filepath": "data/embeddings/stitched_train_collections",
+      "stitch_model_name": "stitch_ada002_to_instructor",
+      "name": "EmbeddingDatasetInformation("
+    },
+    "test_experiment_config": {
+      "dataset_name": "hotpotqa",
+      "dataset_split": "test",
+      "dataset_train_test_split_frac": 0.8,
+      "dataset_size": 200,
+      "source": {
+        "embedding_model_name": "text-embedding-ada-002",
+        "embedding_model_type": "openai",
+        "embedding_dimension": 1536,
+        "text_dataset_name": "hotpotqa",
+        "text_dataset_source": "huggingface",
+        "chromadb_collection_name": "hotpotqa_source_embeddings",
+        "ingestion_settings": {
+          "chunk_size": 256,
+          "device": null,
+          "distance_function": null,
+          "normalize_embeddings": null,
+          "chunk_preprocessing_mode": "add_prefix",
+          "query_preprocessing_mode": "add_prefix",
+          "chunk_prefix": "passage: ",
+          "query_prefix": "query: ",
+          "chunk_overlap": 25,
+          "dataloader_batch_size": 32,
+          "dataloader_num_workers": 4
+        },
+        "stitch_train_settings": null,
+        "dataset_filepath": "data/embeddings/source_embeddings.safetensors",
+        "collections_filepath": "data/embeddings/source_collections",
+        "stitch_model_name": null,
+        "name": "EmbeddingDatasetInformation("
+      },
+      "target": {
+        "embedding_model_name": "instructor-xl",
+        "embedding_model_type": "huggingface",
+        "embedding_dimension": 768,
+        "text_dataset_name": "hotpotqa",
+        "text_dataset_source": "huggingface",
+        "chromadb_collection_name": "hotpotqa_target_embeddings",
+        "ingestion_settings": {
+          "chunk_size": 256,
+          "device": null,
+          "distance_function": null,
+          "normalize_embeddings": null,
+          "chunk_preprocessing_mode": "add_prefix",
+          "query_preprocessing_mode": "add_prefix",
+          "chunk_prefix": "passage: ",
+          "query_prefix": "query: ",
+          "chunk_overlap": 25,
+          "dataloader_batch_size": 32,
+          "dataloader_num_workers": 4
+        },
+        "stitch_train_settings": null,
+        "dataset_filepath": "data/embeddings/target_embeddings.safetensors",
+        "collections_filepath": "data/embeddings/target_collections",
+        "stitch_model_name": null,
+        "name": "EmbeddingDatasetInformation("
+      },
+      "architecture": "affine",
+      "architecture_config": {
+        "bias": true
+      },
+      "name": "Stitch("
+    },
+    "test_evaluation_log": {
+      "evaluations": [
+        {
+          "epoch_num": 9,
+          "num_embeddings_evaluated": 200,
+          "stitching_mse": 0.15,
+          "stitching_mae": 0.12,
+          "stitching_additional_metrics": {},
+          "evaluation_data_split": "test"
+        }
+      ]
+    },
+    "test_stitch_embeddings": {
+      "embedding_model_name": "text-embedding-ada-002",
+      "embedding_model_type": "openai",
+      "embedding_dimension": 768,
+      "text_dataset_name": "hotpotqa",
+      "text_dataset_source": "huggingface",
+      "chromadb_collection_name": "hotpotqa_stitched_test",
+      "ingestion_settings": {
+        "chunk_size": 256,
+        "device": null,
+        "distance_function": null,
+        "normalize_embeddings": null,
+        "chunk_preprocessing_mode": "add_prefix",
+        "query_preprocessing_mode": "add_prefix",
+        "chunk_prefix": "passage: ",
+        "query_prefix": "query: ",
+        "chunk_overlap": 25,
+        "dataloader_batch_size": 32,
+        "dataloader_num_workers": 4
+      },
+      "stitch_train_settings": null,
+      "dataset_filepath": "data/embeddings/stitched_test_embeddings.safetensors",
+      "collections_filepath": "data/embeddings/stitched_test_collections",
+      "stitch_model_name": "stitch_ada002_to_instructor",
+      "name": "EmbeddingDatasetInformation("
+    },
+    "display_name": "Stitch text-embedding-ada-002 to instructor-xl using One-Layer Architecture",
+    "slug": "stitch_text-embedding-ada-002_to_instructor-xl_one-layer",
+    "text_dataset_name": "hotpotqa",
+    "source_embedding_model_name": "text-embedding-ada-002",
+    "target_embedding_model_name": "instructor-xl",
+    "architecture": "affine",
+    "architecture_config": {
+      "bias": true
+    },
+    "architecture_name": "One-Layer",
+    "architecture_slug": "one-layer"
+  },
+  "additional_fields": null
+}

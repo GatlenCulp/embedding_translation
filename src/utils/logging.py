@@ -27,7 +27,14 @@ def setup_logger(filename: str) -> None:
         format="[{time:YYYY-MM-DD HH:mm:ss}] {level} {message}",
     )
     logger.add(
-        RichHandler(rich_tracebacks=True),
+        RichHandler(
+            rich_tracebacks=True,
+            markup=True,
+            show_path=True,
+            show_time=True,
+            keywords=["error", "warning", "debug", "info"],
+            highlighter=None,
+        ),
         level="INFO",
-        format="{message}",
+        format="[{file}:{line}] {message}",
     )

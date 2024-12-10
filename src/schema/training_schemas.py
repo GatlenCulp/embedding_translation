@@ -299,15 +299,23 @@ class StitchSummary(BaseModel):
     6. The trained stitch model dump
     """
 
-    @computed_field(repr=True)
+    @computed_field(repr=True, description="This is the name that will be displayed on graphs.")
     @property
-    def name(self) -> str:
-        """Generate a descriptive name for the stitch summary."""
+    def display_name(self) -> str:
+        """This is the name that will be displayed on graphs."""
         return (
-            f"StitchSummary("
-            f"experiment={self.training_experiment_config.name}, "
-            f"epochs={self.train_status_final.num_epochs}"
-            ")"
+            f"Stitch {self.source_embedding_model_name} to {self.target_embedding_model_name} "
+            f"using {self.architecture_name} Architecture"
+        )
+
+    @computed_field(repr=False, description="This is the name that appears on file names.")
+    @property
+    def slug(self) -> str:
+        """This is the name that appears on file names."""
+        return (
+            f"stitch_{self.source_embedding_model_name.lower()}_to_"
+            f"{self.target_embedding_model_name.lower()}_"
+            f"{self.architecture_slug}"
         )
 
     ### EXTRACT SUMMARY DATA ###
@@ -340,6 +348,22 @@ class StitchSummary(BaseModel):
     def architecture_config(self) -> dict[str, Any] | None:
         """Extracts the architecture class config."""
         return self.training_experiment_config.architecture_config
+
+    @computed_field(repr=False, description="Arch name for plotting")
+    @property
+    def architecture_name(self) -> str:
+        """Arch name for plotting."""
+        if self.architecture == "affine":
+            return "One-Layer"
+        return self.architecture
+
+    @computed_field(repr=False, description="Arch name for files")
+    @property
+    def architecture_slug(self) -> str:
+        """Arch name for files."""
+        if self.architecture == "affine":
+            return "one-layer"
+        return self.architecture.lower()
 
     ### TRAINING STITCH ###
 
