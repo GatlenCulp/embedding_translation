@@ -1,29 +1,29 @@
+"""owler evaluate dataset file."""
+
 import os
-import click
+
 import chromadb
+import click
 import numpy as np
 import pandas as pd
 import torch
-
 from chromadb.config import DEFAULT_TENANT
 from flask import current_app
-from owlergpt.utils import (
-    choose_dataset_folders,
-    filter_collections,
-    calculate_metric,
-    self_sim_score,
-    nn_sim,
-    plot_results,
-    get_embedding_indices,
-)
-from owlergpt.utils import AVAILABLE_METRICS, MATCH_DIM_METRICS, NEAREST_NEIGHBORS
+from owlergpt.utils import AVAILABLE_METRICS
+from owlergpt.utils import MATCH_DIM_METRICS
+from owlergpt.utils import NEAREST_NEIGHBORS
+from owlergpt.utils import calculate_metric
+from owlergpt.utils import choose_dataset_folders
+from owlergpt.utils import filter_collections
+from owlergpt.utils import get_embedding_indices
+from owlergpt.utils import plot_results
+from owlergpt.utils import self_sim_score
 from tqdm import tqdm
 
 
 @current_app.cli.command("eval_ds")
 def evaluate_ds_collections() -> None:
-    """
-    Compares embeddings created for a dataset using different embedding models with matching chunk size. The method
+    """Compares embeddings created for a dataset using different embedding models with matching chunk size. The method
     offers different measures for evaluating similarity.
     """
     environ = os.environ
@@ -67,8 +67,7 @@ def evaluate_ds_collections() -> None:
     if not collections:
         click.echo("No collections found.")
         return
-    else:
-        print("Found collections", collections)  # XXX
+    print("Found collections", collections)  # XXX
 
     collections = [c.name for c in collections]
     collections.sort()
@@ -94,7 +93,7 @@ def evaluate_ds_collections() -> None:
         return
 
     if not match_dimension:
-        num_queries = click.prompt(f"Please choose the number of queries to perform", type=int)
+        num_queries = click.prompt("Please choose the number of queries to perform", type=int)
 
     if num_queries < 1:
         click.echo("Invalid number of queries. Exiting.")
@@ -116,11 +115,10 @@ def evaluate_ds_collections() -> None:
             f"No valid collections for chunk size {chunk_size} and dataset {selected_folder} found."
         )
         return
-    else:
-        click.echo(
-            f"Found valid collections {valid_collections} for dataset {selected_folder} with chunk size "
-            f"{chunk_size}"
-        )
+    click.echo(
+        f"Found valid collections {valid_collections} for dataset {selected_folder} with chunk size "
+        f"{chunk_size}"
+    )
 
     mc = "_mc_" if center else "_"
     if baseline:
