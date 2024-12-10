@@ -5,7 +5,7 @@ import os
 from flask import current_app
 import json
 from tqdm import tqdm
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from langchain.text_splitter import TokenTextSplitter
 
 def valid_datasets_folder(dataset_path: Path):
@@ -34,10 +34,10 @@ def validate_all_ids_unique(dataset_path: Path, enforce_intra: bool = False):
             set_of_all_ids |= ids
 
 class Chunk(BaseModel):
-    _id: str # unique id for the chunk (can combine doc id with index within that chunk)
-    _doc_id: str
-    index_in_doc: int
-    text: str
+    id: str = Field(alias="id") # unique id for the chunk (can combine doc id with index within that chunk)
+    doc_id: str = Field(alias="doc_id")
+    index_in_doc: int = Field(alias="index_in_doc")
+    text: str = Field(alias="text")
 
 # NOTE: examples/samples are 
 @current_app.cli.command("chunk_dataset")
@@ -76,6 +76,7 @@ def chunk_dataset(enforce_intra: bool):
         # Read and process each line
         with open(file, "r") as f:
             lines = f.readlines()
+        assert len(lines) > 0, f"No lines found for {file.as_posix()}"
         
         chunked_documents: List[str] = []
         for line in tqdm(lines, desc=f"Processing {file.name}", leave=False):
@@ -86,9 +87,10 @@ def chunk_dataset(enforce_intra: bool):
             
             # Create new documents for each chunk
             for i, chunk in enumerate(chunks):
+                # NOTE _id -> id cuz otherwise pydantic yells at me
                 chunk = Chunk(
-                    _id=f"doc_{doc['_id']}_chunk_{i}",
-                    _doc_id=doc["_id"],
+                    id=f"doc_{doc['_id']}_chunk_{i}",
+                    doc_id=doc["_id"],
                     index_in_doc=i,
                     text=chunk,
                 )
@@ -97,6 +99,7 @@ def chunk_dataset(enforce_intra: bool):
                 chunked_documents.append(chunk_json)
         
         # Write chunked documents to output file
+        assert len(chunked_documents) > 0, f"No chunks created for {file.as_posix()}"
         with open(out_file, "w") as f:
             for doc in chunked_documents:
                 f.write(doc + "\n")

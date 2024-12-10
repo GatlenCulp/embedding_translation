@@ -68,6 +68,9 @@ class ModelLatentSizing:
 def model2model_dimension(model_name: str) -> int:
     """ Helper: get the size of the embedding dimension vector (1D, usually something like 768-4096). """
     # Miscellaneous (HF)
+    if "/" in model_name:
+        assert model_name.count("/") == 1
+        model_name = model_name.split("/")[-1]
     if model_name == "SFR-Embedding-Mistral":
         return 4096
     elif model_name == "UAE-Large-V1":
