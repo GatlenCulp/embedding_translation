@@ -6,3 +6,4 @@ ipykernel
 datasets
 pydantic
 wandb
+tabulate
