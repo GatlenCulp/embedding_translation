@@ -198,17 +198,73 @@ def create_example_stitch_summary(
     return mock_stitch_summary
 
 
-def save_mock_stitch(suffix: str = "") -> None:
+def create_inverse_stitch_summary(stitch_summary: StitchSummary) -> StitchSummary:
+    """Creates a mock inverse stitch by reversing the source and target embeddings.
+
+    :param stitch_summary: Original StitchSummary to invert
+    :return: New StitchSummary with source/target reversed and appropriate adjustments
+    """
+    # Create deep copy of original summary
+    inv_stitch = stitch_summary.model_copy(deep=True)
+
+    # Swap source and target in training experiment
+    (
+        inv_stitch.training_experiment_config.source,
+        inv_stitch.training_experiment_config.target,
+    ) = (
+        inv_stitch.training_experiment_config.target,
+        inv_stitch.training_experiment_config.source,
+    )
+
+    # Swap source and target in test experiment
+    (
+        inv_stitch.test_experiment_config.source,
+        inv_stitch.test_experiment_config.target,
+    ) = (
+        inv_stitch.test_experiment_config.target,
+        inv_stitch.test_experiment_config.source,
+    )
+
+    # Assume stitching happened perfectly and substitute target for stitch_embeddings
+    inv_stitch.train_stitch_embeddings = inv_stitch.training_experiment_config.target
+    inv_stitch.test_stitch_embeddings = inv_stitch.test_experiment_config.target
+
+    return inv_stitch
+
+
+def save_inverse_stitch(stitch_summary: StitchSummary, suffix: str = "") -> StitchSummary:
+    """Creates a mock inverse stitch by reversing the source and target embeddings.
+
+    :param stitch_summary: Original StitchSummary to invert
+    :return: New StitchSummary with source/target reversed and appropriate adjustments
+    """
+    inv_stitch = create_inverse_stitch_summary(stitch_summary)
+    anal_dump(
+        inv_stitch,
+        output_dir="data/stitch_summaries",
+        filename=f"{inv_stitch.slug}{suffix}",
+    )
+
+    return inv_stitch
+
+
+def save_mock_stitch(suffix: str = "") -> StitchSummary:
     """Generates a mock StitchSummary to data using the name `{slug}{suffix}.json`."""
     mock_stitch_summary = create_example_stitch_summary(create_safetensors=True)
     validated_stitch_summary = StitchSummary.model_validate(mock_stitch_summary)
     logger.info(validated_stitch_summary)
-    anal_dump(validated_stitch_summary, output_dir="data/stitch_summaries", filename=f"{validated_stitch_summary.slug}{suffix}")
+    anal_dump(
+        validated_stitch_summary,
+        output_dir="data/stitch_summaries",
+        filename=f"{validated_stitch_summary.slug}{suffix}",
+    )
+    return validated_stitch_summary
 
 
 def main() -> None:
-    save_mock_stitch("_01")
-    save_mock_stitch("_02")
+    for suffix in ("_01", "_02", "_03"):
+        stitch_summary = save_mock_stitch(suffix=suffix)
+        _ = save_inverse_stitch(stitch_summary, suffix=suffix)
 
 
 if __name__ == "__main__":

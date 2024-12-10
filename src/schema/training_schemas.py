@@ -318,6 +318,24 @@ class StitchSummary(BaseModel):
             f"{self.architecture_slug}"
         )
 
+    @computed_field(repr=False, description="Description for internal use.")
+    @property
+    def description(self) -> str:
+        """This is the name that appears on file names."""
+        return (
+            f"This is a training/testing summary on the stitching model from "
+            f"{self.source_embedding_model_name} (A) to {self.target_embedding_model_name} (B) "
+            f"on the embeddings from the text dataset {self.text_dataset_name}"
+            f"with the architecture {self.architecture_name}."
+            "\n"
+            "Contained within this are the original embeddings info"
+            "({training/test}_experiment_config.SOURCE)"
+            ", what they were being trained to match "
+            "({training/test}_experiment_config.TARGET)"
+            ", and what they they actually produced "
+            "({training/test}_stitch_embeddings)"
+        )
+
     ### EXTRACT SUMMARY DATA ###
     @computed_field(repr=False)
     @property
@@ -399,3 +417,34 @@ class StitchSummary(BaseModel):
         description="The stitch embeddings resulting from feeding the original test embeddings through stitch model",
         repr=False,
     )
+
+    #### ALIASES (Won't be serialized) ###
+    @property
+    def train_source(self) -> EmbeddingDatasetInformation:
+        """Alias for training source embeddings."""
+        return self.training_experiment_config.source
+
+    @property
+    def train_target(self) -> EmbeddingDatasetInformation:
+        """Alias for training target embeddings."""
+        return self.training_experiment_config.target
+
+    @property
+    def train_result(self) -> EmbeddingDatasetInformation:
+        """Alias for training result embeddings."""
+        return self.train_stitch_embeddings
+
+    @property
+    def test_source(self) -> EmbeddingDatasetInformation:
+        """Alias for test source embeddings."""
+        return self.test_experiment_config.source
+
+    @property
+    def test_target(self) -> EmbeddingDatasetInformation:
+        """Alias for test target embeddings."""
+        return self.test_experiment_config.target
+
+    @property
+    def test_result(self) -> EmbeddingDatasetInformation:
+        """Alias for test result embeddings."""
+        return self.test_stitch_embeddings

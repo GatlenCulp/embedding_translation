@@ -1,7 +1,7 @@
 {
   "pydantic_schema": "StitchSummary",
   "name": "stitch_text-embedding-ada-002_to_instructor-xl_one-layer_02",
-  "created_at": "2024-12-10T00:51:10.093146",
+  "created_at": "2024-12-10T03:09:40.462378",
   "version": "1.0.0",
   "description": null,
   "data": {
@@ -369,6 +369,7 @@
     },
     "display_name": "Stitch text-embedding-ada-002 to instructor-xl using One-Layer Architecture",
     "slug": "stitch_text-embedding-ada-002_to_instructor-xl_one-layer",
+    "description": "This is a training/testing summary on the stitching model from text-embedding-ada-002 (A) to instructor-xl (B) on the embeddings from the text dataset hotpotqawith the architecture One-Layer.\nContained within this are the original embeddings info({training/test}_experiment_config.SOURCE), what they were being trained to match ({training/test}_experiment_config.TARGET), and what they they actually produced ({training/test}_stitch_embeddings)",
     "text_dataset_name": "hotpotqa",
     "source_embedding_model_name": "text-embedding-ada-002",
     "target_embedding_model_name": "instructor-xl",

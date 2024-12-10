@@ -23,7 +23,9 @@ For each experiment:
 
 """
 
+from collections.abc import Callable
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 import safetensors.numpy
@@ -88,9 +90,39 @@ class DataVizPipeline:
         save_figure(fig, f"embedding_viz_{stitch_summary.slug}")
 
     @staticmethod
-    def _get_losses(stitch_summaries: list[StitchSummary]) -> None:
-        for stitch_summary in stitch_summaries:
-            pass
+    def _get_matrix_from_stich_summary(
+        stitch_summaries: list[StitchSummary], stitch_fn: Callable[[StitchSummary], np.ndarray]
+    ) -> tuple[list[list[Any]], list[str], list[str]]:
+        """Matches stitch_summaries into a matrix, then calls stitch_fn on each.
+
+        Args:
+            stitch_summaries: List of stitch summaries to analyze
+            stitch_fn: Function to call on each stitch_summary to generate matrix entry
+
+        Returns:
+            tuple containing:
+            - list[list[Any]]: Matrix of results where rows=source models, cols=target models
+            - list[str]: Row labels (source model names)
+            - list[str]: Column labels (target model names)
+        """
+        # Get unique source and target models
+        source_models = sorted({s.source_embedding_model_name for s in stitch_summaries})
+        target_models = sorted({s.target_embedding_model_name for s in stitch_summaries})
+
+        # Initialize matrix with None values
+        matrix = [[None for _ in target_models] for _ in source_models]
+
+        # Create lookup dictionaries for indices
+        source_to_idx = {model: idx for idx, model in enumerate(source_models)}
+        target_to_idx = {model: idx for idx, model in enumerate(target_models)}
+
+        # Fill matrix
+        for stitch in stitch_summaries:
+            i = source_to_idx[stitch.source_embedding_model_name]
+            j = target_to_idx[stitch.target_embedding_model_name]
+            matrix[i][j] = stitch_fn(stitch)
+
+        return matrix, source_models, target_models
 
     @staticmethod
     def _run_loss_viz(stitch_summary: StitchSummary) -> None:
@@ -113,7 +145,12 @@ class DataVizPipeline:
             DataVizPipeline._load_data_as_stitch_summary(path) for path in paths_to_stitch_summaries
         ]
         for stitch_summary in stitch_summaries:
-            DataVizPipeline._run_isolated_eval(stitch_summary)
+            # DataVizPipeline._run_isolated_eval(stitch_summary)
+            pass
+        matrix, row_labels, col_labels = DataVizPipeline._get_matrix_from_stich_summary(
+            stitch_summaries,
+            lambda stitch: stitch,  # Just pass the stitch summary itself
+        )
 
 
 def main() -> None:
