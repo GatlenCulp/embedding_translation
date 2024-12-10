@@ -88,6 +88,11 @@ class DataVizPipeline:
         save_figure(fig, f"embedding_viz_{stitch_summary.slug}")
 
     @staticmethod
+    def _get_losses(stitch_summaries: list[StitchSummary]) -> None:
+        for stitch_summary in stitch_summaries:
+            pass
+
+    @staticmethod
     def _run_loss_viz(stitch_summary: StitchSummary) -> None:
         logger.debug(f"Running _run_loss_viz with {stitch_summary.display_name}")
         matrix = rng.random((10, 10))
@@ -95,22 +100,20 @@ class DataVizPipeline:
         save_figure(fig, f"loss_viz_{stitch_summary.slug}")
 
     @staticmethod
-    def _run_single(path_to_stitch_summary: Path) -> None:
-        stitch_summary = DataVizPipeline._load_data_as_stitch_summary(
-            data_path=path_to_stitch_summary
-        )
+    def _run_isolated_eval(stitch_summary: StitchSummary) -> None:
         anal_dump(stitch_summary, "test_visualize_embeddings")
 
         DataVizPipeline._run_embedding_viz(stitch_summary)
-        DataVizPipeline._run_loss_viz(stitch_summary)
 
     @staticmethod
     def run(paths_to_stitch_summaries: list[Path]) -> None:
         """Runs entire data visualization pipeline on saved data."""
         logger.info(f"Running DataViz pipeline with {len(paths_to_stitch_summaries)}")
-
-        for path_to_stitch_summary in paths_to_stitch_summaries:
-            DataVizPipeline._run_single(path_to_stitch_summary)
+        stitch_summaries: list[StitchSummary] = [
+            DataVizPipeline._load_data_as_stitch_summary(path) for path in paths_to_stitch_summaries
+        ]
+        for stitch_summary in stitch_summaries:
+            DataVizPipeline._run_isolated_eval(stitch_summary)
 
 
 def main() -> None:

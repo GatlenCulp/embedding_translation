@@ -1,7 +1,7 @@
 {
   "pydantic_schema": "StitchSummary",
   "name": "test_visualize_embeddings",
-  "created_at": "2024-12-10T01:01:50.631801",
+  "created_at": "2024-12-10T01:26:43.645620",
   "version": "1.0.0",
   "description": null,
   "data": {

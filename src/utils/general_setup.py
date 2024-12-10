@@ -3,7 +3,7 @@
 import numpy as np
 import rich.traceback
 
-from src.utils.logging import setup_logger
+from utils.log_config import setup_logger
 
 
 def setup(file_name: str) -> np.random.Generator:
