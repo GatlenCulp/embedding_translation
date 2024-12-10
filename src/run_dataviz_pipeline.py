@@ -161,25 +161,78 @@ class DataVizPipeline:
         ]
 
     @staticmethod
-    def _run_loss_viz(
-        matrix: list[list[StitchSummary]], row_labels: list[str], col_labels: list[str], architecture: str | None = None
+    def _run_mse_loss_viz(
+        matrix: list[list[StitchSummary]], row_labels: list[str], col_labels: list[str], architecture: str | None = None, epochs: int | None = None
     ) -> None:
         shape = (len(row_labels), len(col_labels))
-        logger.debug(f"Running _run_loss_viz on {shape} matrix")
+        logger.debug(f"Running _run_mse_loss_viz on {shape} matrix")
+        representative_sample = matrix[1][0]
         if architecture is None:
-            architecture = matrix[1][0].architecture_name
+            architecture = representative_sample.architecture_name
+        if epochs is None:
+            epochs = representative_sample.train_settings.num_epochs
         mse_matrix = DataVizPipeline._apply_to_matrix(matrix, lambda stitch: stitch.test_mse)
         fig = visualize_heatmap(
             matrix=mse_matrix,
             config={
                 "row_labels": row_labels,
                 "col_labels": col_labels,
-                "title": f"MSE Losses (Architecture: {architecture})",
+                "title": f"MSE Losses (Architecture: {architecture} trained over {epochs}))",
                 "xaxis_title": "Target Embedding Space",
                 "yaxis_title": "Starting Embedding Space",
             },
         )
-        save_figure(fig, f"loss_viz_{shape[0]}_by_{shape[1]}")
+        save_figure(fig, f"mse_loss_viz_{shape[0]}_by_{shape[1]}")
+
+    @staticmethod
+    def _run_mae_loss_viz(
+        matrix: list[list[StitchSummary]], row_labels: list[str], col_labels: list[str], architecture: str | None = None, epochs: int | None = None
+    ) -> None:
+        shape = (len(row_labels), len(col_labels))
+        logger.debug(f"Running _run_mae_loss_viz on {shape} matrix")
+        representative_sample = matrix[1][0]
+        if architecture is None:
+            architecture = representative_sample.architecture_name
+        if epochs is None:
+            epochs = representative_sample.train_settings.num_epochs
+        mae_matrix = DataVizPipeline._apply_to_matrix(matrix, lambda stitch: stitch.test_mae)
+        fig = visualize_heatmap(
+            matrix=mae_matrix,
+            config={
+                "row_labels": row_labels,
+                "col_labels": col_labels,
+                "title": f"MAE Losses (Architecture: {architecture} trained over {epochs})",
+                "xaxis_title": "Target Embedding Space",
+                "yaxis_title": "Starting Embedding Space",
+            },
+        )
+        save_figure(fig, f"mae_loss_viz_{shape[0]}_by_{shape[1]}")
+
+
+    @staticmethod
+    def _run_knn_accuracy_viz(
+        matrix: list[list[StitchSummary]], row_labels: list[str], col_labels: list[str], architecture: str | None = None, epochs: int | None = None
+    ) -> None:
+        shape = (len(row_labels), len(col_labels))
+        logger.debug(f"Running _run_mae_loss_viz on {shape} matrix")
+        representative_sample = matrix[1][0]
+        if architecture is None:
+            architecture = representative_sample.architecture_name
+        if epochs is None:
+            epochs = representative_sample.train_settings.num_epochs
+        mae_matrix = DataVizPipeline._apply_to_matrix(matrix, lambda stitch: stitch.test_mae)
+        fig = visualize_heatmap(
+            matrix=mae_matrix,
+            config={
+                "row_labels": row_labels,
+                "col_labels": col_labels,
+                "title": f"MAE Losses (Architecture: {architecture} trained over {epochs})",
+                "xaxis_title": "Target Embedding Space",
+                "yaxis_title": "Starting Embedding Space",
+            },
+        )
+        save_figure(fig, f"mae_loss_viz_{shape[0]}_by_{shape[1]}")
+
 
     @staticmethod
     def _run_isolated_eval(stitch_summary: StitchSummary) -> None:
@@ -200,7 +253,8 @@ class DataVizPipeline:
         matrix, row_labels, col_labels = DataVizPipeline._get_matrix_from_stich_summary(
             stitch_summaries,
         )
-        DataVizPipeline._run_loss_viz(matrix, row_labels, col_labels)
+        DataVizPipeline._run_mse_loss_viz(matrix, row_labels, col_labels)
+        DataVizPipeline._run_mae_loss_viz(matrix, row_labels, col_labels)
 
 
 def main() -> None:

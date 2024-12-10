@@ -31,7 +31,7 @@ class SemanticSearchEvaluation(BaseModel):
     k: int = Field(description="Number of neighbors the test data was labled with", gt=0)
 
     # Results
-    nearest_neighbors: dict[str, dict[str, int]] = Field(
+    nearest_neighbors: dict[str, dict[str, float]] = Field(
         description="Dictionary mapping test_dataset record_ids to their nearest training_dataset record_ids and the distance to each"
     )
     labels: dict[str, str] = Field(
