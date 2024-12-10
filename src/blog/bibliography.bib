@@ -1,7 +1,7 @@
 @inproceedings{andrew_deep_2013,
   title     = {Deep {Canonical} {Correlation} {Analysis}},
   url       = {https://proceedings.mlr.press/v28/andrew13.html},
-  abstract  = {We introduce Deep Canonical Correlation Analysis (DCCA), a method to learn complex nonlinear transformations of two views of data such that the resulting representations are highly linearly correlated. Parameters of both transformations are jointly learned to maximize the (regularized) total correlation.   It can be viewed as a nonlinear extension of the linear method {\textbackslash}emphcanonical correlation analysis (CCA).  It is an alternative to the nonparametric method {\textbackslash}emphkernel canonical correlation analysis (KCCA) for learning correlated nonlinear transformations. Unlike KCCA, DCCA does not require an inner product, and has the advantages of a parametric method: training time scales well with data size and the training data need not be referenced when computing the representations of unseen instances.  In experiments on two real-world datasets, we find that DCCA learns representations with significantly higher correlation than those learned by CCA and KCCA. We also introduce a novel non-saturating sigmoid function based on the cube root that may be useful more generally in feedforward neural networks.},
+  abstract  = {We introduce Deep Canonical Correlation Analysis (DCCA), a method to learn complex nonlinear transformations of two views of data such that the resulting representations are highly linearly correlated...},
   language  = {en},
   urldate   = {2024-11-15},
   booktitle = {Proceedings of the 30th {International} {Conference} on {Machine} {Learning}},
@@ -10,35 +10,31 @@
   month     = may,
   year      = {2013},
   note      = {ISSN: 1938-7228},
-  pages     = {1247--1255},
-  file      = {Full Text PDF:/Users/gat/Zotero/storage/8MVF6Z7I/Andrew et al. - 2013 - Deep Canonical Correlation Analysis.pdf:application/pdf}
+  pages     = {1247--1255}
 }
 
 @misc{andriushchenko_jailbreaking_2024,
   title     = {Jailbreaking {Leading} {Safety}-{Aligned} {LLMs} with {Simple} {Adaptive} {Attacks}},
   url       = {http://arxiv.org/abs/2404.02151},
   doi       = {10.48550/arXiv.2404.02151},
-  abstract  = {We show that even the most recent safety-aligned LLMs are not robust to simple adaptive jailbreaking attacks. First, we demonstrate how to successfully leverage access to logprobs for jailbreaking: we initially design an adversarial prompt template (sometimes adapted to the target LLM), and then we apply random search on a suffix to maximize a target logprob (e.g., of the token "Sure"), potentially with multiple restarts. In this way, we achieve 100\% attack success rate -- according to GPT-4 as a judge -- on Vicuna-13B, Mistral-7B, Phi-3-Mini, Nemotron-4-340B, Llama-2-Chat-7B/13B/70B, Llama-3-Instruct-8B, Gemma-7B, GPT-3.5, GPT-4o, and R2D2 from HarmBench that was adversarially trained against the GCG attack. We also show how to jailbreak all Claude models -- that do not expose logprobs -- via either a transfer or prefilling attack with a 100\% success rate. In addition, we show how to use random search on a restricted set of tokens for finding trojan strings in poisoned models -- a task that shares many similarities with jailbreaking -- which is the algorithm that brought us the first place in the SaTML'24 Trojan Detection Competition. The common theme behind these attacks is that adaptivity is crucial: different models are vulnerable to different prompting templates (e.g., R2D2 is very sensitive to in-context learning prompts), some models have unique vulnerabilities based on their APIs (e.g., prefilling for Claude), and in some settings, it is crucial to restrict the token search space based on prior knowledge (e.g., for trojan detection). For reproducibility purposes, we provide the code, logs, and jailbreak artifacts in the JailbreakBench format at https://github.com/tml-epfl/llm-adaptive-attacks.},
+  abstract  = {We show that even the most recent safety-aligned LLMs are not robust to simple adaptive jailbreaking attacks...},
   urldate   = {2024-11-15},
   publisher = {arXiv},
   author    = {Andriushchenko, Maksym and Croce, Francesco and Flammarion, Nicolas},
   month     = oct,
   year      = {2024},
   note      = {arXiv:2404.02151},
-  keywords  = {Computer Science - Machine Learning, Statistics - Machine Learning, Computer Science - Artificial Intelligence, Computer Science - Cryptography and Security},
-  file      = {Preprint PDF:files/52/Andriushchenko et al. - 2024 - Jailbreaking Leading Safety-Aligned LLMs with Simple Adaptive Attacks.pdf:application/pdf;Snapshot:files/53/2404.html:text/html}
+  keywords  = {Computer Science - Machine Learning, AI, Security}
 }
 
 @article{anthropic,
-  title      = {Towards {Monosemanticity}: {Decomposing} {Language} {Models} {With} {Dictionary} {Learning}},
-  author     = {Trenton Bricken, Adly Templeton, Joshua Batson, Brian Chen, Adam Jermyn, Tom Conerly, Nicholas L Turner, Cem Anil, Carson Denison, Amanda Askell, Robert Lasenby, Yifan Wu, Shauna Kravec, Nicholas Schiefer, Tim Maxwell, Nicholas Joseph, Alex Tamkin, Karina Nguyen, Brayden McLean, Josiah E Burke, Tristan Hume, Shan Carter, Tom Henighan, Chris Olah},
-  shorttitle = {Towards {Monosemanticity}},
-  url        = {https://www.anthropic.com/research/towards-monosemanticity-decomposing-language-models-with-dictionary-learning},
-  abstract   = {Anthropic is an AI safety and research company that's working to build reliable, interpretable, and steerable AI systems.},
-  language   = {en},
-  urldate    = {2024-11-15},
-  year       = {2023},
-  file       = {Snapshot:/Users/gat/Zotero/storage/6L2TSDSH/towards-monosemanticity-decomposing-language-models-with-dictionary-learning.html:text/html}
+  title    = {Towards {Monosemanticity}: {Decomposing} {Language} {Models} {With} {Dictionary} {Learning}},
+  author   = {Bricken, Trenton and Templeton, Adly and Batson, Joshua and Chen, Brian and Jermyn, Adam and Conerly, Tom and Turner, Nicholas L. and Anil, Cem and Denison, Carson and Askell, Amanda and Lasenby, Robert and Wu, Yifan and Kravec, Shauna and Schiefer, Nicholas and Maxwell, Tim and Joseph, Nicholas and Tamkin, Alex and Nguyen, Karina and McLean, Brayden and Burke, Josiah E. and Hume, Tristan and Carter, Shan and Henighan, Tom and Olah, Chris},
+  url      = {https://www.anthropic.com/research/towards-monosemanticity-decomposing-language-models-with-dictionary-learning},
+  abstract = {Anthropic is an AI safety and research company...},
+  language = {en},
+  urldate  = {2024-11-15},
+  year     = {2023}
 }
 
 @inproceedings{bansal_revisiting_2021,
@@ -50,8 +46,7 @@
   publisher = {Curran Associates, Inc.},
   author    = {Bansal, Yamini and Nakkiran, Preetum and Barak, Boaz},
   year      = {2021},
-  pages     = {225--236},
-  file      = {Full Text PDF:files/22/Bansal et al. - 2021 - Revisiting Model Stitching to Compare Neural Representations.pdf:application/pdf}
+  pages     = {225--236}
 }
 
 @misc{box-rep-sim,
@@ -72,48 +67,38 @@
   author   = {Cammarata, Nick and Goh, Gabriel and Carter, Shan and Schubert, Ludwig and Petrov, Michael and Olah, Chris},
   month    = jun,
   year     = {2020},
-  pages    = {e00024.003},
-  file     = {Snapshot:files/64/curve-detectors.html:text/html}
+  pages    = {e00024.003}
 }
 
 @misc{chao_jailbreaking_2024,
   title     = {Jailbreaking {Black} {Box} {Large} {Language} {Models} in {Twenty} {Queries}},
   url       = {http://arxiv.org/abs/2310.08419},
   doi       = {10.48550/arXiv.2310.08419},
-  abstract  = {There is growing interest in ensuring that large language models (LLMs) align with human values. However, the alignment of such models is vulnerable to adversarial jailbreaks, which coax LLMs into overriding their safety guardrails. The identification of these vulnerabilities is therefore instrumental in understanding inherent weaknesses and preventing future misuse. To this end, we propose Prompt Automatic Iterative Refinement (PAIR), an algorithm that generates semantic jailbreaks with only black-box access to an LLM. PAIR -- which is inspired by social engineering attacks -- uses an attacker LLM to automatically generate jailbreaks for a separate targeted LLM without human intervention. In this way, the attacker LLM iteratively queries the target LLM to update and refine a candidate jailbreak. Empirically, PAIR often requires fewer than twenty queries to produce a jailbreak, which is orders of magnitude more efficient than existing algorithms. PAIR also achieves competitive jailbreaking success rates and transferability on open and closed-source LLMs, including GPT-3.5/4, Vicuna, and Gemini.},
+  abstract  = {We propose Prompt Automatic Iterative Refinement (PAIR), a method that generates semantic jailbreaks with only black-box access...},
   urldate   = {2024-11-15},
   publisher = {arXiv},
   author    = {Chao, Patrick and Robey, Alexander and Dobriban, Edgar and Hassani, Hamed and Pappas, George J. and Wong, Eric},
   month     = jul,
   year      = {2024},
-  note      = {arXiv:2310.08419},
-  keywords  = {Computer Science - Machine Learning, Computer Science - Artificial Intelligence},
-  file      = {Preprint PDF:files/43/Chao et al. - 2024 - Jailbreaking Black Box Large Language Models in Twenty Queries.pdf:application/pdf;Snapshot:files/44/2310.html:text/html}
+  note      = {arXiv:2310.08419}
 }
+
 @misc{cunningham_sparse_2023,
   title     = {Sparse {Autoencoders} {Find} {Highly} {Interpretable} {Features} in {Language} {Models}},
   url       = {http://arxiv.org/abs/2309.08600},
   doi       = {10.48550/arXiv.2309.08600},
-  abstract  = {One of the roadblocks to a better understanding of neural networks' internals is {\textbackslash}textit\{polysemanticity\}, where neurons appear to activate in multiple, semantically distinct contexts. Polysemanticity prevents us from identifying concise, human-understandable explanations for what neural networks are doing internally. One hypothesised cause of polysemanticity is {\textbackslash}textit\{superposition\}, where neural networks represent more features than they have neurons by assigning features to an overcomplete set of directions in activation space, rather than to individual neurons. Here, we attempt to identify those directions, using sparse autoencoders to reconstruct the internal activations of a language model. These autoencoders learn sets of sparsely activating features that are more interpretable and monosemantic than directions identified by alternative approaches, where interpretability is measured by automated methods. Moreover, we show that with our learned set of features, we can pinpoint the features that are causally responsible for counterfactual behaviour on the indirect object identification task {\textbackslash}citep\{wang2022interpretability\} to a finer degree than previous decompositions. This work indicates that it is possible to resolve superposition in language models using a scalable, unsupervised method. Our method may serve as a foundation for future mechanistic interpretability work, which we hope will enable greater model transparency and steerability.},
+  abstract  = {We show that sparse autoencoders can resolve superposition in language models...},
   urldate   = {2024-11-15},
   publisher = {arXiv},
   author    = {Cunningham, Hoagy and Ewart, Aidan and Riggs, Logan and Huben, Robert and Sharkey, Lee},
   month     = oct,
   year      = {2023},
-  note      = {arXiv:2309.08600},
-  keywords  = {Computer Science - Machine Learning, Computer Science - Computation and Language},
-  file      = {Preprint PDF:files/55/Cunningham et al. - 2023 - Sparse Autoencoders Find Highly Interpretable Features in Language Models.pdf:application/pdf;Snapshot:files/56/2309.html:text/html}
+  note      = {arXiv:2309.08600}
 }
 
 @inproceedings{eberle-etal-2022-transformer,
   title     = {Do Transformer Models Show Similar Attention Patterns to Task-Specific Human Gaze?},
-  author    = {Eberle, Oliver  and
-               Brandl, Stephanie  and
-               Pilot, Jonas  and
-               S{\o}gaard, Anders},
-  editor    = {Muresan, Smaranda  and
-               Nakov, Preslav  and
-               Villavicencio, Aline},
+  author    = {Eberle, Oliver and Brandl, Stephanie and Pilot, Jonas and S{\o}gaard, Anders},
   booktitle = {Proceedings of the 60th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)},
   month     = may,
   year      = {2022},
@@ -121,8 +106,7 @@
   publisher = {Association for Computational Linguistics},
   url       = {https://aclanthology.org/2022.acl-long.296},
   doi       = {10.18653/v1/2022.acl-long.296},
-  pages     = {4295--4309},
-  abstract  = {Learned self-attention functions in state-of-the-art NLP models often correlate with human attention. We investigate whether self-attention in large-scale pre-trained language models is as predictive of human eye fixation patterns during task-reading as classical cognitive models of human attention. We compare attention functions across two task-specific reading datasets for sentiment analysis and relation extraction. We find the predictiveness of large-scale pre-trained self-attention for human attention depends on {`}what is in the tail{'}, e.g., the syntactic nature of rare contexts. Further, we observe that task-specific fine-tuning does not increase the correlation with human task-specific reading. Through an input reduction experiment we give complementary insights on the sparsity and fidelity trade-off, showing that lower-entropy attention vectors are more faithful.}
+  pages     = {4295--4309}
 }
 
 @article{haxby_decoding_2014,
@@ -131,7 +115,7 @@
   issn     = {0147-006X, 1545-4126},
   url      = {https://www.annualreviews.org/doi/10.1146/annurev-neuro-062012-170325},
   doi      = {10.1146/annurev-neuro-062012-170325},
-  abstract = {A major challenge for systems neuroscience is to break the neural code. Computational algorithms for encoding information into neural activity and extracting information from measured activity afford understanding of how percepts, memories, thought, and knowledge are represented in patterns of brain activity. The past decade and a half has seen significant advances in the development of methods for decoding human neural activity, such as multivariate pattern classification, representational similarity analysis, hyperalignment, and stimulus-model-based encoding and decoding. This article reviews these advances and integrates neural decoding methods into a common framework organized around the concept of high-dimensional representational spaces.},
+  abstract = {A review discussing methods for decoding human neural activity...},
   language = {en},
   number   = {1},
   urldate  = {2024-11-15},
@@ -143,140 +127,81 @@
 }
 
 @misc{hernandez_model_2023,
-  title      = {Model {Stitching}: {Looking} {For} {Functional} {Similarity} {Between} {Representations}},
-  shorttitle = {Model {Stitching}},
-  url        = {http://arxiv.org/abs/2303.11277},
-  doi        = {10.48550/arXiv.2303.11277},
-  abstract   = {Model stitching (Lenc \& Vedaldi 2015) is a compelling methodology to compare different neural network representations, because it allows us to measure to what degree they may be interchanged. We expand on a previous work from Bansal, Nakkiran \& Barak which used model stitching to compare representations of the same shapes learned by differently seeded and/or trained neural networks of the same architecture. Our contribution enables us to compare the representations learned by layers with different shapes from neural networks with different architectures. We subsequently reveal unexpected behavior of model stitching. Namely, we find that stitching, based on convolutions, for small ResNets, can reach high accuracy if those layers come later in the first (sender) network than in the second (receiver), even if those layers are far apart.},
-  urldate    = {2024-11-15},
-  publisher  = {arXiv},
-  author     = {Hernandez, Adriano and Dangovski, Rumen and Lu, Peter Y. and Soljacic, Marin},
-  month      = aug,
-  year       = {2023},
-  note       = {arXiv:2303.11277},
-  keywords   = {Computer Science - Machine Learning},
-  file       = {Preprint PDF:files/24/Hernandez et al. - 2023 - Model Stitching Looking For Functional Similarity Between Representations.pdf:application/pdf;Snapshot:files/25/2303.html:text/html}
+  title     = {Model {Stitching}: {Looking} {For} {Functional} {Similarity} {Between} {Representations}},
+  url       = {http://arxiv.org/abs/2303.11277},
+  doi       = {10.48550/arXiv.2303.11277},
+  abstract  = {Model stitching is a methodology to compare neural network representations by measuring their interchangeability...},
+  urldate   = {2024-11-15},
+  publisher = {arXiv},
+  author    = {Hernandez, Adriano and Dangovski, Rumen and Lu, Peter Y. and Soljacic, Marin},
+  month     = aug,
+  year      = {2023},
+  note      = {arXiv:2303.11277}
 }
 
 @misc{huh_platonic_2024,
   title     = {The {Platonic} {Representation} {Hypothesis}},
   url       = {http://arxiv.org/abs/2405.07987},
   doi       = {10.48550/arXiv.2405.07987},
-  abstract  = {We argue that representations in AI models, particularly deep networks, are converging. First, we survey many examples of convergence in the literature: over time and across multiple domains, the ways by which different neural networks represent data are becoming more aligned. Next, we demonstrate convergence across data modalities: as vision models and language models get larger, they measure distance between datapoints in a more and more alike way. We hypothesize that this convergence is driving toward a shared statistical model of reality, akin to Plato's concept of an ideal reality. We term such a representation the platonic representation and discuss several possible selective pressures toward it. Finally, we discuss the implications of these trends, their limitations, and counterexamples to our analysis.},
+  abstract  = {We argue that representations in AI models are converging, driving toward a shared statistical model of reality...},
   urldate   = {2024-11-15},
   publisher = {arXiv},
   author    = {Huh, Minyoung and Cheung, Brian and Wang, Tongzhou and Isola, Phillip},
   month     = jul,
   year      = {2024},
-  note      = {arXiv:2405.07987},
-  keywords  = {Computer Science - Machine Learning, Computer Science - Artificial Intelligence, Computer Science - Computer Vision and Pattern Recognition, Computer Science - Neural and Evolutionary Computing},
-  file      = {Preprint PDF:files/58/Huh et al. - 2024 - The Platonic Representation Hypothesis.pdf:application/pdf;Snapshot:files/59/2405.html:text/html}
-}
-
-@misc{huh_platonic_2024-1,
-  title     = {The {Platonic} {Representation} {Hypothesis}},
-  url       = {http://arxiv.org/abs/2405.07987},
-  doi       = {10.48550/arXiv.2405.07987},
-  abstract  = {We argue that representations in AI models, particularly deep networks, are converging. First, we survey many examples of convergence in the literature: over time and across multiple domains, the ways by which different neural networks represent data are becoming more aligned. Next, we demonstrate convergence across data modalities: as vision models and language models get larger, they measure distance between datapoints in a more and more alike way. We hypothesize that this convergence is driving toward a shared statistical model of reality, akin to Plato's concept of an ideal reality. We term such a representation the platonic representation and discuss several possible selective pressures toward it. Finally, we discuss the implications of these trends, their limitations, and counterexamples to our analysis.},
-  urldate   = {2024-11-15},
-  publisher = {arXiv},
-  author    = {Huh, Minyoung and Cheung, Brian and Wang, Tongzhou and Isola, Phillip},
-  month     = jul,
-  year      = {2024},
-  note      = {arXiv:2405.07987},
-  keywords  = {Computer Science - Artificial Intelligence, Computer Science - Computer Vision and Pattern Recognition, Computer Science - Machine Learning, Computer Science - Neural and Evolutionary Computing},
-  file      = {Preprint PDF:files/69/Huh et al. - 2024 - The Platonic Representation Hypothesis.pdf:application/pdf;Snapshot:files/70/2405.html:text/html}
+  note      = {arXiv:2405.07987}
 }
 
 @article{klabunde_similarity_2023,
-  title      = {Similarity of {Neural} {Network} {Models}: {A} {Survey} of {Functional} and {Representational} {Measures}},
-  copyright  = {arXiv.org perpetual, non-exclusive license},
-  shorttitle = {Similarity of {Neural} {Network} {Models}},
-  url        = {https://arxiv.org/abs/2305.06329},
-  doi        = {10.48550/ARXIV.2305.06329},
-  abstract   = {Measuring similarity of neural networks to understand and improve their behavior has become an issue of great importance and research interest. In this survey, we provide a comprehensive overview of two complementary perspectives of measuring neural network similarity: (i) representational similarity, which considers how activations of intermediate layers differ, and (ii) functional similarity, which considers how models differ in their outputs. In addition to providing detailed descriptions of existing measures, we summarize and discuss results on the properties of and relationships between these measures, and point to open research problems. We hope our work lays a foundation for more systematic research on the properties and applicability of similarity measures for neural network models.},
-  urldate    = {2024-11-15},
-  author     = {Klabunde, Max and Schumacher, Tobias and Strohmaier, Markus and Lemmerich, Florian},
-  year       = {2023},
-  note       = {Publisher: arXiv
-                Version Number: 3},
-  keywords   = {FOS: Computer and information sciences, Machine Learning (cs.LG)},
-  file       = {Full Text PDF:files/29/Klabunde et al. - 2023 - Similarity of Neural Network Models A Survey of Functional and Representational Measures.pdf:application/pdf}
+  title    = {Similarity of {Neural} {Network} {Models}: {A} {Survey} of {Functional} and {Representational} {Measures}},
+  url      = {https://arxiv.org/abs/2305.06329},
+  doi      = {10.48550/ARXIV.2305.06329},
+  abstract = {A survey of measures for functional and representational similarity in neural networks...},
+  urldate  = {2024-11-15},
+  author   = {Klabunde, Max and Schumacher, Tobias and Strohmaier, Markus and Lemmerich, Florian},
+  year     = {2023}
 }
 
 @article{Klabunde2023TowardsMR,
   title   = {Towards Measuring Representational Similarity of Large Language Models},
-  author  = {Max Klabunde and Mehdi Ben Amor and Michael Granitzer and Florian Lemmerich},
+  author  = {Klabunde, Max and Ben Amor, Mehdi and Granitzer, Michael and Lemmerich, Florian},
   journal = {ArXiv},
   year    = {2023},
   volume  = {abs/2312.02730},
-  url     = {https://api.semanticscholar.org/CorpusID:265658940}
+  url     = {https://arxiv.org/abs/2312.02730}
 }
 
 @misc{kornblith_similarity_2019,
   title     = {Similarity of {Neural} {Network} {Representations} {Revisited}},
   url       = {http://arxiv.org/abs/1905.00414},
   doi       = {10.48550/arXiv.1905.00414},
-  abstract  = {Recent work has sought to understand the behavior of neural networks by comparing representations between layers and between different trained models. We examine methods for comparing neural network representations based on canonical correlation analysis (CCA). We show that CCA belongs to a family of statistics for measuring multivariate similarity, but that neither CCA nor any other statistic that is invariant to invertible linear transformation can measure meaningful similarities between representations of higher dimension than the number of data points. We introduce a similarity index that measures the relationship between representational similarity matrices and does not suffer from this limitation. This similarity index is equivalent to centered kernel alignment (CKA) and is also closely connected to CCA. Unlike CCA, CKA can reliably identify correspondences between representations in networks trained from different initializations.},
+  abstract  = {Examines methods for comparing neural network representations based on CCA and introduces CKA...},
   urldate   = {2024-11-15},
   publisher = {arXiv},
   author    = {Kornblith, Simon and Norouzi, Mohammad and Lee, Honglak and Hinton, Geoffrey},
   month     = jul,
   year      = {2019},
-  note      = {arXiv:1905.00414},
-  keywords  = {Computer Science - Machine Learning, Quantitative Biology - Neurons and Cognition, Statistics - Machine Learning},
-  file      = {Preprint PDF:/Users/gat/Zotero/storage/W39KUJDS/Kornblith et al. - 2019 - Similarity of Neural Network Representations Revisited.pdf:application/pdf;Snapshot:/Users/gat/Zotero/storage/FW8VZ2CV/1905.html:text/html}
+  keywords  = {Machine Learning}
 }
 
-@misc{kornblith_similarity_2019,
-  title     = {Similarity of {Neural} {Network} {Representations} {Revisited}},
-  url       = {http://arxiv.org/abs/1905.00414},
-  doi       = {10.48550/arXiv.1905.00414},
-  abstract  = {Recent work has sought to understand the behavior of neural networks by comparing representations between layers and between different trained models. We examine methods for comparing neural network representations based on canonical correlation analysis (CCA). We show that CCA belongs to a family of statistics for measuring multivariate similarity, but that neither CCA nor any other statistic that is invariant to invertible linear transformation can measure meaningful similarities between representations of higher dimension than the number of data points. We introduce a similarity index that measures the relationship between representational similarity matrices and does not suffer from this limitation. This similarity index is equivalent to centered kernel alignment (CKA) and is also closely connected to CCA. Unlike CCA, CKA can reliably identify correspondences between representations in networks trained from different initializations.},
-  urldate   = {2024-11-15},
-  publisher = {arXiv},
-  author    = {Kornblith, Simon and Norouzi, Mohammad and Lee, Honglak and Hinton, Geoffrey},
-  month     = jul,
-  year      = {2019},
-  note      = {arXiv:1905.00414},
-  keywords  = {Computer Science - Machine Learning, Quantitative Biology - Neurons and Cognition, Statistics - Machine Learning},
-  file      = {Preprint PDF:files/5/Kornblith et al. - 2019 - Similarity of Neural Network Representations Revisited.pdf:application/pdf;Snapshot:files/6/1905.html:text/html}
-}
-
-@misc{kornblith_similarity_2019-1,
-  title     = {Similarity of {Neural} {Network} {Representations} {Revisited}},
-  url       = {http://arxiv.org/abs/1905.00414},
-  abstract  = {Recent work has sought to understand the behavior of neural networks by comparing representations between layers and between different trained models. We examine methods for comparing neural network representations based on canonical correlation analysis (CCA). We show that CCA belongs to a family of statistics for measuring multivariate similarity, but that neither CCA nor any other statistic that is invariant to invertible linear transformation can measure meaningful similarities between representations of higher dimension than the number of data points. We introduce a similarity index that measures the relationship between representational similarity matrices and does not suffer from this limitation. This similarity index is equivalent to centered kernel alignment (CKA) and is also closely connected to CCA. Unlike CCA, CKA can reliably identify correspondences between representations in networks trained from different initializations.},
-  urldate   = {2024-11-15},
-  publisher = {arXiv},
-  author    = {Kornblith, Simon and Norouzi, Mohammad and Lee, Honglak and Hinton, Geoffrey},
-  month     = jul,
-  year      = {2019},
-  doi       = {10.48550/arXiv.1905.00414},
-  keywords  = {Computer Science - Machine Learning, Quantitative Biology - Neurons and Cognition, Statistics - Machine Learning},
-  file      = {Preprint PDF:files/13/Kornblith et al. - 2019 - Similarity of Neural Network Representations Revisited.pdf:application/pdf;Snapshot:files/14/1905.html:text/html}
-}
 @article{kriegeskorte_representational_2008,
   title    = {Representational similarity analysis - connecting the branches of systems neuroscience},
   volume   = {2},
   issn     = {1662-5137},
-  url      = {https://www.frontiersin.org/journals/systems-neuroscience/articles/10.3389/neuro.06.004.2008/full},
+  url      = {https://www.frontiersin.org/articles/10.3389/neuro.06.004.2008/full},
   doi      = {10.3389/neuro.06.004.2008},
-  abstract = {{\textless}p{\textgreater}A fundamental challenge for systems neuroscience is to quantitatively relate its three major branches of research: brain-activity measurement, behavioral measurement, and computational modeling. Using measured brain-activity patterns to evaluate computational network models is complicated by the need to define the correspondency between the units of the model and the channels of the brain-activity data, e.g., single-cell recordings or voxels from functional magnetic resonance imaging (fMRI). Similar correspondency problems complicate relating activity patterns between different modalities of brain-activity measurement (e.g., fMRI and invasive or scalp electrophysiology), and between subjects and species. In order to bridge these divides, we suggest abstracting from the activity patterns themselves and computing representational dissimilarity matrices (RDMs), which characterize the information carried by a given representation in a brain or model. Building on a rich psychological and mathematical literature on similarity analysis, we propose a new experimental and data-analytical framework called representational similarity analysis (RSA), in which multi-channel measures of neural activity are quantitatively related to each other and to computational theory and behavior by comparing RDMs. We demonstrate RSA by relating representations of visual objects as measured with fMRI in early visual cortex and the fusiform face area to computational models spanning a wide range of complexities. The RDMs are simultaneously related via second-level application of multidimensional scaling and tested using randomization and bootstrap techniques. We discuss the broad potential of RSA, including novel approaches to experimental design, and argue that these ideas, which have deep roots in psychology and neuroscience, will allow the integrated quantitative analysis of data from all three branches, thus contributing to a more unified systems neuroscience.{\textless}/p{\textgreater}},
-  language = {English},
+  abstract = {A framework to quantitatively relate brain-activity measurement, behavior, and computational modeling via RSA...},
+  language = {en},
   urldate  = {2024-11-15},
   journal  = {Frontiers in Systems Neuroscience},
   author   = {Kriegeskorte, Nikolaus and Mur, Marieke and Bandettini, Peter A.},
   month    = nov,
-  year     = {2008},
-  note     = {Publisher: Frontiers},
-  keywords = {computational modeling, Electrophysiology, fMRI, population code, representation, Similarity},
-  file     = {Full Text PDF:files/16/Kriegeskorte et al. - 2008 - Representational similarity analysis - connecting the branches of systems neuroscience.pdf:application/pdf}
+  year     = {2008}
 }
 
 @misc{li2016convergentlearningdifferentneural,
   title         = {Convergent Learning: Do different neural networks learn the same representations?},
-  author        = {Yixuan Li and Jason Yosinski and Jeff Clune and Hod Lipson and John Hopcroft},
+  author        = {Li, Yixuan and Yosinski, Jason and Clune, Jeff and Lipson, Hod and Hopcroft, John},
   year          = {2016},
   eprint        = {1511.07543},
   archiveprefix = {arXiv},
@@ -285,77 +210,38 @@
 }
 
 @misc{mehrotra_tree_2024,
-  title      = {Tree of {Attacks}: {Jailbreaking} {Black}-{Box} {LLMs} {Automatically}},
-  shorttitle = {Tree of {Attacks}},
-  url        = {http://arxiv.org/abs/2312.02119},
-  abstract   = {While Large Language Models (LLMs) display versatile functionality, they continue to generate harmful, biased, and toxic content, as demonstrated by the prevalence of human-designed jailbreaks. In this work, we present Tree of Attacks with Pruning (TAP), an automated method for generating jailbreaks that only requires black-box access to the target LLM. TAP utilizes an attacker LLM to iteratively refine candidate (attack) prompts until one of the refined prompts jailbreaks the target. In addition, before sending prompts to the target, TAP assesses them and prunes the ones unlikely to result in jailbreaks, reducing the number of queries sent to the target LLM. In empirical evaluations, we observe that TAP generates prompts that jailbreak state-of-the-art LLMs (including GPT4-Turbo and GPT4o) for more than 80\% of the prompts. This significantly improves upon the previous state-of-the-art black-box methods for generating jailbreaks while using a smaller number of queries than them. Furthermore, TAP is also capable of jailbreaking LLMs protected by state-of-the-art guardrails, e.g., LlamaGuard.},
-  language   = {en},
-  urldate    = {2024-11-15},
-  publisher  = {arXiv},
-  author     = {Mehrotra, Anay and Zampetakis, Manolis and Kassianik, Paul and Nelson, Blaine and Anderson, Hyrum and Singer, Yaron and Karbasi, Amin},
-  month      = oct,
-  year       = {2024},
-  note       = {arXiv:2312.02119 [cs]},
-  keywords   = {Computer Science - Machine Learning, Statistics - Machine Learning, Computer Science - Artificial Intelligence, Computer Science - Computation and Language, Computer Science - Cryptography and Security},
-  file       = {PDF:files/45/Mehrotra et al. - 2024 - Tree of Attacks Jailbreaking Black-Box LLMs Automatically.pdf:application/pdf}
-}
-
-@misc{mehrotra_tree_2024-1,
-  title      = {Tree of {Attacks}: {Jailbreaking} {Black}-{Box} {LLMs} {Automatically}},
-  shorttitle = {Tree of {Attacks}},
-  url        = {http://arxiv.org/abs/2312.02119},
-  doi        = {10.48550/arXiv.2312.02119},
-  abstract   = {While Large Language Models (LLMs) display versatile functionality, they continue to generate harmful, biased, and toxic content, as demonstrated by the prevalence of human-designed jailbreaks. In this work, we present Tree of Attacks with Pruning (TAP), an automated method for generating jailbreaks that only requires black-box access to the target LLM. TAP utilizes an attacker LLM to iteratively refine candidate (attack) prompts until one of the refined prompts jailbreaks the target. In addition, before sending prompts to the target, TAP assesses them and prunes the ones unlikely to result in jailbreaks, reducing the number of queries sent to the target LLM. In empirical evaluations, we observe that TAP generates prompts that jailbreak state-of-the-art LLMs (including GPT4-Turbo and GPT4o) for more than 80\% of the prompts. This significantly improves upon the previous state-of-the-art black-box methods for generating jailbreaks while using a smaller number of queries than them. Furthermore, TAP is also capable of jailbreaking LLMs protected by state-of-the-art guardrails, e.g., LlamaGuard.},
-  urldate    = {2024-11-15},
-  publisher  = {arXiv},
-  author     = {Mehrotra, Anay and Zampetakis, Manolis and Kassianik, Paul and Nelson, Blaine and Anderson, Hyrum and Singer, Yaron and Karbasi, Amin},
-  month      = oct,
-  year       = {2024},
-  note       = {arXiv:2312.02119},
-  keywords   = {Computer Science - Machine Learning, Statistics - Machine Learning, Computer Science - Artificial Intelligence, Computer Science - Computation and Language, Computer Science - Cryptography and Security},
-  file       = {Preprint PDF:files/49/Mehrotra et al. - 2024 - Tree of Attacks Jailbreaking Black-Box LLMs Automatically.pdf:application/pdf;Snapshot:files/50/2312.html:text/html}
+  title     = {Tree of {Attacks}: {Jailbreaking} {Black}-{Box} {LLMs} {Automatically}},
+  url       = {http://arxiv.org/abs/2312.02119},
+  doi       = {10.48550/arXiv.2312.02119},
+  abstract  = {We present Tree of Attacks with Pruning (TAP), an automated method for generating jailbreaks that requires only black-box access...},
+  urldate   = {2024-11-15},
+  publisher = {arXiv},
+  author    = {Mehrotra, Anay and Zampetakis, Manolis and Kassianik, Paul and Nelson, Blaine and Anderson, Hyrum and Singer, Yaron and Karbasi, Amin},
+  month     = oct,
+  year      = {2024},
+  note      = {arXiv:2312.02119}
 }
 
 @inproceedings{morcos_insights_2018,
   title    = {Insights on representational similarity in neural networks with canonical correlation},
-  url      = {https://www.semanticscholar.org/paper/Insights-on-representational-similarity-in-neural-Morcos-Raghu/e5a95a679774e069e1e36d96f92bac6b93027118},
-  abstract = {Comparing different neural network representations and determining how representations evolve over time remain challenging open questions in our understanding of the function of neural networks. Comparing representations in neural networks is fundamentally difficult as the structure of representations varies greatly, even across groups of networks trained on identical tasks, and over the course of training. Here, we develop projection weighted CCA (Canonical Correlation Analysis) as a tool for understanding neural networks, building off of SVCCA, a recently proposed method (Raghu et al., 2017). We first improve the core method, showing how to differentiate between signal and noise, and then apply this technique to compare across a group of CNNs, demonstrating that networks which generalize converge to more similar representations than networks which memorize, that wider networks converge to more similar solutions than narrow networks, and that trained networks with identical topology but different learning rates converge to distinct clusters with diverse representations. We also investigate the representational dynamics of RNNs, across both training and sequential timesteps, finding that RNNs converge in a bottom-up pattern over the course of training and that the hidden state is highly variable over the course of a sequence, even when accounting for linear transforms. Together, these results provide new insights into the function of CNNs and RNNs, and demonstrate the utility of using CCA to understand representations.},
+  abstract = {Uses projection weighted CCA to study representational similarity across CNNs and RNNs...},
   urldate  = {2024-11-15},
-  author   = {Morcos, Ari S. and Raghu, M. and Bengio, Samy},
+  author   = {Morcos, Ari S. and Raghu, Maithra and Bengio, Samy},
   month    = jun,
-  year     = {2018},
-  file     = {Full Text PDF:files/37/Morcos et al. - 2018 - Insights on representational similarity in neural networks with canonical correlation.pdf:application/pdf}
+  year     = {2018}
 }
 
 @misc{nguyen_wide_2021,
-  title      = {Do {Wide} and {Deep} {Networks} {Learn} the {Same} {Things}? {Uncovering} {How} {Neural} {Network} {Representations} {Vary} with {Width} and {Depth}},
-  shorttitle = {Do {Wide} and {Deep} {Networks} {Learn} the {Same} {Things}?},
-  url        = {http://arxiv.org/abs/2010.15327},
-  doi        = {10.48550/arXiv.2010.15327},
-  abstract   = {A key factor in the success of deep neural networks is the ability to scale models to improve performance by varying the architecture depth and width. This simple property of neural network design has resulted in highly effective architectures for a variety of tasks. Nevertheless, there is limited understanding of effects of depth and width on the learned representations. In this paper, we study this fundamental question. We begin by investigating how varying depth and width affects model hidden representations, finding a characteristic block structure in the hidden representations of larger capacity (wider or deeper) models. We demonstrate that this block structure arises when model capacity is large relative to the size of the training set, and is indicative of the underlying layers preserving and propagating the dominant principal component of their representations. This discovery has important ramifications for features learned by different models, namely, representations outside the block structure are often similar across architectures with varying widths and depths, but the block structure is unique to each model. We analyze the output predictions of different model architectures, finding that even when the overall accuracy is similar, wide and deep models exhibit distinctive error patterns and variations across classes.},
-  urldate    = {2024-11-15},
-  publisher  = {arXiv},
-  author     = {Nguyen, Thao and Raghu, Maithra and Kornblith, Simon},
-  month      = apr,
-  year       = {2021},
-  note       = {arXiv:2010.15327},
-  keywords   = {Computer Science - Machine Learning},
-  file       = {Preprint PDF:files/2/Nguyen et al. - 2021 - Do Wide and Deep Networks Learn the Same Things Uncovering How Neural Network Representations Vary.pdf:application/pdf;Snapshot:files/3/2010.html:text/html}
-}
-
-@misc{nguyen_wide_2021-1,
-  title      = {Do {Wide} and {Deep} {Networks} {Learn} the {Same} {Things}? {Uncovering} {How} {Neural} {Network} {Representations} {Vary} with {Width} and {Depth}},
-  shorttitle = {Do {Wide} and {Deep} {Networks} {Learn} the {Same} {Things}?},
-  url        = {http://arxiv.org/abs/2010.15327},
-  abstract   = {A key factor in the success of deep neural networks is the ability to scale models to improve performance by varying the architecture depth and width. This simple property of neural network design has resulted in highly effective architectures for a variety of tasks. Nevertheless, there is limited understanding of effects of depth and width on the learned representations. In this paper, we study this fundamental question. We begin by investigating how varying depth and width affects model hidden representations, finding a characteristic block structure in the hidden representations of larger capacity (wider or deeper) models. We demonstrate that this block structure arises when model capacity is large relative to the size of the training set, and is indicative of the underlying layers preserving and propagating the dominant principal component of their representations. This discovery has important ramifications for features learned by different models, namely, representations outside the block structure are often similar across architectures with varying widths and depths, but the block structure is unique to each model. We analyze the output predictions of different model architectures, finding that even when the overall accuracy is similar, wide and deep models exhibit distinctive error patterns and variations across classes.},
-  urldate    = {2024-11-15},
-  publisher  = {arXiv},
-  author     = {Nguyen, Thao and Raghu, Maithra and Kornblith, Simon},
-  month      = apr,
-  year       = {2021},
-  doi        = {10.48550/arXiv.2010.15327},
-  keywords   = {Computer Science - Machine Learning},
-  file       = {Preprint PDF:files/9/Nguyen et al. - 2021 - Do Wide and Deep Networks Learn the Same Things Uncovering How Neural Network Representations Vary.pdf:application/pdf;Snapshot:files/10/2010.html:text/html}
+  title     = {Do {Wide} and {Deep} {Networks} {Learn} the {Same} {Things}? {Uncovering} {How} {Neural} {Network} {Representations} {Vary} with {Width} and {Depth}},
+  url       = {http://arxiv.org/abs/2010.15327},
+  doi       = {10.48550/arXiv.2010.15327},
+  abstract  = {Investigates how varying depth and width affects model hidden representations...},
+  urldate   = {2024-11-15},
+  publisher = {arXiv},
+  author    = {Nguyen, Thao and Raghu, Maithra and Kornblith, Simon},
+  month     = apr,
+  year      = {2021},
+  keywords  = {Computer Science - Machine Learning}
 }
 
 @misc{noauthor_20_scaling_lawspdf_nodate,
@@ -363,56 +249,44 @@
   url      = {https://www.dropbox.com/scl/fi/xhnv84zx78u0l8o1o4pce/20_scaling_laws.pdf?dl=0&e=1&rlkey=ucg32vqlxgadea3enzh90qaop},
   abstract = {Shared with Dropbox},
   language = {en},
-  urldate  = {2024-11-15},
-  journal  = {Dropbox},
-  file     = {Snapshot:/Users/gat/Zotero/storage/QH8RJ3SA/20_scaling_laws.html:text/html}
+  urldate  = {2024-11-15}
 }
 
 @misc{noauthor_canonical_2024,
-  title     = {Canonical correlation},
-  copyright = {Creative Commons Attribution-ShareAlike License},
-  url       = {https://en.wikipedia.org/w/index.php?title=Canonical_correlation&oldid=1246555266},
-  abstract  = {In statistics, canonical-correlation analysis (CCA), also called canonical variates analysis, is a way of inferring information from cross-covariance matrices. If we have two vectors X = (X1, ..., Xn) and Y = (Y1, ..., Ym)  of random variables, and there are correlations among the variables, then canonical-correlation analysis will find linear combinations of X and Y that have a maximum correlation with each other. T. R. Knapp notes that "virtually all of the commonly encountered parametric tests of significance can be treated as special cases of canonical-correlation analysis, which is the general procedure for investigating the relationships between two sets of variables." The method was first introduced by Harold Hotelling in 1936, although in the context of angles between flats the mathematical concept was published by Camille Jordan in 1875.
-               CCA is now a cornerstone of multivariate statistics and multi-view learning, and a great number of interpretations and extensions have been proposed, such as probabilistic CCA, sparse CCA, multi-view CCA, Deep CCA, and DeepGeoCCA. Unfortunately, perhaps because of its popularity, the literature can be inconsistent with notation, we attempt to highlight such inconsistencies in this article to help the reader make best use of the existing literature and techniques available.
-               Like its sister method PCA, CCA can be viewed in population form (corresponding to random vectors and their covariance matrices) or in sample form (corresponding to datasets and their sample covariance matrices). These two forms are almost exact analogues of each other, which is why their distinction is often overlooked, but they can behave very differently in high dimensional settings. We next give explicit mathematical definitions for the population problem and highlight the different objects in the so-called canonical decomposition - understanding the differences between these objects is crucial for interpretation of the technique.},
-  language  = {en},
-  urldate   = {2024-11-15},
-  journal   = {Wikipedia},
-  month     = sep,
-  year      = {2024},
-  note      = {Page Version ID: 1246555266},
-  file      = {Snapshot:/Users/gat/Zotero/storage/FDHQBCPT/Canonical_correlation.html:text/html}
+  title    = {Canonical correlation},
+  url      = {https://en.wikipedia.org/w/index.php?title=Canonical_correlation&oldid=1246555266},
+  abstract = {An explanation of canonical-correlation analysis (CCA)...},
+  language = {en},
+  urldate  = {2024-11-15},
+  journal  = {Wikipedia},
+  month    = sep,
+  year     = {2024}
 }
 
 @misc{noauthor_mantis_nodate,
   title   = {Mantis},
   url     = {https://home.withmantis.com/},
-  urldate = {2024-11-15},
-  file    = {Mantis:/Users/gat/Zotero/storage/2FAYY6IR/home.withmantis.com.html:text/html}
+  urldate = {2024-11-15}
 }
 
 @misc{noauthor_model_nodate,
-  title      = {‪{Model} {Stitching}: {Looking} {For} {Functional} {Similarity} {Between} {Representations}‬},
-  shorttitle = {‪{Model} {Stitching}},
-  url        = {https://scholar.google.com/citations?view_op=view_citation&hl=en&user=evT71z8AAAAJ&citation_for_view=evT71z8AAAAJ:u5HHmVD_uO8C},
-  abstract   = {‪A Hernandez, R Dangovski, PY Lu, M Soljacic‬, ‪SVRHM 2022 Workshop@ NeurIPS‬ - ‪Cited by 3‬},
-  urldate    = {2024-11-15},
-  file       = {Snapshot:/Users/gat/Zotero/storage/RNWSUS8T/citations.html:text/html}
+  title    = {Model {Stitching}: {Looking} {For} {Functional} {Similarity} {Between} {Representations}},
+  url      = {https://scholar.google.com/citations?view_op=view_citation&hl=en&user=evT71z8AAAAJ&citation_for_view=evT71z8AAAAJ:u5HHmVD_uO8C},
+  abstract = {Short summary referencing model stitching and functional similarity.},
+  urldate  = {2024-11-15}
 }
 
 @misc{noauthor_representational_nodate,
-  title   = {Representational {Similarity} in {Neural} {Networks} {\textbar} {Elicit}},
+  title   = {Representational {Similarity} in {Neural} {Networks} | {Elicit}},
   url     = {https://elicit.com/notebook/ca8a9992-4e9e-4478-b991-7229cd640ba2#18080183417d138da0d0dc40dc987bc5},
-  urldate = {2024-11-15},
-  file    = {Representational Similarity in Neural Networks | Elicit:files/34/ca8a9992-4e9e-4478-b991-7229cd640ba2.html:text/html}
+  urldate = {2024-11-15}
 }
 
 @misc{noauthor_simon_nodate,
-  title    = {Simon {Kornblith} - {AI} + {Science} {Talk} {Part} 1\&2.pdf {\textbar} {Powered} by {Box}},
+  title    = {Simon {Kornblith} - {AI} + {Science} {Talk} {Part} 1\&2.pdf | Powered by Box},
   url      = {https://uchicago.app.box.com/s/ymyt6ushjg94l1aauutgwq256w30mhbg},
   language = {en-US},
-  urldate  = {2024-11-15},
-  file     = {Snapshot:/Users/gat/Zotero/storage/YW3834NL/ymyt6ushjg94l1aauutgwq256w30mhbg.html:text/html}
+  urldate  = {2024-11-15}
 }
 
 @article{olah2020zoom,
@@ -431,32 +305,30 @@
   journal = {Transformer Circuits Thread},
   note    = {https://transformer-circuits.pub/2022/in-context-learning-and-induction-heads/index.html}
 }
+
 @misc{pliny_elder-pliniusl1b3rt4s_2024,
-  title     = {elder-plinius/{L1B3RT4S}},
-  copyright = {AGPL-3.0},
-  url       = {https://github.com/elder-plinius/L1B3RT4S},
-  abstract  = {TOTALLY HARMLESS LIBERATION PROMPTS FOR GOOD LIL AI'S},
-  urldate   = {2024-11-15},
-  author    = {pliny},
-  month     = nov,
-  year      = {2024},
-  note      = {original-date: 2024-04-08T16:49:12Z},
-  keywords  = {ai, ai-jailbreak, ai-liberation, artificial-intelligence, jailbreak, liberation, llm, prompts, red-teaming, roleplay, scenario}
+  title    = {elder-plinius/{L1B3RT4S}},
+  url      = {https://github.com/elder-plinius/L1B3RT4S},
+  abstract = {TOTALLY HARMLESS LIBERATION PROMPTS FOR GOOD LIL AI'S},
+  urldate  = {2024-11-15},
+  author   = {pliny},
+  month    = nov,
+  year     = {2024}
 }
+
 @misc{radford_learning_2021,
   title     = {Learning {Transferable} {Visual} {Models} {From} {Natural} {Language} {Supervision}},
   url       = {http://arxiv.org/abs/2103.00020},
   doi       = {10.48550/arXiv.2103.00020},
-  abstract  = {State-of-the-art computer vision systems are trained to predict a fixed set of predetermined object categories. This restricted form of supervision limits their generality and usability since additional labeled data is needed to specify any other visual concept. Learning directly from raw text about images is a promising alternative which leverages a much broader source of supervision. We demonstrate that the simple pre-training task of predicting which caption goes with which image is an efficient and scalable way to learn SOTA image representations from scratch on a dataset of 400 million (image, text) pairs collected from the internet. After pre-training, natural language is used to reference learned visual concepts (or describe new ones) enabling zero-shot transfer of the model to downstream tasks. We study the performance of this approach by benchmarking on over 30 different existing computer vision datasets, spanning tasks such as OCR, action recognition in videos, geo-localization, and many types of fine-grained object classification. The model transfers non-trivially to most tasks and is often competitive with a fully supervised baseline without the need for any dataset specific training. For instance, we match the accuracy of the original ResNet-50 on ImageNet zero-shot without needing to use any of the 1.28 million training examples it was trained on. We release our code and pre-trained model weights at https://github.com/OpenAI/CLIP.},
+  abstract  = {Introduces CLIP, trained on (image, text) pairs to learn visual representations...},
   urldate   = {2024-11-15},
   publisher = {arXiv},
   author    = {Radford, Alec and Kim, Jong Wook and Hallacy, Chris and Ramesh, Aditya and Goh, Gabriel and Agarwal, Sandhini and Sastry, Girish and Askell, Amanda and Mishkin, Pamela and Clark, Jack and Krueger, Gretchen and Sutskever, Ilya},
   month     = feb,
   year      = {2021},
-  note      = {arXiv:2103.00020},
-  keywords  = {Computer Science - Machine Learning, Computer Science - Computer Vision and Pattern Recognition},
-  file      = {Preprint PDF:files/66/Radford et al. - 2021 - Learning Transferable Visual Models From Natural Language Supervision.pdf:application/pdf;Snapshot:files/67/2103.html:text/html}
+  keywords  = {Computer Vision, Representation Learning}
 }
+
 @article{schubert2021high-low,
   author  = {Schubert, Ludwig and Voss, Chelsea and Cammarata, Nick and Goh, Gabriel and Olah, Chris},
   title   = {High-Low Frequency Detectors},
@@ -465,13 +337,14 @@
   note    = {https://distill.pub/2020/circuits/frequency-edges},
   doi     = {10.23915/distill.00024.005}
 }
+
 @article{yousefnezhad_deep_2021,
   title    = {Deep {Representational} {Similarity} {Learning} for {Analyzing} {Neural} {Signatures} in {Task}-based {fMRI} {Dataset}},
   volume   = {19},
   issn     = {1539-2791, 1559-0089},
   url      = {https://link.springer.com/10.1007/s12021-020-09494-4},
   doi      = {10.1007/s12021-020-09494-4},
-  abstract = {Similarity analysis is one of the crucial steps in most fMRI studies. Representational Similarity Analysis (RSA) can measure similarities of neural signatures generated by different cognitive states. This paper develops Deep Representational Similarity Learning (DRSL), a deep extension of RSA that is appropriate for analyzing similarities between various cognitive tasks in fMRI datasets with a large number of subjects, and high-dimensionality — such as whole-brain images. Unlike the previous methods, DRSL is not limited by a linear transformation or a restricted fixed nonlinear kernel function — such as Gaussian kernel. DRSL utilizes a multi-layer neural network for mapping neural responses to linear space, where this network can implement a customized nonlinear transformation for each subject separately. Furthermore, utilizing a gradient-based optimization in DRSL can significantly reduce runtime of analysis on large datasets because it uses a batch of samples in each iteration rather than all neural responses to find an optimal solution. Empirical studies on multi-subject fMRI datasets with various tasks — including visual stimuli, decision making, flavor, and working memory — confirm that the proposed method achieves superior performance to other state-of-the-art RSA algorithms.},
+  abstract = {Introduces DRSL, a deep extension of RSA suitable for analyzing similarities between cognitive tasks in large fMRI datasets...},
   language = {en},
   number   = {3},
   urldate  = {2024-11-15},
@@ -481,33 +354,27 @@
   year     = {2021},
   pages    = {417--431}
 }
+
 @misc{zhou_object_2015,
   title     = {Object {Detectors} {Emerge} in {Deep} {Scene} {CNNs}},
   url       = {http://arxiv.org/abs/1412.6856},
   doi       = {10.48550/arXiv.1412.6856},
-  abstract  = {With the success of new computational architectures for visual processing, such as convolutional neural networks (CNN) and access to image databases with millions of labeled examples (e.g., ImageNet, Places), the state of the art in computer vision is advancing rapidly. One important factor for continued progress is to understand the representations that are learned by the inner layers of these deep architectures. Here we show that object detectors emerge from training CNNs to perform scene classification. As scenes are composed of objects, the CNN for scene classification automatically discovers meaningful objects detectors, representative of the learned scene categories. With object detectors emerging as a result of learning to recognize scenes, our work demonstrates that the same network can perform both scene recognition and object localization in a single forward-pass, without ever having been explicitly taught the notion of objects.},
+  abstract  = {Demonstrates that object detectors emerge as a byproduct of training CNNs for scene classification...},
   urldate   = {2024-11-15},
   publisher = {arXiv},
   author    = {Zhou, Bolei and Khosla, Aditya and Lapedriza, Agata and Oliva, Aude and Torralba, Antonio},
   month     = apr,
-  year      = {2015},
-  note      = {arXiv:1412.6856},
-  keywords  = {Computer Science - Computer Vision and Pattern Recognition, Computer Science - Neural and Evolutionary Computing},
-  file      = {Preprint PDF:files/61/Zhou et al. - 2015 - Object Detectors Emerge in Deep Scene CNNs.pdf:application/pdf;Snapshot:files/62/1412.html:text/html}
+  year      = {2015}
 }
-
 
 @misc{zou_universal_2023,
   title     = {Universal and {Transferable} {Adversarial} {Attacks} on {Aligned} {Language} {Models}},
   url       = {http://arxiv.org/abs/2307.15043},
   doi       = {10.48550/arXiv.2307.15043},
-  abstract  = {Because "out-of-the-box" large language models are capable of generating a great deal of objectionable content, recent work has focused on aligning these models in an attempt to prevent undesirable generation. While there has been some success at circumventing these measures -- so-called "jailbreaks" against LLMs -- these attacks have required significant human ingenuity and are brittle in practice. In this paper, we propose a simple and effective attack method that causes aligned language models to generate objectionable behaviors. Specifically, our approach finds a suffix that, when attached to a wide range of queries for an LLM to produce objectionable content, aims to maximize the probability that the model produces an affirmative response (rather than refusing to answer). However, instead of relying on manual engineering, our approach automatically produces these adversarial suffixes by a combination of greedy and gradient-based search techniques, and also improves over past automatic prompt generation methods. Surprisingly, we find that the adversarial prompts generated by our approach are quite transferable, including to black-box, publicly released LLMs. Specifically, we train an adversarial attack suffix on multiple prompts (i.e., queries asking for many different types of objectionable content), as well as multiple models (in our case, Vicuna-7B and 13B). When doing so, the resulting attack suffix is able to induce objectionable content in the public interfaces to ChatGPT, Bard, and Claude, as well as open source LLMs such as LLaMA-2-Chat, Pythia, Falcon, and others. In total, this work significantly advances the state-of-the-art in adversarial attacks against aligned language models, raising important questions about how such systems can be prevented from producing objectionable information. Code is available at github.com/llm-attacks/llm-attacks.},
+  abstract  = {Proposes an approach to automatically produce adversarial suffixes for LLMs, achieving attacks that transfer to many models...},
   urldate   = {2024-11-15},
   publisher = {arXiv},
   author    = {Zou, Andy and Wang, Zifan and Carlini, Nicholas and Nasr, Milad and Kolter, J. Zico and Fredrikson, Matt},
   month     = dec,
-  year      = {2023},
-  note      = {arXiv:2307.15043},
-  keywords  = {Computer Science - Machine Learning, Computer Science - Artificial Intelligence, Computer Science - Computation and Language, Computer Science - Cryptography and Security},
-  file      = {Preprint PDF:files/39/Zou et al. - 2023 - Universal and Transferable Adversarial Attacks on Aligned Language Models.pdf:application/pdf;Snapshot:files/40/2307.html:text/html}
+  year      = {2023}
 }
