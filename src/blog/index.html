@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <meta charset="utf-8" />
 <script src="https://distill.pub/template.v1.js"></script>
-<!-- Add MathJax support -->
 <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+/>
 <script
   id="MathJax-script"
   async
@@ -27,13 +30,12 @@
     },
   };
 </script>
+
 <!-- https://distill.pub/guide/ -->
 <!-- 
 TODO: 
-1. Number each of the headings (01, 02, etc)
 2. Fix citations
 3. Add pretty graphics (maybe html/css animations created by claude)
-4. Embed plotly plots automatically
  -->
 <!-- 
  Examples
@@ -71,200 +73,347 @@ We can
     The Alignment of Semantic Representations Across Language Models
   </h1>
 
-  <div class="">
-    <h2 id="abstract">Abstract</h2>
-    <p>
-      Recent advances in Large Language Models (LLMs) have demonstrated their
-      remarkable ability to capture and manipulate semantic information. In this
-      work, we investigated a fundamental question: to what extent do different
-      LLMs learn similar semantic representations despite variations in
-      architecture, training data, and initialization? Our findings reveal
-      significant alignment between models' semantic spaces, with implications
-      for both theoretical understanding and practical applications.
-    </p>
+  <div
+    class="authors-section l-middle"
+    style="text-align: center; margin-top: 2em"
+  >
+    <div class="authors" style="margin-bottom: 1em">
+      <span style="font-size: 1.2em">
+        <a
+          href="https://gatlen.notion.site"
+          style="text-decoration: none; color: #333"
+          >Gatlen Culp</a
+        >
+        <span style="color: #666; margin: 0 0.5em">·</span>
+        <a
+          href="https://superurop.mit.edu/scholars/adriano-hernandez/"
+          style="text-decoration: none; color: #333"
+          >Adriano Hernandez</a
+        >
+      </span>
+    </div>
+
+    <div class="affiliations" style="color: #666; margin-bottom: 1em">
+      Massachusetts Institute of Technology
+    </div>
+
+    <div class="date-info" style="color: #888; font-size: 0.9em">
+      Published December 10th, 2024
+    </div>
   </div>
 
+  <h2 id="abstract">Abstract</h2>
+  <p>
+    Recent advances in Large Language Models (LLMs) have demonstrated their
+    remarkable ability to capture and manipulate semantic information. In this
+    work, we investigated a fundamental question: to what extent do different
+    LLMs learn similar semantic representations despite variations in
+    architecture, training data, and initialization? Our findings reveal
+    significant alignment between models' semantic spaces, with implications for
+    both theoretical understanding and practical applications.
+  </p>
+  <!-- Honestly I don't know if this is such a great abstract. -->
+
   <h2 id="introduction">01 Background</h2>
+  <!-- Think we maybe jumped into this a bit too soon
+  <hr/> cool 
+  -->
 
   <p>
-    There is ample evidence supporting the idea that representations may be
+    There is ample evidence supporting the idea that text representations may be
     similar to some degree. Some notable observations include:
   </p>
-  <ul>
-    <li>
-      <b>Functionally similar components across neural networks:</b> For
-      instance, induction heads have been observed in different language
-      transformer architectures <dt-cite key="olsson2022context"></dt-cite>.
-      Similar patterns have also been found in vision models
-      <dt-cite key="cammarata_curve_2020"></dt-cite>
-      <dt-cite key="schubert2021high-low"></dt-cite>
-      <dt-cite key="olah2020zoom"></dt-cite>. We believe that such functionally
-      similar components correspond to similar internal representations, and the
-      language setting is relatively less explored.
+  <!-- TODO: Add icons or something but this onslaught of bullets is a lot -->
+  <ul style="list-style: none; padding-left: 0">
+    <li
+      style="
+        margin-bottom: 1.5em;
+        display: flex;
+        gap: 1em;
+        align-items: baseline;
+      "
+    >
+      <i
+        class="fas fa-network-wired"
+        style="color: #666; width: 1.5em; text-align: center"
+      ></i>
+      <div>
+        <b>Functionally similar components across neural networks:</b> For
+        instance, induction heads have been observed in different language
+        transformer architectures <dt-cite key="olsson2022context"></dt-cite>.
+        Similar patterns have also been found in vision models
+        <dt-cite key="cammarata_curve_2020"></dt-cite>
+        <dt-cite key="schubert2021high-low"></dt-cite>
+        <dt-cite key="olah2020zoom"></dt-cite>. We believe that such
+        functionally similar components correspond to similar internal
+        representations, and the language setting is relatively less explored.
+      </div>
     </li>
-    <li>
-      <b>Consistent representations and behaviors:</b> Previous work has shown
-      that different transformers exhibit consistent attention patterns for
-      similar semantic concepts
-      <dt-cite key="eberle-etal-2022-transformer"></dt-cite>, often aligning
-      with human judgments. In vision, linear mappings can translate between
-      representation spaces of different models, enabling interoperability
-      <dt-cite key="hernandez_model_2023"></dt-cite>
-      <dt-cite key="bansal_revisiting_2021"></dt-cite>. While there is debate
-      and complexity in this field
-      <dt-cite key="Klabunde2023TowardsMR"></dt-cite>, these findings suggest a
-      common representational substrate across models.
+    <li
+      style="
+        margin-bottom: 1.5em;
+        display: flex;
+        gap: 1em;
+        align-items: baseline;
+      "
+    >
+      <i
+        class="fas fa-brain"
+        style="color: #666; width: 1.5em; text-align: center"
+      ></i>
+      <div>
+        <b>Consistent representations and behaviors:</b> Previous work has shown
+        that different transformers exhibit consistent attention patterns for
+        similar semantic concepts
+        <dt-cite key="eberle-etal-2022-transformer"></dt-cite>, often aligning
+        with human judgments. In vision, linear mappings can translate between
+        representation spaces of different models, enabling interoperability
+        <dt-cite key="hernandez_model_2023"></dt-cite>
+        <dt-cite key="bansal_revisiting_2021"></dt-cite>. While there is debate
+        and complexity in this field
+        <dt-cite key="Klabunde2023TowardsMR"></dt-cite>, these findings suggest
+        a common representational substrate across models.
+      </div>
     </li>
-    <li>
-      <b>Attack transferability:</b> Red-teaming and jailbreak prompts often
-      transfer across different models, including black-box ones
-      <dt-cite key="zou_universal_2023"></dt-cite>
-      <dt-cite key="andriushchenko_jailbreaking_2024"></dt-cite>
-      <dt-cite key="chao_jailbreaking_2024"></dt-cite>
-      <dt-cite key="mehrotra_tree_2024"></dt-cite>. Such robustness of attacks
-      may be due to underlying shared representational patterns, indicating that
-      multiple models rely on similar internal structures.
+    <li
+      style="
+        margin-bottom: 1.5em;
+        display: flex;
+        gap: 1em;
+        align-items: baseline;
+      "
+    >
+      <i
+        class="fas fa-shield-halved"
+        style="color: #666; width: 1.5em; text-align: center"
+      ></i>
+      <div>
+        <b>Attack transferability:</b> Red-teaming and jailbreak prompts often
+        transfer across different models, including black-box ones
+        <dt-cite key="zou_universal_2023"></dt-cite>
+        <dt-cite key="andriushchenko_jailbreaking_2024"></dt-cite>
+        <dt-cite key="chao_jailbreaking_2024"></dt-cite>
+        <dt-cite key="mehrotra_tree_2024"></dt-cite>. Such robustness of attacks
+        may be due to underlying shared representational patterns, indicating
+        that multiple models rely on similar internal structures.
+      </div>
+    </li>
+    <li
+      style="
+        margin-bottom: 1.5em;
+        display: flex;
+        gap: 1em;
+        align-items: baseline;
+      "
+    >
+      <i
+        class="fas fa-layer-group"
+        style="color: #666; width: 1.5em; text-align: center"
+      ></i>
+      <div>
+        <b>Mechanistic interpretability (MI) and feature superposition:</b> The
+        feature superposition theory
+        <dt-cite key="anthropic"></dt-cite> suggests that multiple semantic
+        features may be entangled within individual neurons, hinting at
+        underlying "platonic" semantic features. Sparse Autoencoders (SAEs)
+        <dt-cite key="cunningham_sparse_2023"></dt-cite> further support the
+        idea of universal features that different models might compress
+        differently.
+      </div>
+    </li>
+    <li
+      style="
+        margin-bottom: 1.5em;
+        display: flex;
+        gap: 1em;
+        align-items: baseline;
+      "
+    >
+      <i
+        class="fas fa-chart-line"
+        style="color: #666; width: 1.5em; text-align: center"
+      ></i>
+      <div>
+        <b>Representational similarity tools:</b> Techniques such as CKA
+        <dt-cite key="kornblith_similarity_2019"></dt-cite>, stitching
+        <dt-cite key="bansal_revisiting_2021"></dt-cite>, CCA
+        <dt-cite key="noauthor_canonical_2024"></dt-cite>
+        <dt-cite key="andrew_deep_2013"></dt-cite>, Orthogonal Procrustes
+        <dt-cite key="box-rep-sim"></dt-cite>, and others, along with
+        representational similarity analysis in neuroscience
+        <dt-cite key="haxby_decoding_2014"></dt-cite>
+        <dt-cite key="kriegeskorte_representational_2008"></dt-cite>
+        <dt-cite key="yousefnezhad_deep_2021"></dt-cite>, have matured, making
+        it feasible to systematically investigate such questions.
+      </div>
     </li>
   </ul>
-
-  <p>We also note the following two points:</p>
-  <ol>
-    <li>
-      <b>Mechanistic interpretability (MI) and feature superposition:</b> The
-      feature superposition theory <dt-cite key="anthropic"></dt-cite> suggests
-      that multiple semantic features may be entangled within individual
-      neurons, hinting at underlying "platonic" semantic features. Sparse
-      Autoencoders (SAEs)
-      <dt-cite key="cunningham_sparse_2023"></dt-cite> further support the idea
-      of universal features that different models might compress differently.
-    </li>
-    <li>
-      <b>Representational similarity tools:</b> Techniques such as CKA
-      <dt-cite key="kornblith_similarity_2019"></dt-cite>, stitching
-      <dt-cite key="bansal_revisiting_2021"></dt-cite>, CCA
-      <dt-cite key="noauthor_canonical_2024"></dt-cite>
-      <dt-cite key="andrew_deep_2013"></dt-cite>, Orthogonal Procrustes
-      <dt-cite key="box-rep-sim"></dt-cite>, and others, along with
-      representational similarity analysis in neuroscience
-      <dt-cite key="haxby_decoding_2014"></dt-cite>
-      <dt-cite key="kriegeskorte_representational_2008"></dt-cite>
-      <dt-cite key="yousefnezhad_deep_2021"></dt-cite>, have matured, making it
-      feasible to systematically investigate such questions.
-    </li>
-  </ol>
 
   <p>
     If representations are indeed (approximately) universal, we can leverage
-    this to cheaply translate between different models' embeddings. Our project
-    proposes to explore how similar these representations are across commonly
-    used embedding models (e.g., popular HuggingFace models, finetuned Llama
-    variants, OpenAI embeddings) and attempt to map one model's embedding space
-    onto another's. This would have both theoretical and practical implications,
-    as discussed next.
+    this to cheaply translate between different models' embeddings. In related
+    literature, this translation process is known as <b>stitching</b> and thus
+    it will be referred to as such for the remainder of this post.
+    <!-- TODO: @Adriano, explain a bit more -->
+
+    Our project proposes to explore how similar these representations are across
+    commonly used embedding models
+    <!-- (e.g., (TODO)) -->
+    and attempt to map one model's embedding space onto another's.
+    <dt-fn>
+      "Embedding space" here and throughout this article refers to a standard of
+      embedding data such that embeddings sharing the same space can be used for
+      similar applications without tweaking the algorithm.
+      <!-- Awful explanation, need to rewrite -->
+    </dt-fn>
+  </p>
+
+  <p>
+    As a bit of terminology, will name embedding spaces after the original
+    embedding model that maps data onto that space. Embeddings generated from
+    the original model will be called <b>native embeddings</b> while embeddings
+    generated by another model and mapped onto the embedding space of the native
+    model will be called <b>stitched embeddings</b>.
+    <!-- Note: feels slightly out of place but seems good to provide at some point -->
+  </p>
+
+  <p>
+    <!-- TODO: Talk about owler https://arxiv.org/pdf/2407.08275v1 
+     https://github.com/casparil/embedding-model-similarity
+     We also probably need to note that we borrowed some of their code
+    -->
   </p>
 
   <h2 id="motivation">02 Motivation</h2>
+  <div class="l-page side">
+    <figure>
+      <img
+        src="./figs/mantis.gif"
+        alt="Exploring a dataset with MantisAI"
+        style="width: 100%; max-height: 400px; object-fit: cover"
+        frameborder="0"
+      />
+    </figure>
+    <figcaption>Exploring a dataset with MantisAI</figcaption>
+  </div>
+  <h3 id="origin">Origin</h3>
   <p>
-    This project was inspired by practical challenges encountered in MantisAI
-    <dt-cite key="noauthor_mantis_nodate"></dt-cite>, where reusing embeddings
-    from cheaper models while benefiting from richer embeddings of more
-    expensive models would be ideal. Instead of re-computing all embeddings for
-    a large dataset, we aim to learn a translation function that can map old
-    embeddings into the new embedding space, significantly reducing compute
-    costs. This translation could be critical in scenarios where we have a
-    massive amount of precomputed embeddings but want to upgrade to a more
-    semantically rich model without starting from scratch.
+    This project originated from challenges at
+    <a href="https://home.withmantis.com/">MantisAI</a>
+    <dt-cite key="noauthor_mantis_nodate"></dt-cite>, where we needed to
+    efficiently translate between different embedding models. Having a stitching
+    model to translate. Rather than re-computing embeddings for large datasets
+    when upgrading models, in training an stitching model to map between
+    embedding spaces, significantly reducing computational overhead and
+    compatability from one data visualization workspace to another.
   </p>
 
-  <p>
-    <b>In sum:</b> We will try to train a translation layer and also evaluate
-    representational similarity measures to see if this approach is feasible and
-    theoretically meaningful. If successful, the translation approach can serve
-    both practical data visualization use-cases and advance our understanding of
-    universal semantic features.
-  </p>
-
-  <p><b>Theoretical Significance:</b></p>
+  <h3 id="theoretical-significance">Theoretical Significance</h3>
   <ul>
+    <!-- https://phillipi.github.io/prh/ -->
     <li>
-      <b>Platonic Representation Hypothesis:</b> Validate or refine the idea
-      that LLMs share universal features.
+      <b
+        ><a href="https://phillipi.github.io/prh/"
+          >Platonic Representation Hypothesis</a
+        >:</b
+      >
+      Gather more evidence as to whether models tend to learn similar
+      representations even when trained on different datasets.
+      <!-- Note: might want to include some background on these datasets -->
     </li>
-    <li>
+    <!-- <li>
       <b>Model Compression Understanding:</b> Understand if smaller models are
-      essentially compressed versions of larger models.
-    </li>
-    <li>
+      essentially compressed versions of larger models.? idk if we include
+    </li> -->
+    <!-- <li>
       <b>Architecture Impact:</b> Investigate how architecture choices affect
-      semantic representation alignment.
-    </li>
+      semantic representation alignment. Idk if we include either, didn't do much work on Architecture effects.
+    </li> -->
   </ul>
 
-  <p><b>Practical Applications:</b></p>
+  <h3 id="practical-applications">Practical Applications</h3>
   <ul>
     <li>
-      <b>Cost-Effective Computing:</b> Avoid re-embedding entire datasets when
-      switching models.
+      <b>Cost-Effective Computing:</b> Avoid the financial and time costs of
+      having to re-embed entire datasets for interoperability.
     </li>
     <li>
       <b>Standardized Embeddings:</b> Contribute towards a universal embedding
       space standard.
     </li>
-    <li>
+    <!-- <li>
       <b>Model Distillation:</b> Gain insights on how semantic information
       scales with model size, informing better distillation approaches.
-    </li>
+    </li> -->
   </ul>
 
-  <p><b>Research Questions:</b></p>
+  <h3 id="research-questions">Research Questions</h3>
+  <!-- Gah this whole section is so mid -->
   <ul>
-    <li>How does translation loss vary with model scale?</li>
+    <li>How does stitching loss vary with model scale?</li>
     <li>Which domains are easiest/hardest to translate?</li>
     <li>Can we identify patterns in hard-to-translate samples?</li>
     <li>How complex must translation functions be?</li>
   </ul>
 
   <h2 id="methodology">03 Methodology</h2>
+  <h3 id="methodology-overview">Overview</h3>
+
+  <p>
+    We systematically evaluated embedding translation across different model architectures, 
+    embedding spaces, and datasets. Our methodology follows a rigorous experimental setup:
+  </p>
+
   <ol>
     <li>
-      <b>Translation Architecture:</b> We implemented a translation function
-      \(T:\mathcal{E}_A \to \mathcal{E}_B\) and trained it to minimize
-      \(\|T(f_A(x)) - f_B(x)\|_2\), where \(\mathcal{E}_A,\mathcal{E}_B\) are
-      embedding spaces from two different models \(f_A,f_B\).
-    </li>
-    <li>
-      <b>Model Selection:</b> We evaluated translation quality across:
+      <h3 id="translation-architecture">Stitch Architecture</h3>
+      We implemented translation functions between embedding spaces, testing three key architectures:
       <ul>
-        <li>Small models (BERT-base, GPT-2)</li>
-        <li>Medium models (T5-large, RoBERTa-large)</li>
-        <li>Large models (GPT-3, PaLM)</li>
+        <li>Linear transformations (baseline)</li>
+        <li>Single-layer MLP</li> 
+        <li>Two-layer MLP 
+          <!-- TODO: Uncomment if we did this
+          
+          with varying hidden dimensions:
+          <ul>
+            <li>Full rank (matching input/output)</li>
+            <li>8x Full rank hidden dimensions</li>
+            <li>32x Full rank hidden dimensions</li>
+          </ul> -->
+        </li>
       </ul>
     </li>
+
     <li>
-      <b>Translation Architectures:</b> We tested:
+      <h3 id="model-selection">Model Selection</h3>
+      We evaluated translation quality across several foundation models:
       <ul>
-        <li>Linear mappings (baseline)</li>
-        <li>Multi-layer perceptrons (2-5 layers)</li>
-        <li>Attention-based translators</li>
+        <li>Small T5 model</li>
+        <li>Small Hugging Face models</li>
+        <li>GPT embeddings</li>
+        <li>Medium-sized models (e.g., Llama-base)</li>
       </ul>
     </li>
+
     <li>
-      <b>Evaluation Data:</b> We used:
+      <h3 id="evaluation-data">Evaluation Data</h3>
+      <p>
+        For each dataset, we used an 80-20 train/test split to evaluate performance.
+        Our evaluation pipeline included:
+      </p>
       <ul>
-        <li>100K news articles from Reuters</li>
-        <li>50K academic papers from arXiv</li>
-        <li>25K code snippets from GitHub</li>
-        <li>1M general web text samples</li>
+        <li>Training using MSE loss</li>
+        <li>Generating embeddings on test datasets</li>
+        <li>Creating UMAP visualizations with prompts/labels</li>
+        <li>Generating comparison tables for:
+          <ul>
+            <li>MSE across model pairs and ranks</li>
+            <li>k-NN edit distance metrics</li>
+          </ul>
+        </li>
       </ul>
     </li>
   </ol>
-
-  <p>
-    We also plan to use representational similarity techniques (CKA, CCA, etc.)
-    to further analyze and corroborate our findings. This will help us
-    understand if models share underlying representations and how robust these
-    similarities are.
-  </p>
 
   <h2 id="results">04 Results and Analysis</h2>
   <p>
@@ -441,7 +590,81 @@ We can
   </p>
 </dt-article>
 
-<dt-appendix> </dt-appendix>
+<dt-appendix>
+  <h3>📚 Cite this work</h3>
+
+  <p style="margin-bottom: 1em">If you found this work useful, please cite:</p>
+
+  <div
+    style="
+      background: #f5f6f7;
+      padding: 1.5em;
+      border-radius: 8px;
+      margin-bottom: 1em;
+    "
+  >
+    <pre
+      style="
+        font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+        font-size: 0.9em;
+        margin: 0;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+      "
+    >
+@article{culp_hern_embed_stitch_2024,
+    title     = {The Alignment of Semantic Representations Across Language Models},
+    author    = {Culp, Gatlen* and Hernandez, Adriano*},
+    note      = {* Equal Contribution},
+    journal   = {MIT Deep Learning Blogs},
+    year      = {2024},
+    month     = {dec},
+    url       = {https://gatlen.notion.site/blog/semantic-alignment},
+    abstract  = {Recent advances in Large Language Models (LLMs) have demonstrated their
+                remarkable ability to capture and manipulate semantic information. This
+                work investigates the extent to which different LLMs learn similar
+                semantic representations despite variations in architecture, training
+                data, and initialization, revealing significant alignment between
+                models' semantic spaces.}
+}</pre
+    >
+  </div>
+
+  <!-- <div style="display: flex; gap: 1em; margin-top: 1em">
+    <a
+      href="#"
+      style="
+        text-decoration: none;
+        padding: 0.5em 1em;
+        background: #007bff;
+        color: white;
+        border-radius: 4px;
+      "
+    >
+      📋 Copy Citation
+    </a>
+    <a
+      href="#"
+      style="
+        text-decoration: none;
+        padding: 0.5em 1em;
+        background: #28a745;
+        color: white;
+        border-radius: 4px;
+      "
+    >
+      📥 Download BibTeX
+    </a>
+  </div> -->
+
+  <h3>💻 Use our code</h3>
+  <p style="margin-top: 1.5em; font-size: 0.9em; color: #666">
+    Our code will eventually be made public here:
+    <a href="https://github.com/GatlenCulp/embedding_translation"
+      >https://github.com/GatlenCulp/embedding_translation</a
+    >
+  </p>
+</dt-appendix>
 
 <script type="text/bibliography">
   @inproceedings{andrew_deep_2013,

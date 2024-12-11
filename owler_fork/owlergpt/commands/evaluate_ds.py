@@ -7,10 +7,18 @@ import torch
 
 from chromadb.config import DEFAULT_TENANT
 from flask import current_app
-from owlergpt.utils import (choose_dataset_folders, filter_collections, calculate_metric, self_sim_score, nn_sim,
-                            plot_results, get_embedding_indices)
+from owlergpt.utils import (
+    choose_dataset_folders,
+    filter_collections,
+    calculate_metric,
+    self_sim_score,
+    nn_sim,
+    plot_results,
+    get_embedding_indices,
+)
 from owlergpt.utils import AVAILABLE_METRICS, MATCH_DIM_METRICS, NEAREST_NEIGHBORS
 from tqdm import tqdm
+
 
 @current_app.cli.command("eval_ds")
 def evaluate_ds_collections() -> None:
@@ -20,7 +28,9 @@ def evaluate_ds_collections() -> None:
     """
     environ = os.environ
     default_chunk_size = int(environ.get("VECTOR_SEARCH_SENTENCE_DEFAULT_CHUNK_SIZE", 100))
-    target_dimension = int(environ.get("EMBEDDING_DIMENSION"))  # Target dimension for the embeddings
+    target_dimension = int(
+        environ.get("EMBEDDING_DIMENSION")
+    )  # Target dimension for the embeddings
     chunk_size = environ.get("CHUNK_SIZE")
     center = bool(int(environ.get("MEAN_CENTER")))
     batch_size = int(environ.get("BATCH_SIZE"))
@@ -58,7 +68,7 @@ def evaluate_ds_collections() -> None:
         click.echo("No collections found.")
         return
     else:
-        print("Found collections", collections) # XXX
+        print("Found collections", collections)  # XXX
 
     collections = [c.name for c in collections]
     collections.sort()
@@ -74,7 +84,9 @@ def evaluate_ds_collections() -> None:
         return
 
     verb = "compare" if match_dimension else "retrieve"
-    num_embeds = click.prompt(f"Please choose the number of embeddings to {verb} or 0 to {verb} all", type=int)
+    num_embeds = click.prompt(
+        f"Please choose the number of embeddings to {verb} or 0 to {verb} all", type=int
+    )
     num_queries = 1
 
     if num_embeds < 0:
@@ -89,15 +101,26 @@ def evaluate_ds_collections() -> None:
         return
 
     print("Filtering collections...")
-    collections_info, valid_collections = filter_collections(chroma_client, collections, target_dimension, chunk_size,
-                                                             default_chunk_size, selected_folder, match_dimension)
+    collections_info, valid_collections = filter_collections(
+        chroma_client,
+        collections,
+        target_dimension,
+        chunk_size,
+        default_chunk_size,
+        selected_folder,
+        match_dimension,
+    )
 
     if not valid_collections:
-        click.echo(f"No valid collections for chunk size {chunk_size} and dataset {selected_folder} found.")
+        click.echo(
+            f"No valid collections for chunk size {chunk_size} and dataset {selected_folder} found."
+        )
         return
     else:
-        click.echo(f"Found valid collections {valid_collections} for dataset {selected_folder} with chunk size "
-                   f"{chunk_size}")
+        click.echo(
+            f"Found valid collections {valid_collections} for dataset {selected_folder} with chunk size "
+            f"{chunk_size}"
+        )
 
     mc = "_mc_" if center else "_"
     if baseline:
@@ -126,7 +149,11 @@ def evaluate_ds_collections() -> None:
         for i in range(len(collections)):
             model = collections[i]["embedding_model"]
             models.append(model)
-            for j in tqdm(range(len(collections)), desc=f"Similarity for model {model}", total=len(collections)):
+            for j in tqdm(
+                range(len(collections)),
+                desc=f"Similarity for model {model}",
+                total=len(collections),
+            ):
                 if i == j and not baseline:
                     if metric in NEAREST_NEIGHBORS:
                         lines[i][j] = self_sim_score(metric)
@@ -142,7 +169,9 @@ def evaluate_ds_collections() -> None:
                         for num in range(k):
                             results[num].append(results[num][j * len(collections) + i])
                         for key in sims_at_early_k:
-                            sims_at_early_k[key][0].append(sims_at_early_k[key][0][j * len(collections) + i])
+                            sims_at_early_k[key][0].append(
+                                sims_at_early_k[key][0][j * len(collections) + i]
+                            )
                     else:
                         results[0].append(results[0][j * len(collections) + i])
                 else:
@@ -153,7 +182,9 @@ def evaluate_ds_collections() -> None:
                     embeddings2 = collection2.get(include=["metadatas", "embeddings"])
                     meta1 = embeddings1["metadatas"]
                     meta2 = embeddings2["metadatas"]
-                    idx1, idx2, query_inds1, query_inds2 = get_embedding_indices(meta1, meta2, num_queries)
+                    idx1, idx2, query_inds1, query_inds2 = get_embedding_indices(
+                        meta1, meta2, num_queries
+                    )
 
                     if not match_dimension:
                         queries1 = np.array(embeddings1["embeddings"])[query_inds1]
@@ -161,8 +192,20 @@ def evaluate_ds_collections() -> None:
 
                     embeddings1 = torch.tensor(embeddings1["embeddings"])[idx1]
                     embeddings2 = torch.tensor(embeddings2["embeddings"])[idx2]
-                    sim, fig = calculate_metric(embeddings1, embeddings2, queries1, queries2, metric, batch_size,
-                                                device, num_embeds, k, nn_metric, center, baseline)
+                    sim, fig = calculate_metric(
+                        embeddings1,
+                        embeddings2,
+                        queries1,
+                        queries2,
+                        metric,
+                        batch_size,
+                        device,
+                        num_embeds,
+                        k,
+                        nn_metric,
+                        center,
+                        baseline,
+                    )
 
                     if metric in NEAREST_NEIGHBORS:
                         lines[i][j] = sim
@@ -178,7 +221,8 @@ def evaluate_ds_collections() -> None:
                         output_filename = os.path.join(
                             environ["VISUALIZATIONS_FOLDER_PATH"],
                             f"{dataset}_{chunk_size}_{collections[i]['embedding_model']}_vs_"
-                            f"{collections[j]['embedding_model']}_{num_embeds}_{num_queries}{mc}{metric}.html")
+                            f"{collections[j]['embedding_model']}_{num_embeds}_{num_queries}{mc}{metric}.html",
+                        )
                         fig.write_html(output_filename)
 
         if metric not in MATCH_DIM_METRICS:
@@ -187,14 +231,25 @@ def evaluate_ds_collections() -> None:
                 plot_results(lines, file_name, environ["VISUALIZATIONS_FOLDER_PATH"], models, k)
                 for key in sims_at_early_k:
                     file_name = f"{dataset}_{chunk_size}_{num_embeds}{mc}{metric}_top{key}"
-                    plot_results(sims_at_early_k[key], file_name, environ["VISUALIZATIONS_FOLDER_PATH"], models, k)
+                    plot_results(
+                        sims_at_early_k[key],
+                        file_name,
+                        environ["VISUALIZATIONS_FOLDER_PATH"],
+                        models,
+                        k,
+                    )
             else:
                 plot_results(results, file_name, environ["VISUALIZATIONS_FOLDER_PATH"], models, k)
 
         for i in results:
             j = i + 1
-            df = pd.DataFrame(np.array(results[i]).reshape(len(collections), len(collections)), index=models,
-                              columns=models)
-            path = os.path.join(environ["EVAL_FOLDER_PATH"], f"{dataset}_{chunk_size}_{num_embeds}_{num_queries}_top{j}"
-                                                             f"{mc}{metric}.csv")
+            df = pd.DataFrame(
+                np.array(results[i]).reshape(len(collections), len(collections)),
+                index=models,
+                columns=models,
+            )
+            path = os.path.join(
+                environ["EVAL_FOLDER_PATH"],
+                f"{dataset}_{chunk_size}_{num_embeds}_{num_queries}_top{j}" f"{mc}{metric}.csv",
+            )
             df.to_csv(path)
