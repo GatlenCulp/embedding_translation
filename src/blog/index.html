@@ -463,7 +463,7 @@ We can
       <h3 id="evaluation-data">Evaluation Data</h3>
       <p>
         For each dataset, we used an 80-20 train/test split to evaluate performance.
-        You should know the following key facts from our embedding pipeline:
+        You should know the following key facts from our embedding:
       </p>
 
 <!-- DATASETS = [
@@ -476,8 +476,10 @@ We can
 "trec-covid", # too much -> 20K
 ] -->
       <ul>
-        <li>We use the following datasts: arguana, fiqa, scidocs, nfcorpus, hotpotqa, trec-covid. These are available from MTEB, a commonly-used set of datasets and bencchmarks for semantic search and text embedding models.</li>
-        <li>As our key metrics we use training using MSE loss and CKA.</li>
+        <li>We use the following <b>datasets</b>datasts: arguana, fiqa, scidocs, nfcorpus, hotpotqa, trec-covid. These are available from MTEB, a commonly-used set of datasets and bencchmarks for semantic search and text embedding models.</li>
+        <li>As our key <b>metrics</b> we use training using MSE loss and CKA. The MSE loss is observed
+        both for the training and test datasets. The CKA metric is observed on the test datasets. CKA is used to
+      initially corroborate the findings from previous work. We include controls with random.</li>
         <!-- <li>Generating embeddings on test datasets</li> -->
         <li>To visualize a sanity check we create UMAP visualizations with prompts/labels</li>
         <li>We generate comparison tables for:
