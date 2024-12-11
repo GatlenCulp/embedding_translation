@@ -245,9 +245,7 @@ class ModelGenerator:
 
         return embedding_datasets
 
-
-# %%
-if __name__ == "__main__":
+def main() -> None:
     ### GET TRAINING LOGS ###
     # Save
     train_loss_dir = PROJ_ROOT / "data" / "arguana_loss"
@@ -304,7 +302,6 @@ if __name__ == "__main__":
     save_figure(fig, f"mae_matrix_on{text_dataset_name}", output_dir=PROJ_ROOT / "data" / "figs")
     logger.info(mae_matrix)
 
-
 # %%
-# no org
-Path("embeddings") / "dataset" / "model" / "train or validation" / "linear.safetensors"
+if __name__ == "__main__":
+    main()
