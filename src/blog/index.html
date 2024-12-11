@@ -133,7 +133,7 @@ We can
     There is ample evidence supporting the idea that neural network representations may be
     aligned to some degree. Some notable observations include:
   </p>
-  <!-- TODO: Add icons or something but this onslaught of bullets is a lot -->
+   <!-- TODO: Maybe include the thing about embedding triangulation pascal mentioned -->
     <ul style="list-style: none; padding-left: 0">
       <li
         style="
@@ -275,10 +275,15 @@ We can
     literature, this translation process is called <b>stitching</b> <dt-cite key="lenc2015understandingimagerepresentationsmeasuring"></dt-cite>
     and thus we make use of that terminology. We work in the domain of text embeddings,
     where models convert text into dense vectors. We call the vector-space of the
-    embeddings the <b>embedding space</b>. Our stitches are linear transformers between
+    embeddings the <b>embedding space</b>.
+    <!-- TODO: This is not an accurate use of vector space. If distinct embedding models A and B produce 1024 dim vectors,
+     they are technically the same vector space mathematically. We might need a better definition of embedding space. -->
+    Our stitches are linear transformers between
     pairs of embedding spaces. They are directional.
-    <!-- TODO: @Adriano, explain a bit more -->
+    <!-- Linear transformations? Also if we are using layers, maybe note. -->
+  </p>
 
+  <p>
     Previous work explored <dt-cite key="caspari2024benchmarksevaluatingembeddingmodel"></dt-cite>
     do a minor extent whether the representations may be similar for these different
     embedding spaces. We extend their work by training stitches between pairs of
@@ -286,31 +291,43 @@ We can
     to be similar in a way that we call <b>connectivity-aligned</b>. This termonology
     highlights the notion that the two spaces are linearly mappable-between; we base this terminology on the literature, where this sort of
     linear alignment is called <b>stitch connectivity</b> <dt-cite key="lenc2015understandingimagerepresentationsmeasuring"></dt-cite>.
-    
+    <!-- Gatlen Note: Imo feels a bit of a weird name. Feels kind of similar to saying the stitch S is a approximately an isomorphism between embedding spaces. -->
+  </p>
+  <p>
     If two spaces are connectivity-aligned, then there are features in each that linearly
     correlate (by definition). An easy way to interpret this, is that one space is using different "units"
     and that they are stored in different dimensions of the dense vector (though one space may also combine
     multiple dimensions). While connectivity-aligned spaces can differ in how they prioritize features, there
-    is a sense in which they have found the same ones. We believe, confirming or disconfirming this will help the research
-    community motivate future interpretability and deep learning science research; specifically, connectivity-alignment
-    could, for example, open the path for faster training algorithms which exploit this alignment to hone in on more
+    is a sense in which they have found the same ones. 
+    <!-- Gatlen Note: Again, not sure if we should move forward with the linear algebra
+     analogy described above or maybe take some kind of information theoretic approach(?)
+     I think about this a decent amount in terms of compression-->
+  </p>
+  <p>
+    We believe, gathering evidence to support whether embedding spaces are or are not connectivity-aligned will
+    motivate future interpretability and deep learning science research; for example, connectivity-alignment could
+    open the path for faster training algorithms which exploit this alignment to hone in on more
     "correct" representations. In the nearer term, a confirmation of this fact could enable cross-dataset stitching when
     merging visualization datasets (i.e. semantic clustering). Since linear layers are around 1/20th the size and
     computational span of the embedding models we consider and often much less by proportion, stitching could enable
     this sort of merging to be 1/20th as expensive.
-
-    Our key hypothesis is that textual models <b>are connectivity-aligned</b>. The results confirm that it is a common phenomenon across a subset of commonly-used models,
+    <!-- Maybe move this to motivations. -->
+  </p>
+  <p>
+    Our key hypothesis is that textual models of similar quality (parameters, training data size, etc.) are connectivity-aligned.
+    The results confirm that it is a common phenomenon across a subset of commonly-used models,
     but some more research is merited to expand our coverage of models and datasets. Moreover, uncovering qualitative
     differences in more depth could be fruitful. 
-
-  <!-- <p>
+  </p>
+  <!-- Note: feels slightly out of place but seems good to provide at some point
+  <p>
     As a bit of terminology, will name embedding spaces after the original
     embedding model that maps data onto that space. Embeddings generated from
     the original model will be called <b>native embeddings</b> while embeddings
     generated by another model and mapped onto the embedding space of the native
     model will be called <b>stitched embeddings</b>.
   </p> -->
-  <!-- Note: feels slightly out of place but seems good to provide at some point -->
+  <!-- Also this feel quite repetitive gahh -->
 
 
   <p>
@@ -321,6 +338,7 @@ We can
   </p>
 
   <h2 id="motivation">02 Motivation</h2>
+  <!-- This section feels very oddly formatted. -->
   <div class="l-page side">
     <figure>
       <img
@@ -337,11 +355,11 @@ We can
     This project originated from challenges at
     <a href="https://home.withmantis.com/">MantisAI</a>
     <dt-cite key="noauthor_mantis_nodate"></dt-cite>, where we needed to
-    efficiently translate between different embedding models. Having a stitching
-    model to translate. Rather than re-computing embeddings for large datasets
-    when upgrading models, in training an stitching model to map between
-    embedding spaces, significantly reducing computational overhead and
-    compatability from one data visualization workspace to another.
+    efficiently translate between different embedding models. This way we would not need to
+    re-compute embeddings for large datasets
+    when upgrading models or provide our customers with the option to use cheaper models,
+    significantly reducing computational overhead and
+    maintaining compatability from one data visualization workspace to another.
   </p>
 
   <h3 id="theoretical-significance">Theoretical Significance</h3>
@@ -350,8 +368,7 @@ We can
     <li>
       <b
         ><a href="https://phillipi.github.io/prh/"
-          >Platonic Representation Hypothesis</a
-        >:</b
+          >Platonic Representation Hypothesis</a>:</b
       >
       Gather more evidence as to whether models tend to learn similar
       representations even when trained on different datasets. This could help improve
@@ -382,6 +399,9 @@ We can
       space standard. Such a standard would make it easy to merge datasets
       and abstract away the more tedious and time-intensive aspects of
       data science, improving communication in the workspace.
+      <!-- Gah idk if we include this. Something like "translate all embeddings to this
+       embedding space and publish your embeddings to save compute or smthn". Idk if we can
+       just drop this point here. -->
     </li>
     <!-- <li>
       <b>Model Distillation:</b> Gain insights on how semantic information
@@ -396,6 +416,7 @@ We can
       <b>(2)</b> How complex must translation functions be? <b>(3)</b> Which sorts of embedding models are more similar or dissimilar by linear connectivity-alignment?
     
       It should be clear that the second two are offshoots of the first.
+      <!-- Weird formatting -->
     </li>
     <!-- <li>How does stitching loss vary with model scale?</li> -->
     <!-- <li>Which domains are easiest/hardest to translate?</li> -->
