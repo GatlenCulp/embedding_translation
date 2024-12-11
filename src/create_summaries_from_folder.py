@@ -83,12 +83,6 @@ class ModelGenerator:
         return embedding_datasets
 
     @staticmethod
-    def stitches_from_dir_i_guess(dir: Path) -> None:
-        """Runs dataviz pipeline with default config."""
-        stitch_summaries_dir = PROJ_ROOT / "data" / "stitch_summaries"
-        # data_paths = list(stitch_summaries_dir.glob("*.json"))
-
-    @staticmethod
     def get_train_logs(dir: Path) -> list[dict]:
         """Extract training information from stitch directories.
 
@@ -126,7 +120,7 @@ class ModelGenerator:
                         log = [json.loads(line) for line in f.readlines()]
 
                     train_value = {
-                        "info": info,
+                        "info": info, # source, target, dataset, mode
                         "log": log,
                         "dir": str(dataset_dir),  # Include directory for reference
                     }
