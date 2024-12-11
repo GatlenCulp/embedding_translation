@@ -3,6 +3,8 @@ from __future__ import annotations
 """
 Shitty train script. This is NOT meant to be used later when it is replaced by the actual schemas. Does not actually log everything. Is
 really jank ngl. 
+
+[WARNING: DEPRECATED] (try to use the `train_on_safetensors_dbs.ipynb`)
 """
 from typing import List, Tuple, Literal, Optional, Dict, Any
 import yaml
@@ -39,7 +41,16 @@ class ModelInfo(BaseModel):
 class StitchPair(BaseModel):
     source: ModelInfo
     target: ModelInfo
+    dataset: str
     mode: Literal["affine"] = "affine"  # TODO(Adriano) later we will support more shit here
+
+    def save_linear_transform(self, linear: nn.Linear, save_path: Path) -> None:
+        linear_path = save_path / "linear_transform.safetensors"
+        stitch_info_path = save_path / "stitch_info.json"
+        assert not linear_path.exists(), f"Linear transform already exists at {linear_path}"
+        assert not stitch_info_path.exists(), f"Stitch info already exists at {stitch_info_path}"
+        safetensors.torch.save_file(linear.state_dict(), linear_path)
+        stitch_info_path.write_text(self.model_dump_json())
 
 
 # TODO(Adriano) actually use the train_status file plz

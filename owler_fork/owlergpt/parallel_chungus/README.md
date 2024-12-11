@@ -1,3 +1,7 @@
+# Warning
+This is not tested. It may be used in the future if needed, but is not needed right now.
+
+# Description
 A standalone parallel embedding script. It will embed for all models EXCEPT the Mistral model (i.e. for the ones highlighted below) for ALL datasets in the `./chunks/` directory. Every `.jsonl` file (which usually corresponds to a corpus or whatever) gets turned into `embeddings.safetensors` and `metadatas.jsonl`. `embeddings.safetensors` has shape `(n_chunks, 1536)` and `metadatas.jsonl` has length `(n_chunks, 1)` and each is of the type we show below.
 ```python
 from pydantic import BaseModel
