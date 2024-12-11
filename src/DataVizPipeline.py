@@ -270,7 +270,6 @@ class DataVizPipeline:
         # DataVizPipeline._run_mae_loss_viz(matrix, row_labels, col_labels)
         DataVizPipeline._run_knn_accuracy_viz(matrix, row_labels, col_labels)
 
-
 def main() -> None:
     """Runs dataviz pipeline with default config."""
     stitch_summaries_dir = PROJ_ROOT / "data" / "stitch_summaries"

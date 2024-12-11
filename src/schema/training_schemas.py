@@ -6,6 +6,7 @@ This is a WIP. You can copy it to have interoperability.
 from __future__ import annotations
 
 from datetime import datetime
+from pathlib import Path
 from typing import Any
 from typing import Literal
 
@@ -72,7 +73,7 @@ class EvaluationSettings(BaseModel):
 class TrainSettings(BaseModel):
     """Train settings."""
 
-    experiment_settings: ExperimentConfig  # <--- arch, src, dest, etc...
+    experiment_settings: ExperimentConfig | None = None  # <--- arch, src, dest, etc...
 
     # Training config
     batch_size: int = 32
@@ -126,15 +127,15 @@ class EmbeddingDatasetInformation(BaseModel):
     # Dataset + Index
     text_dataset_name: str  # <--- all from HF (but locally stored as .jsonl)
     text_dataset_source: Literal["huggingface"] = "huggingface"
-    chromadb_collection_name: str  # <--- refers to ChromaDB OBJECT name
+    chromadb_collection_name: str | None = None  # <--- refers to ChromaDB OBJECT name
 
     # Ingestion parameters
-    ingestion_settings: IngestionSettings
+    ingestion_settings: IngestionSettings = Field(default_factory=IngestionSettings)
     stitch_train_settings: TrainSettings | None = None
 
     # Optional dataset + filepath
-    dataset_filepath: str | None = None
-    collections_filepath: str | None = None
+    dataset_filepath: str | Path | None = None
+    collections_filepath: str | Path | None = None
 
     # Gatlen Proposed
     stitch_model_name: str | None = Field(
@@ -192,7 +193,7 @@ class ExperimentConfig(BaseModel):
         default="train", description="Whether this is a training or testing experiment."
     )
     dataset_train_test_split_frac: float = 0.8
-    dataset_size: int
+    dataset_size: int | None = None
 
     # Source/Target embedding datasets
     # (should both be only training/testing depeneding on above)
@@ -395,7 +396,6 @@ class StitchSummary(BaseModel):
         """Extracted mae from test eval."""
         return self.test_evaluation_log.evaluations[0].stitching_mae
 
-
     ### TRAINING STITCH ###
 
     # Training Experiment Configuration
@@ -403,14 +403,18 @@ class StitchSummary(BaseModel):
         description="The inputs for training the stitch.", repr=False
     )
     train_settings: TrainSettings = Field(
-        description="The settings used to train the stitch.", repr=False
+        default_factory=TrainSettings,
+        description="The settings used to train the stitch.",
+        repr=False,
     )
 
     # Training Results
-    training_evaluation_log: StitchEvaluationLog = Field(
-        description="Epoch-by-epoch WandB-style evaluations.", repr=False
+    training_evaluation_log: StitchEvaluationLog | None = Field(
+        None, description="Epoch-by-epoch WandB-style evaluations.", repr=False
     )
-    train_status_final: TrainStatus = Field(description="The stitch save location and other info.")
+    train_status_final: TrainStatus | None = Field(
+        None, description="The stitch save location and other info."
+    )
     train_stitch_embeddings: EmbeddingDatasetInformation = Field(
         description="The stitch embeddings resulting from feeding the original training embeddings through stitch model",
         repr=False,
