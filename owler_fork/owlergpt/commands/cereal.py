@@ -19,6 +19,7 @@ COPY OF `train_on_safetensors_dbs.ipynb`
 #             metadatas_query_train.json
 #             metadatas_query_validation.json
 import torch.nn as nn
+import click
 from pydantic import BaseModel
 import itertools
 import torch
@@ -342,14 +343,22 @@ class EmbeddingTransformTrainer:
 # RUN WITH
 #
 # python3 owlergpt/commands/cereal.py
-if __name__ == "__main__":
+@click.command()
+@click.option("--dataset", "-da", type=str)
+@click.option("--device", "-d", type=str)
+def main(dataset: str, device: str):
+    assert dataset in DATASETS
+    save_path_parent = Path(f"/mnt/align3_drive/adrianoh/dl_final_project_layers/{dataset}_hf_cartesian_product")
+    assert not save_path_parent.exists()
     trainer = EmbeddingTransformTrainer(
-        save_path_parent=Path("/mnt/align3_drive/adrianoh/dl_final_project_layers/arguana_hf_cartesian_product"),
+        save_path_parent=save_path_parent,
         load_path_parent=Path("/mnt/align3_drive/adrianoh/dl_final_project_embeddings_huggingface"),
-        device="cuda:0",
-        wandb_project="2024_12_10_dl_project_layer_arguana_hf_only_train"
+        device=device,
+        wandb_project=f"2024_12_10_dl_project_layer_{dataset}_hf_only_train"
     )
     trainer.train_all_pairs(
         filter_against_model=["Salesforce/SFR-Embedding-Mistral","text-embedding-3-large","text-embedding-3-small"],
-        filter_for_dataset=["arguana"],
+        filter_for_dataset=[dataset],
     )
+if __name__ == "__main__":
+    main()
