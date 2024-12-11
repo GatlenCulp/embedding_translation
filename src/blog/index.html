@@ -49,13 +49,12 @@ We can
 -->
 
 <script type="text/front-matter">
-  title: "The Alignment of Semantic Representations Across Language Models"
-  description: "Exploring whether different LLMs learn similar semantic representations and how we can leverage these similarities."
+  title: "LEAD: Linear Embedding Alignment across Deep Neural Network Language Models' Representations"
+  description: "Exploring whether different LLM-based semantic-search embedding models learn similar representations to push forward our understanding of LLM representations and lower the barrier to entry for semantic search and visualization."
   authors:
   - Gatlen Culp: https://gatlen.notion.site
-  - Adriano Hernandez: https://superurop.mit.edu/scholars/adriano-hernandez/
+  - Adriano Hernandez: https://linktr.ee/4gate
   affiliations:
-  - MIT: http://web.mit.edu/
   - MIT: http://web.mit.edu/
 </script>
 
@@ -70,7 +69,7 @@ We can
     </figure>
   </div>
   <h1 id="title">
-    The Alignment of Semantic Representations Across Language Models
+    LEAD: Linear Embedding Alignment across Deep Neural Network Language Models' Representations
   </h1>
 
   <div
@@ -101,16 +100,27 @@ We can
       Published December 10th, 2024
     </div>
   </div>
-
+  <!-- TODO: we MUST add some sort of control i.e. via random projections -->
   <h2 id="abstract">Abstract</h2>
   <p>
     Recent advances in Large Language Models (LLMs) have demonstrated their
     remarkable ability to capture and manipulate semantic information. In this
-    work, we investigated a fundamental question: to what extent do different
-    LLMs learn similar semantic representations despite variations in
-    architecture, training data, and initialization? Our findings reveal
-    significant alignment between models' semantic spaces, with implications for
-    both theoretical understanding and practical applications.
+    work, we investigate a fundamental question: to what extent do different
+    language embedding models learn similar semantic representations despite variations in
+    architecture, training data, and initialization? Previous work briefly explored
+    whether embedding models were similar by top-k result similarity as well as Centered
+    Kernel Alignment (CKA), but found lukewarm results. After a reproduction of their work, <!-- not sure if we cite the subtle bug?-->
+    we extend it to include a linear connectivity analysis: we train mappings between embedding spaces
+    with linear layers. If the mappings are (approximately) bijective, then we consider those two spaces
+    to be connectivity-aligned. Our findings over the span of 6 embedding datasets ranging from roughly
+    5,000 to 20,000 documents and 18 models (ranging in size from 20-30 layers and including
+    both open-source huggingface models and closed-source OpenAI models), showcases significant
+    connectivity-alignment between models' semantic spaces in absolute terms, though there are a few outliers.
+    Our findings have both theoretical and practical implications. Theoretically, they support
+    the Platonic Representation Hypothesis and more weakly, the linear representation hypothesis.
+    Practically, they have the potential to lower the cost of merging embedding datasets
+    by a factor of at least 20. Our datasets, code, and results are publicly available in github and huggingface. <!--- might have to remove this? make sure to cite the bug-->
+    
   </p>
   <!-- Honestly I don't know if this is such a great abstract. -->
 
