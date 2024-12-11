@@ -1,6 +1,7 @@
 """Creates StitchSummaries from a given directory which is the format that Adriano saved the stuff in."""
 
 from pathlib import Path
+import json
 
 from loguru import logger
 
@@ -72,6 +73,61 @@ class ModelGenerator:
         return embedding_datasets
 
     @staticmethod
+    def stitches_from_dir_i_guess(dir: Path) -> None:
+        """Runs dataviz pipeline with default config."""
+        stitch_summaries_dir = PROJ_ROOT / "data" / "stitch_summaries"
+        # data_paths = list(stitch_summaries_dir.glob("*.json"))
+
+    @staticmethod
+    def fuck_just_get_mse_matrix(dir: Path) -> list[dict]:
+        """Extract training information from stitch directories.
+
+        Args:
+            dir: Root directory containing stitch folders, each with info and log files
+
+        Returns:
+            List of dictionaries containing info and final log entries for each stitch
+        """
+        if not dir.exists():
+            raise ValueError(f"Directory {dir} does not exist")
+
+        train_values = []
+
+        for stitch_dir in dir.iterdir():
+            info_path = stitch_dir / "stitch_info_pairs.json"
+            log_path = stitch_dir / "log.jsonl"
+
+            # Skip if either file is missing
+            if not info_path.exists() or not log_path.exists():
+                logger.warning(f"Skipping {stitch_dir.name} - missing required files")
+                continue
+
+            try:
+                # Read the info file
+                with open(info_path) as f:
+                    info = json.loads(f.read())
+
+                # Read the last line of the log file
+                with open(log_path) as f:
+                    # Skip to the end and read last line
+                    for line in f:
+                        last_log = json.loads(line)
+
+                train_value = {
+                    "info": info,
+                    "log": last_log,
+                    "dir": str(stitch_dir),  # Include directory for reference
+                }
+                train_values.append(train_value)
+
+            except json.JSONDecodeError:
+                logger.error(f"Invalid JSON in {stitch_dir.name}")
+            except Exception as e:
+                logger.error(f"Error processing {stitch_dir.name}: {str(e)}")
+
+        return train_values
+
+    @staticmethod
     def stitches_from_directory(
         native_embeddings_dir: Path, stitched_embeddings_dir: Path
     ) -> list[StitchSummary]:
@@ -132,11 +188,13 @@ class ModelGenerator:
 
 
 if __name__ == "__main__":
-    embeddings_dir = PROJ_ROOT / "data" / "huggingface_embeddings"
-    dataset_infos = ModelGenerator.native_embedding_dataset_info_from_dir(embeddings_dir)
-    for i, dataset_info in enumerate(dataset_infos):
-        anal_dump(dataset_info, filename=str(i), output_dir="data/dataset_infos")
-    logger.info(dataset_infos)
+    # embeddings_dir = PROJ_ROOT / "data" / "huggingface_embeddings"
+    # dataset_infos = ModelGenerator.native_embedding_dataset_info_from_dir(embeddings_dir)
+    # for i, dataset_info in enumerate(dataset_infos):
+    #     anal_dump(dataset_info, filename=str(i), output_dir="data/dataset_infos")
+    # logger.info(dataset_infos)
+    train_values = ModelGenerator.fuck_just_get_mse_matrix(PROJ_ROOT / "data" / "arguana_loss")
+    print(train_values)
 
 
 # no org
