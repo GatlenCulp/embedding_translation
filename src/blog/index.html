@@ -354,7 +354,10 @@ We can
         >:</b
       >
       Gather more evidence as to whether models tend to learn similar
-      representations even when trained on different datasets.
+      representations even when trained on different datasets. This could help improve
+      training procedures as we proposed (which has positive externalities ranging from
+      significantly less carbon emissions to faster time to market for AI-powered products
+      and safer, more-controllable and robust AI systems)
       <!-- Note: might want to include some background on these datasets -->
     </li>
     <!-- <li>
@@ -371,11 +374,14 @@ We can
   <ul>
     <li>
       <b>Cost-Effective Computing:</b> Avoid the financial and time costs of
-      having to re-embed entire datasets for interoperability.
+      having to re-embed entire datasets for interoperability. This would help
+      save time, money, and even space of the embedding vectors.
     </li>
     <li>
       <b>Standardized Embeddings:</b> Contribute towards a universal embedding
-      space standard.
+      space standard. Such a standard would make it easy to merge datasets
+      and abstract away the more tedious and time-intensive aspects of
+      data science, improving communication in the workspace.
     </li>
     <!-- <li>
       <b>Model Distillation:</b> Gain insights on how semantic information
@@ -389,7 +395,7 @@ We can
     <!-- <li>How does stitching loss vary with model scale?</li> -->
     <!-- <li>Which domains are easiest/hardest to translate?</li> -->
     <li>Which sorts of embedding models are more similar or dissimilar?</li>
-    <li>Are models linearly connectivity-aligned?</li>
+    <li><b></b>Are models linearly connectivity-aligned?</b></li>
     <li>How complex must translation functions be?</li>
   </ul>
 
@@ -404,31 +410,52 @@ We can
   <ol>
     <li>
       <h3 id="translation-architecture">Stitch Architecture</h3>
-      We implemented translation functions between embedding spaces, testing three key architectures:
-      <ul>
-        <li>Linear transformations (baseline)</li>
-        <li>Single-layer MLP</li> 
-        <li>Two-layer MLP 
-          <!-- TODO: Uncomment if we did this
-          
-          with varying hidden dimensions:
-          <ul>
-            <li>Full rank (matching input/output)</li>
-            <li>8x Full rank hidden dimensions</li>
-            <li>32x Full rank hidden dimensions</li>
-          </ul> -->
-        </li>
-      </ul>
+      We implemented stitch functions only using affine linear layers. We considered trying more complicated
+      functions but it was not necessary.
     </li>
 
     <li>
       <h3 id="model-selection">Model Selection</h3>
-      We evaluated translation quality across several foundation models:
+      We evaluated translation quality across several foundation models available on huggingface
+      and via the OpenAI API:
+      <!-- MODEL_NAMES = [
+    "Salesforce/SFR-Embedding-Mistral",
+    "WhereIsAI/UAE-Large-V1",
+    "BAAI/bge-base-en-v1.5",
+    "BAAI/bge-large-en-v1.5",
+    "BAAI/bge-small-en-v1.5",
+    "intfloat/e5-base-v2",
+    "intfloat/e5-large-v2",
+    "intfloat/e5-small-v2",
+    "thenlper/gte-base",
+    "thenlper/gte-large",
+    "thenlper/gte-small",
+    "sentence-transformers/gtr-t5-base",
+    "sentence-transformers/gtr-t5-large",
+    "mixedbread-ai/mxbai-embed-large-v1",
+    "sentence-transformers/sentence-t5-base",
+    "sentence-transformers/sentence-t5-large",
+    "openai/text-embedding-3-large",
+    "openai/text-embedding-3-small",
+] -->
       <ul>
-        <li>Small T5 model</li>
-        <li>Small Hugging Face models</li>
-        <li>GPT embeddings</li>
-        <li>Medium-sized models (e.g., Llama-base)</li>
+        <li>WhereIsAI/UAE-Large-V1</li>
+        <li>BAAI/bge-base-en-v1.5</li>
+        <li>BAAI/bge-large-en-v1.5</li>
+        <li>BAAI/bge-small-en-v1.5</li>
+        <li>intfloat/e5-base-v2</li>
+        <li>intfloat/e5-large-v2</li>
+        <li>intfloat/e5-small-v2</li>
+        <li>thenlper/gte-base</li>
+        <li>thenlper/gte-large</li>
+        <li>thenlper/gte-small</li>
+        <li>sentence-transformers/gtr-t5-base</li>
+        <li>sentence-transformers/gtr-t5-large</li>
+        <li>mixedbread-ai/mxbai-embed-large-v1</li>
+        <li>sentence-transformers/sentence-t5-base</li>
+        <li>sentence-transformers/sentence-t5-large</li>
+        <li>openai/text-embedding-3-large</li>
+        <li>openai/text-embedding-3-small</li>
       </ul>
     </li>
 
