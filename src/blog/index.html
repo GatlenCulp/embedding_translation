@@ -130,11 +130,32 @@ We can
   -->
 
   <p>
-    There is ample evidence supporting the idea that text representations may be
-    similar to some degree. Some notable observations include:
+    There is ample evidence supporting the idea that neural network representations may be
+    aligned to some degree. Some notable observations include:
   </p>
   <!-- TODO: Add icons or something but this onslaught of bullets is a lot -->
-  <ul style="list-style: none; padding-left: 0">
+    <ul style="list-style: none; padding-left: 0">
+      <li
+        style="
+        margin-bottom: 1.5em;
+        display: flex;
+        gap: 1em;
+        align-items: baseline;
+      ">
+      <i
+        class="fas fa-chart-line"
+        style="color: #666; width: 1.5em; text-align: center"
+      ></i>
+        <div>
+          <b>Scaling Laws and Platonic Representations:</b> recent work
+          has provided strong evidence that many different neural network models, even those trained on different datasets,
+          or different sensory modalities, converge to a shared representation of the world <dt-cite key="huh_platonic_2024"></dt-cite>. Scaling
+          laws based on quantized models of learning <dt-cite key="michaud2024quantizationmodelneuralscaling"></dt-cite>
+           <dt-cite key="song2024resourcemodelneuralscaling"></dt-cite> also suggest at a compelling world-view in which
+           different models, despite differing in architecture, training data, or training methodology, converge to shared
+           representations of the world.
+        </div>
+    </li>
     <li
       style="
         margin-bottom: 1.5em;
@@ -231,43 +252,40 @@ We can
         differently.
       </div>
     </li>
-    <li
-      style="
-        margin-bottom: 1.5em;
-        display: flex;
-        gap: 1em;
-        align-items: baseline;
-      "
-    >
-      <i
-        class="fas fa-chart-line"
-        style="color: #666; width: 1.5em; text-align: center"
-      ></i>
-      <div>
-        <b>Representational similarity tools:</b> Techniques such as CKA
-        <dt-cite key="kornblith_similarity_2019"></dt-cite>, stitching
-        <dt-cite key="bansal_revisiting_2021"></dt-cite>, CCA
-        <dt-cite key="noauthor_canonical_2024"></dt-cite>
-        <dt-cite key="andrew_deep_2013"></dt-cite>, Orthogonal Procrustes
-        <dt-cite key="box-rep-sim"></dt-cite>, and others, along with
-        representational similarity analysis in neuroscience
-        <dt-cite key="haxby_decoding_2014"></dt-cite>
-        <dt-cite key="kriegeskorte_representational_2008"></dt-cite>
-        <dt-cite key="yousefnezhad_deep_2021"></dt-cite>, have matured, making
-        it feasible to systematically investigate such questions.
-      </div>
-    </li>
   </ul>
+  <p>
+    At the same time <b>Representational similarity tools are becoming mature enough to explore such questions more deeply
+      and empirically</b> and are percolating across both the machine learning and neuroscience communities <dt-cite key="sucholutsky2024gettingalignedrepresentationalalignment"></dt-cite>.
+      For example, in <a href="https://representational-alignment.github.io/">ICLR there was a workshop on it this year</a>.
+      Techniques such as CKA <dt-cite key="kornblith_similarity_2019"></dt-cite>, stitching
+    <dt-cite key="bansal_revisiting_2021"></dt-cite>, CCA,
+    <dt-cite key="noauthor_canonical_2024"></dt-cite>
+    <dt-cite key="andrew_deep_2013"></dt-cite> Orthogonal Procrustes
+    <dt-cite key="box-rep-sim"></dt-cite>, and others, along with
+    representational similarity analysis in neuroscience
+    <dt-cite key="haxby_decoding_2014"></dt-cite>
+    <dt-cite key="kriegeskorte_representational_2008"></dt-cite>
+    <dt-cite key="yousefnezhad_deep_2021"></dt-cite>, have matured, making
+    it feasible to systematically investigate such questions.
+  </p>
 
   <p>
     If representations are indeed (approximately) universal, we can leverage
     this to cheaply translate between different models' embeddings. In related
-    literature, this translation process is known as <b>stitching</b> and thus
-    it will be referred to as such for the remainder of this post.
+    literature, this translation process is called <b>stitching</b> <dt-cite key="lenc2015understandingimagerepresentationsmeasuring"></dt-cite>
+    and thus we make use of that terminology. We work in the domain of text embeddings,
+    where models convert text into dense vectors. We call the vector-space of the
+    embeddings as the embedding space. Our stitches are linear transformers between
+    pairs of embedding spaces. They are directional.
     <!-- TODO: @Adriano, explain a bit more -->
 
-    Our project proposes to explore how similar these representations are across
-    commonly used embedding models
+    Previous work explored <dt-cite key="caspari2024benchmarksevaluatingembeddingmodel"></dt-cite>
+    do a minor extent whether the representations may be similar for these different
+    embedding spaces. We extend their work by training stitches between pairs of
+    embedding spaces. If the MSE is sufficiently low we consider these two spaces
+    to be similar in a way that we call <b>connectivity-aligned</b>. This termonology
+    highlights the notion that the two spaces are linearly mappable-between; we base this terminology on the literature, where this sort of
+    linear alignment is called <b>stitch connectivity</b> <dt-cite key="lenc2015understandingimagerepresentationsmeasuring"></dt-cite>.
     <!-- (e.g., (TODO)) -->
     and attempt to map one model's embedding space onto another's.
     <dt-fn>
