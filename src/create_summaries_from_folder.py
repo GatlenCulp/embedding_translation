@@ -1,24 +1,31 @@
 """Creates StitchSummaries from a given directory which is the format that Adriano saved the stuff in."""
 
 # %%
-from pathlib import Path
 import json
-
-from loguru import logger
+from pathlib import Path
 from typing import Any
 
+from loguru import logger
+from pydantic import BaseModel
+
 from src.collection_utils import model2model_dimension
+from src.DataVizPipeline import save_figure
+from src.DataVizPipeline import visualize_heatmap
+from src.DataVizPipeline import DataVizPipeline, DataFile
 from src.schema.training_schemas import EmbeddingDatasetInformation
 from src.schema.training_schemas import ExperimentConfig
 from src.schema.training_schemas import StitchSummary
 from src.utils.general_setup import setup
 from src.logic.anal_dump import anal_dump
-from src.DataVizPipeline import visualize_heatmap, save_figure
 
 
 setup("StitchSummaryGenerator")
 
 PROJ_ROOT = Path(__file__).parent.parent
+
+
+class TrainingLogs(BaseModel):
+    logs: list[dict[Any, Any]]
 
 
 class ModelGenerator:
@@ -128,30 +135,56 @@ class ModelGenerator:
                 except json.JSONDecodeError:
                     logger.error(f"Invalid JSON in {stitch_dir.name}")
                 except Exception as e:
-                    logger.error(f"Error processing {stitch_dir.name}: {str(e)}")
+                    logger.error(f"Error processing {stitch_dir.name}: {e!s}")
 
         return train_values
 
     @staticmethod
     def get_mapping_from_train_values(train_values: list[dict[str, Any]]):
-        # Group by source and target
-        matrix: dict[str, dict[str, Any]] = {
-            train_value["info"]["source"]: {train_value["info"]["target"]: train_value}
-            for train_value in train_values
-        }
+        # Group by source and target, allowing multiple targets per source
+        matrix: dict[str, dict[str, Any]] = {}
+        for train_value in train_values:
+            source = train_value["info"]["source"]
+            target = train_value["info"]["target"]
+            if source not in matrix:
+                matrix[source] = {}
+            matrix[source][target] = train_value
         return matrix
 
     @staticmethod
-    def get_mse_matrix_from_matrix(matrix: dict[str, dict[str, Any]]):
-        labels = list(matrix.keys())
-        mse_matrix = [[None for _ in labels] for _ in labels]
+    def get_mse_matrix_from_matrix(matrix: dict[str, dict[str, Any]], labels: list[str]):
+        mse_matrix = [[None for _ in labels] for _ in labels]  # Initialize with zeros
         for i, row_label in enumerate(labels):
             for j, col_label in enumerate(labels):
-                if row_label in matrix and col_label in matrix[row_label]:
+                if i == j:
+                    continue
+                try:
                     mse_matrix[i][j] = matrix[row_label][col_label]["log"][-1]["test_mse"]
-                # logger.info(f"{i=} {j=}, {row_label=} {col_label=}")
+                except (KeyError, IndexError):
+                    continue
+        return mse_matrix
 
-        return mse_matrix, labels
+    @staticmethod
+    def get_mae_matrix_from_matrix(matrix: dict[str, dict[str, Any]], labels: list[str]):
+        mae_matrix = [[None for _ in labels] for _ in labels]  # Initialize with zeros
+        for i, row_label in enumerate(labels):
+            for j, col_label in enumerate(labels):
+                if i == j:
+                    continue
+                try:
+                    mae_matrix[i][j] = matrix[row_label][col_label]["log"][-1]["test_mse"]
+                except (KeyError, IndexError):
+                    continue
+        return mae_matrix
+
+    @staticmethod
+    def load_data_as_train_logs(data_path: Path) -> StitchSummary:
+        """Load JSON data from path and convert to StitchSummary."""
+        logger.debug(f"Loading {data_path} as train logs...")
+        with data_path.open() as f:
+            data = f.read()
+        data = DataFile.model_validate_json(data)
+        return TrainingLogs.model_validate(data.data)
 
     @staticmethod
     def stitches_from_directory(
@@ -215,32 +248,61 @@ class ModelGenerator:
 
 # %%
 if __name__ == "__main__":
-    # embeddings_dir = PROJ_ROOT / "data" / "huggingface_embeddings"
-    # dataset_infos = ModelGenerator.native_embedding_dataset_info_from_dir(embeddings_dir)
-    # for i, dataset_info in enumerate(dataset_infos):
-    #     anal_dump(dataset_info, filename=str(i), output_dir="data/dataset_infos")
-    # logger.info(dataset_infos)
-    train_values = ModelGenerator.get_train_logs(PROJ_ROOT / "data" / "arguana_loss")
+    ### GET TRAINING LOGS ###
+    # Save
+    train_loss_dir = PROJ_ROOT / "data" / "arguana_loss"
+    train_logs_dir = PROJ_ROOT / "data" / "arguana_loss_logs"
+    if train_logs_dir.exists():
+        train_values = ModelGenerator.load_data_as_train_logs(train_logs_dir / "arguana_loss_logs.json")
+        train_values = train_values.model_dump()["logs"]
+    else:
+        train_logs_dir.mkdir(parents=True, exist_ok=False)
+        train_values = ModelGenerator.get_train_logs(PROJ_ROOT / "data" / "arguana_loss")
+        anal_dump(TrainingLogs(logs=train_values), "arguana_loss_logs", "data/arguana_loss_logs")
+
+    logger.info(f"Received {len(train_values)} training values")
     matrix = ModelGenerator.get_mapping_from_train_values(train_values)
-    mse_matrix, labels = ModelGenerator.get_mse_matrix_from_matrix(matrix)
+    labels = sorted(matrix.keys())
+
+    ### MSE MATRIX ###
+    mse_matrix = ModelGenerator.get_mse_matrix_from_matrix(matrix, labels)
     text_dataset_name = "arguana"
     fig = visualize_heatmap(
         matrix=mse_matrix,
         config={
             "row_labels": labels,
             "col_labels": labels,
-            "title": f"CKA Matrix on {text_dataset_name}",
+            "title": f"MSE Matrix on {text_dataset_name}",
             "xaxis_title": "Native Embedding Space",
             "yaxis_title": "Target Embedding Space",
         },
     )
 
-    # fig.update_yaxes(autorange=True)
     fig["layout"]["yaxis"]["autorange"] = "reversed"
     fig.update_xaxes(side="top")
 
     save_figure(fig, f"mse_matrix_on{text_dataset_name}", output_dir=PROJ_ROOT / "data" / "figs")
     logger.info(mse_matrix)
+
+    ### MAE MATRIX ###
+    mae_matrix = ModelGenerator.get_mae_matrix_from_matrix(matrix, labels)
+    text_dataset_name = "arguana"
+    fig = visualize_heatmap(
+        matrix=mae_matrix,
+        config={
+            "row_labels": labels,
+            "col_labels": labels,
+            "title": f"MAE Matrix on {text_dataset_name}",
+            "xaxis_title": "Native Embedding Space",
+            "yaxis_title": "Target Embedding Space",
+        },
+    )
+
+    fig["layout"]["yaxis"]["autorange"] = "reversed"
+    fig.update_xaxes(side="top")
+
+    save_figure(fig, f"mae_matrix_on{text_dataset_name}", output_dir=PROJ_ROOT / "data" / "figs")
+    logger.info(mae_matrix)
 
 
 # %%
