@@ -19,6 +19,7 @@ COPY OF `train_on_safetensors_dbs.ipynb`
 #             metadatas_query_train.json
 #             metadatas_query_validation.json
 import torch.nn as nn
+import click
 from pydantic import BaseModel
 import itertools
 import torch
@@ -241,8 +242,8 @@ MODEL_NAMES = [
     "mixedbread-ai/mxbai-embed-large-v1",
     "sentence-transformers/sentence-t5-base",
     "sentence-transformers/sentence-t5-large",
-    "text-embedding-3-large", # openai
-    "text-embedding-3-small", # openai
+    "openai/text-embedding-3-large",
+    "openai/text-embedding-3-small",
 ]
 
 class EmbeddingTransformTrainer:
@@ -253,13 +254,33 @@ class EmbeddingTransformTrainer:
         self.load_path_parent = load_path_parent
         self.device = device
         self.wandb_project = wandb_project
-        
+        # TODO(Adriano) support queries? I'm not sure it's totally meritted to include them for the MSE analysis, but
+        # they are nonetheless useful for other analyses like the ones from the paper
+        self.record_type = "corpus"
+    
+
+    def get_embeddings_paths(self, embeddings_path: Path):
+        embeddings_train_path = embeddings_path / f"embeddings_{self.record_type}_train.safetensors"
+        embeddings_validation_path = embeddings_path / f"embeddings_{self.record_type}_validation.safetensors"
+        assert (
+            (embeddings_train_path.exists() and embeddings_validation_path.exists()) or 
+            (not embeddings_train_path.exists() and not embeddings_validation_path.exists())
+        )
+        if not embeddings_train_path.exists():
+            # NOTE: that sometimes the path names are reversed, i.e. when using OpenAI models; you can observe
+            # more in detail in `get_reversed_model_files` in `sanity_check_embeddings_note_equal.ipynb`
+            embeddings_train_path = embeddings_path / f"{self.record_type}_train_embeddings.safetensors"
+            embeddings_validation_path = embeddings_path / f"{self.record_type}_validation_embeddings.safetensors"
+        assert embeddings_train_path.exists() and embeddings_validation_path.exists(), f"Files {embeddings_train_path} and {embeddings_validation_path} do not exist" # fmt: skip
+        return embeddings_train_path, embeddings_validation_path
+
     def train_all_pairs(
         self,
         filter_against_model: List[str] = [],
         filter_for_model: List[str] = [],
         filter_for_dataset: List[str] = [],
-        filter_against_dataset: List[str] = []
+        filter_against_dataset: List[str] = [],
+        verbose: bool = False
     ):
         """Train transforms between all pairs of embeddings."""
         # filtering...
@@ -269,12 +290,18 @@ class EmbeddingTransformTrainer:
         for filter_against_model in filter_against_model:
             combos = [x for x in combos if filter_against_model not in x[1] and filter_against_model not in x[2]]
         for filter_for_model in filter_for_model:
-            combos = [x for x in combos if filter_for_model in x[1] and filter_for_model in x[2]]
+            # TODO(Adriano) allow for conjunction and dysjunction more smartly plz
+            combos = [x for x in combos if filter_for_model in x[1] or filter_for_model in x[2]]
         # 2. filter for datasets
         for filter_for_dataset in filter_for_dataset:
             combos = [x for x in combos if filter_for_dataset in x[0]]
         for filter_against_dataset in filter_against_dataset:
             combos = [x for x in combos if filter_against_dataset not in x[0]]
+        combos = sorted(combos, key=lambda x: (x[0], x[1], x[2])) # visualize more nicely
+        if verbose:
+            click.echo("  " + "\n  ".join([f"{x[0]} {x[1]} {x[2]}" for x in combos]))
+            click.echo(f"Training {len(combos)} transforms")
+            click.confirm("Continue?", abort=True)
         # End filtering...
         print(f"Training {len(combos)} transforms")
         for dataset, src, dest in tqdm.tqdm(combos, desc="Training transforms (all default settings)"):
@@ -288,10 +315,11 @@ class EmbeddingTransformTrainer:
             embeddings1_path = self.load_path_parent / src_name_ok / dataset_ok
             embeddings2_path = self.load_path_parent / dest_name_ok / dataset_ok
             # NOTE ====> only corpus right now
-            embeddings1_train_path = embeddings1_path / "embeddings_corpus_train.safetensors"
-            embeddings1_validation_path = embeddings1_path / "embeddings_corpus_validation.safetensors"
-            embeddings2_train_path = embeddings2_path / "embeddings_corpus_train.safetensors"
-            embeddings2_validation_path = embeddings2_path / "embeddings_corpus_validation.safetensors"
+            # TODO(Adriano) validate and copy the metadatas jsonls? We don't do this because right now in
+            # `sanity_check_embeddings_note_equal.ipynb` we validate that this stuff matches up OK and so
+            # we can uset he index of the row as the ID of that chunk etc...
+            embeddings1_train_path, embeddings1_validation_path = self.get_embeddings_paths(embeddings1_path)
+            embeddings2_train_path, embeddings2_validation_path = self.get_embeddings_paths(embeddings2_path)
             if any(not x.exists() for x in [embeddings1_train_path, embeddings1_validation_path, embeddings2_train_path, embeddings2_validation_path]):
                 print(f"Skipping {src} to {dest} because some files do not exist in {embeddings1_path.name} or {embeddings2_path.name}")
                 for file in [embeddings1_train_path, embeddings1_validation_path, embeddings2_train_path, embeddings2_validation_path]:
@@ -342,14 +370,29 @@ class EmbeddingTransformTrainer:
 # RUN WITH
 #
 # python3 owlergpt/commands/cereal.py
-if __name__ == "__main__":
+@click.command()
+@click.option("--dataset", "-da", type=str)
+@click.option("--device", "-d", type=str)
+@click.option("--filter-against-model", "-fa", type=str, multiple=True, default=["Salesforce/SFR-Embedding-Mistral","text-embedding-3-large","text-embedding-3-small"])
+@click.option("--filter-for-model", "-ff", type=str, multiple=True)
+def main(dataset: str, device: str, filter_against_model: List[str], filter_for_model: List[str], ):
+    assert dataset in DATASETS
+    save_path_parent = Path(f"/mnt/align3_drive/adrianoh/dl_final_project_layers/{dataset}_hf_cartesian_product")
+    # assert not save_path_parent.exists()
     trainer = EmbeddingTransformTrainer(
-        save_path_parent=Path("/mnt/align3_drive/adrianoh/dl_final_project_layers/arguana_hf_cartesian_product"),
-        load_path_parent=Path("/mnt/align3_drive/adrianoh/dl_final_project_embeddings_huggingface"),
-        device="cuda:0",
-        wandb_project="2024_12_10_dl_project_layer_arguana_hf_only_train"
+        save_path_parent=save_path_parent,
+        load_path_parent=Path("/mnt/align3_drive/adrianoh/dl_final_project_embeddings"),
+        device=device,
+        # TODO(Adriano): we use this project because historically it's the one we used for the comparisons; however, we are actually
+        # also training openai models in here too...
+        wandb_project=f"2024_12_10_dl_project_layer_{dataset}_hf_only_train"
     )
     trainer.train_all_pairs(
-        filter_against_model=["Salesforce/SFR-Embedding-Mistral","text-embedding-3-large","text-embedding-3-small"],
-        filter_for_dataset=["arguana"],
+        filter_against_model=filter_against_model,
+        filter_for_model=filter_for_model,
+        filter_for_dataset=[dataset],
+        filter_against_dataset=[],
+        verbose=True
     )
+if __name__ == "__main__":
+    main()
