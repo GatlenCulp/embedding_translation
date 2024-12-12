@@ -198,8 +198,9 @@ We can
       one another. For a model \(M\), we denote its embedding space as
       \(\mathcal{E}_M \subset \mathbb{R}^d\), where \(d\) is the embedding
       dimension. While mathematically these may share the same dimension (e.g.,
-      \(d=1024\)), each model's unique mapping creates a distinct semantic space.
-      $d=1024$), each model's unique mapping creates a distinct semantic space.
+      \(d=1024\)), each model's unique mapping creates a distinct semantic
+      space. $d=1024$), each model's unique mapping creates a distinct semantic
+      space.
       <!-- why isn't this rendering -->
       <dt-fn>
         Note: This is not a formal or rigorous definition, rather a useful
@@ -226,14 +227,14 @@ We can
      could easily compose new translations by just doing the matrix multiplication. -->
 
     <li style="margin-bottom: 1em">
-      <b>Connectivity-Alignment:</b> We say two embedding spaces \(\mathcal{E}_A\)
-      and \(\mathcal{E}_B\) are connectivity-aligned if there exists a stitch
-      \(S_{A\rightarrow B}\) that achieves low mean squared error:
-      \[\text{MSE}(S_{A\rightarrow B}) = \frac{1}{n}\sum_{i=1}^n
+      <b>Connectivity-Alignment:</b> We say two embedding spaces
+      \(\mathcal{E}_A\) and \(\mathcal{E}_B\) are connectivity-aligned if there
+      exists a stitch \(S_{A\rightarrow B}\) that achieves low mean squared
+      error: \[\text{MSE}(S_{A\rightarrow B}) = \frac{1}{n}\sum_{i=1}^n
       \|S_{A\rightarrow B}(x_i) - y_i\|^2 < \epsilon\] where \(x_i \in
-      \mathcal{E}_A\), \(y_i \in \mathcal{E}_B\) are corresponding embeddings, and
-      \(\epsilon\) is a threshold. This indicates the spaces preserve similar
-      semantic features, albeit potentially encoded differently.
+      \mathcal{E}_A\), \(y_i \in \mathcal{E}_B\) are corresponding embeddings,
+      and \(\epsilon\) is a threshold. This indicates the spaces preserve
+      similar semantic features, albeit potentially encoded differently.
       <dt-fn
         >This is perhaps analagous to (approximate) isomorphism for vector
         spaces.</dt-fn
@@ -241,10 +242,11 @@ We can
     </li>
 
     <li style="margin-bottom: 1em">
-      <b>Native vs. Stitched Embeddings:</b> For a text input \(t\) and model \(M\),
-      we denote its native embedding as \(M(t) \in \mathcal{E}_M\). When we map
-      embeddings from model \(A\) to model \(B\)'s space using a stitch, we denote
-      the stitched embedding as \(S_{A\rightarrow B}(A(t)) \in \mathcal{E}_B\).
+      <b>Native vs. Stitched Embeddings:</b> For a text input \(t\) and model
+      \(M\), we denote its native embedding as \(M(t) \in \mathcal{E}_M\). When
+      we map embeddings from model \(A\) to model \(B\)'s space using a stitch,
+      we denote the stitched embedding as \(S_{A\rightarrow B}(A(t)) \in
+      \mathcal{E}_B\).
     </li>
   </ul>
 
@@ -577,25 +579,26 @@ We can
       free except at prohibitively low request rates) and the Mistral model,
       since it was too big for our GPU.
       <pre><code class="language-python">
-  MODEL_NAMES = [
-    "WhereIsAI/UAE-Large-V1",
-    "BAAI/bge-base-en-v1.5",
-    "BAAI/bge-large-en-v1.5",
-    "BAAI/bge-small-en-v1.5",
-    "intfloat/e5-base-v2",
-    "intfloat/e5-large-v2",
-    "intfloat/e5-small-v2",
-    "thenlper/gte-base",
-    "thenlper/gte-large",
-    "thenlper/gte-small",
-    "sentence-transformers/gtr-t5-base",
-    "sentence-transformers/gtr-t5-large",
-    "mixedbread-ai/mxbai-embed-large-v1",
-    "sentence-transformers/sentence-t5-base",
-    "sentence-transformers/sentence-t5-large",
-    "openai/text-embedding-3-large",
-    "openai/text-embedding-3-small",
-    ]
+        MODEL_NAMES = [
+        # MODEL_NAME                    EMBEDDING DIMENSION
+        "WhereIsAI/UAE-Large-V1",                    # 1024
+        "BAAI/bge-base-en-v1.5",                     # 768
+        "BAAI/bge-large-en-v1.5",                    # 1024
+        "BAAI/bge-small-en-v1.5",                    # 384
+        "intfloat/e5-base-v2",                       # 768
+        "intfloat/e5-large-v2",                      # 1024
+        "intfloat/e5-small-v2",                      # 384
+        "thenlper/gte-base",                         # 768
+        "thenlper/gte-large",                        # 1024
+        "thenlper/gte-small",                        # 384
+        "sentence-transformers/gtr-t5-base",         # 768
+        "sentence-transformers/gtr-t5-large",        # 768
+        "mixedbread-ai/mxbai-embed-large-v1",        # 1024
+        "sentence-transformers/sentence-t5-base",     # 768
+        "sentence-transformers/sentence-t5-large",    # 768
+        "openai/text-embedding-3-large",             # 3072
+        "openai/text-embedding-3-small",             # 1536
+        ]
       </code></pre>
     </li>
     <li>
@@ -832,8 +835,10 @@ We can
         embedding space may experience non-linear expansion as certain related
         concepts tend to disentangle or as the relationship between different
         concepts changes such that there exists no affine mapping from the model
-        earlier in training and the model later in training. This would not be
-        terribly
+        earlier in training and the model later in training. This would make
+        sense, considering there is a qualitative difference between embeddings
+        of more sophisticated models and less sophisticated ones, a an
+        exclusively linear mapping would not make sense.
       </p>
       <p>
         Future work could also consider optimizing over even simpler
@@ -844,44 +849,102 @@ We can
        scaled x2 but maybe regularization beats this out idk. Uncertain whether to simpler transform is cash money. -->
       </p>
     </li>
-
+    <!-- TODO: Add math everywhere ig -->
     <li>
       <h3 id="evaluation-metric">Evaluation Metrics</h3>
+      <p>
+        We considered a range of different metrics to analyze the relationship
+        between embedding spaces, settling on a mix from our reference paper,
+        statistics on the stiching models bridging two embedding spaces, and
+        some visualizaitons to better understand exactly what these stitches are
+        doing.
+      </p>
+
       <ul>
-        <li style="margin-bottom: 1.5em; display: flex; gap: 1em; align-items: baseline;">
-          <i class="fas fa-chart-bar" style="color: #666; width: 1.5em; text-align: center"></i>
+        <li
+          style="
+            margin-bottom: 1.5em;
+            display: flex;
+            gap: 1em;
+            align-items: baseline;
+          "
+        >
+          <i
+            class="fas fa-chart-bar"
+            style="color: #666; width: 1.5em; text-align: center"
+          ></i>
           <div>
-            Our <b>initial metrics</b> aimed corroborate the work in our reference paper:
-            <i>Beyond Benchmarks: Evaluating Embedding Model Similarity for Retrieval Augmented Generation Systems</i>
-            <dt-cite key="caspari2024benchmarksevaluatingembeddingmodel"></dt-cite>. We look primarily into
-            <a href="http://datumorphism.leima.is/cards/machine-learning/measurement/centered-kernel-alignment/"><b>CKA (Centered Kernel Alignment)</b></a>
+            Our <b>embedding similarity metrics</b> aimed corroborate the work
+            in our reference paper:
+            <i
+              >Beyond Benchmarks: Evaluating Embedding Model Similarity for
+              Retrieval Augmented Generation Systems</i
+            >
+            <dt-cite
+              key="caspari2024benchmarksevaluatingembeddingmodel"
+            ></dt-cite
+            >. We look primarily into
+            <a
+              href="http://datumorphism.leima.is/cards/machine-learning/measurement/centered-kernel-alignment/"
+              ><b>CKA (Centered Kernel Alignment)</b></a
+            >
             <!-- We look into the same <b>CKA</b>, <b>Rank</b>, and <b>Jaccard Index</b> metrics to -->
             <!-- https://datumorphism.leima.is/cards/machine-learning/measurement/centered-kernel-alignment/ -->
             <!-- TODO: Rank and Jaccard Index, also maybe Adriano can explain this -->
-            , a metric to measure the similarity between feature representations between neural networks. We compare these metrics with the past
-            results and against those of the stitched embeddings. That is to say, if on a single datset we stitch the embeddings of model \(A\) to the
-            embeddings of model \(B\) then we look at the CKA, Rank, and Jaccard Index of the image of the map with the embeddings from model \(B\).
+            , a metric to measure the similarity between feature representations
+            between neural networks. We compare these metrics with the past
+            results and against those of the stitched embeddings. That is to
+            say, if on a single datset we stitch the embeddings of model \(A\)
+            to the embeddings of model \(B\) then we look at the CKA, Rank, and
+            Jaccard Index of the image of the map with the embeddings from model
+            \(B\).
             <!-- TODO: This last part of doing the stitched embeddings -->
           </div>
         </li>
         <!-- Note: Adriano maybe wants to swap intial with linear connectivity -->
-        <li style="margin-bottom: 1.5em; display: flex; gap: 1em; align-items: baseline;">
-          <i class="fas fa-ruler" style="color: #666; width: 1.5em; text-align: center"></i>
+        <li
+          style="
+            margin-bottom: 1.5em;
+            display: flex;
+            gap: 1em;
+            align-items: baseline;
+          "
+        >
+          <i
+            class="fas fa-ruler"
+            style="color: #666; width: 1.5em; text-align: center"
+          ></i>
           <div>
-            Our <b>linear connectivity-alignment metrics</b> are the train and validation accuracy of our stitching models, which we measure by
-            <b>Mean Squared Error (MSE)</b>. To make this more interpretable, we also provide: <b>mean absolute error (MAE)</b> on the validation set,
-            explained <b>variance ratio</b> between the stitched embeddings and the target embeddings,
+            Our <b>linear connectivity-alignment metrics</b> are the train and
+            validation accuracy of our stitching models, which we measure by
+            <b>Mean Squared Error (MSE)</b>. To make this more interpretable, we
+            also provide: <b>mean absolute error (MAE)</b> on the validation
+            set, explained <b>variance ratio</b> between the stitched embeddings
+            and the target embeddings,
             <!-- TODO? -->
             explained <b>absolute variation</b>
-            between the stitched embeddings and the target embeddings. We also plot
+            between the stitched embeddings and the target embeddings. We also
+            plot
             <!-- TODO? -->
-            the <b>eigenvalues/singular values</b> of the stitched embeddings and compare their affine shifts to the means of the embedding datasets.
-            This helps us qualitatively estimate whether the embedding matrix may actually belong to a simpler class, such as a rotation.
+            the <b>eigenvalues/singular values</b> of the stitched embeddings
+            and compare their affine shifts to the means of the embedding
+            datasets. This helps us qualitatively estimate whether the embedding
+            matrix may actually belong to a simpler class, such as a rotation.
             <!-- TODO -->
           </div>
         </li>
-        <li style="margin-bottom: 1.5em; display: flex; gap: 1em; align-items: baseline;">
-          <i class="fas fa-eye" style="color: #666; width: 1.5em; text-align: center"></i>
+        <li
+          style="
+            margin-bottom: 1.5em;
+            display: flex;
+            gap: 1em;
+            align-items: baseline;
+          "
+        >
+          <i
+            class="fas fa-eye"
+            style="color: #666; width: 1.5em; text-align: center"
+          ></i>
           <div>
             Our <b>interpretation visualizations</b> include a <b>UMAP</b>.
             <!--<b>PCA</b>, and
@@ -940,36 +1003,8 @@ We can
     architectures. Here are our key findings:
   </p>
 
-  <div class="l-screen-inset">
-    <!-- <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2em">
-      <figure>
-        <iframe
-          src="figs/embedding_viz_stitch_instructor-xl_to_text-embedding-ada-002_one-layer.html"
-          width="100%"
-          height="600px"
-          frameborder="0"
-        >
-        </iframe>
-        <figcaption>
-          Embedding visualization: Instructor-XL to Text-Embedding-Ada-002
-          translation
-        </figcaption>
-      </figure>
-
-      <figure>
-        <iframe
-          src="figs/embedding_viz_stitch_text-embedding-ada-002_to_instructor-xl_one-layer.html"
-          width="100%"
-          height="600px"
-          frameborder="0"
-        >
-        </iframe>
-        <figcaption>
-          Embedding visualization: Text-Embedding-Ada-002 to Instructor-XL
-          translation
-        </figcaption>
-      </figure>
-
+  <!-- <div class="l-screen-inset">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2em">
       <figure>
         <iframe
           src="figs/mae_loss_viz_2_by_2.html"
@@ -994,9 +1029,10 @@ We can
         <figcaption>
           Mean Squared Error (MSE) loss visualization across model pairs
         </figcaption>
-      </figure> -->
-  </div>
+      </figure>
+  </div> -->
 
+  <h3 id="results-measuring-sim">Measuring Representational Similarity</h3>
   <figure>
     <iframe
       src="figs/cka_matrix_on_arguana.html"
@@ -1006,57 +1042,46 @@ We can
       scrolling="no"
     ></iframe>
     <figcaption>
-      CKA Matrix on Arguana measuring representational similarity.
+      CKA Matrix measuring representational similarity between embedding models
+      with text sampled from ArguAna.
     </figcaption>
   </figure>
 
-  <h3 id="translation-quality">Translation Quality vs Model Scale</h3>
   <p>
-    Our initial results suggest that translation quality varies systematically
-    with model scale:
+    In line with the metrics presented in <i>Beyond Benchmarks</i>, we examined
+    the pairwise similarity between our various embedding models. Above you can
+    see our
+    <a
+      href="http://datumorphism.leima.is/cards/machine-learning/measurement/centered-kernel-alignment/"
+      ><b>CKA (Centered Kernel Alignment)</b></a
+    >
+    matrix. This is a simple common metric to measure the similarity between
+    representations. To do this, you start with a text dataset which are fed
+    through the embedding models \(A\) and \(B\) to produce sample embeddings
+    \(Z_A\) and \(Z_B\). These embeddings are then compared. 
+    <!-- finish description -->
+    Scores closer to \(1\) are more similar and scores
+    closer to \(0\) are less similar. In our matrix we also introduced a control
+    "embedding" model which was a (ArguAna Length \(\times 768\) embedding
+    dimension) standard gaussian matrix not included in the reference paper.
+    <!-- idk if this explanation is required but word count go brr I guess -->
+    <!-- Also I think the control was dimensionality 768? -->
   </p>
-  <ul>
-    <li>
-      <b>Small-to-Small Translation:</b> Linear mappings achieved surprisingly
-      good results (cosine similarity >0.85) when translating between
-      similarly-sized models (10⁷-10⁸ parameters).
-    </li>
-    <li>
-      <b>Small-to-Large Translation:</b> Translation quality degraded when
-      mapping to larger models, suggesting information loss in smaller models
-      that cannot be recovered.
-    </li>
-    <li>
-      <b>Large-to-Small Translation:</b> Maintained reasonable quality (cosine
-      similarity >0.75), indicating larger models learn more generalizable
-      representations that can be compressed.
-    </li>
-  </ul>
 
-  <h3 id="domain-performance">Domain-Specific Performance</h3>
+  <p>
+    As you can hope to see, the random embedding model is extremely dissimilar
+    from other embeddings, getting a similarity score of only \(0.10\) to \(0.16\)
+    while the strongest similarities are all the way up to \(1.00\) for mxbai-embed-large-v1 to UAE-Large-V1 and vice versa
+  </p>
+  <!-- TODO: Compare with -->
+
+  <!-- <h3 id="domain-performance"> (FILLER) Domain-Specific Performance</h3>
   <p>Translation quality varied significantly across domains:</p>
   <ul>
     <li><b>News Articles:</b> 0.89 mean cosine similarity</li>
     <li><b>Academic Papers:</b> 0.82 mean cosine similarity</li>
     <li><b>Code Snippets:</b> 0.67 mean cosine similarity</li>
-  </ul>
-
-  <h3 id="network-complexity">Translation Network Complexity</h3>
-  <p>We explored various translation network architectures:</p>
-  <ul>
-    <li>
-      <b>Linear Mappings:</b> Surprisingly effective for similar-sized models,
-      suggesting underlying representational alignment.
-    </li>
-    <li>
-      <b>Multi-Layer Networks:</b> Provided marginal improvements (2-5%) over
-      linear mappings at significant computational cost.
-    </li>
-    <li>
-      <b>Attention Mechanisms:</b> Showed promise for handling context-dependent
-      translations but required careful tuning.
-    </li>
-  </ul>
+  </ul> -->
 
   <h2 id="discussion">05 Discussion</h2>
   <p>
@@ -1163,7 +1188,8 @@ We can
     >
   </p>
 
-  @inproceedings{andrew_deep_2013, title = {Deep {Canonical} {Correlation} {Analysis}}, url = {https://proceedings.mlr.press/v28/andrew13.html}, abstract
+  @inproceedings{andrew_deep_2013, title = {Deep {Canonical} {Correlation}
+  {Analysis}}, url = {https://proceedings.mlr.press/v28/andrew13.html}, abstract
   = {We introduce Deep Canonical Correlation Analysis (DCCA), a method to learn
   complex nonlinear transformations of two views of data such that the resulting
   representations are highly linearly correlated...}, language = {en}, urldate =
@@ -1313,8 +1339,7 @@ We can
   {2024-11-15}, publisher = {arXiv}, author = {Mehrotra, Anay and Zampetakis,
   Manolis and Kassianik, Paul and Nelson, Blaine and Anderson, Hyrum and Singer,
   Yaron and Karbasi, Amin}, month = oct, year = {2024}, note =
-  {arXiv:2312.02119} }
-  @inproceedings{morcos_insights_2018, title = {Insights on
+  {arXiv:2312.02119} } @inproceedings{morcos_insights_2018, title = {Insights on
   representational similarity in neural networks with canonical correlation},
   abstract = {Uses projection weighted CCA to study representational similarity
   across CNNs and RNNs...}, urldate = {2024-11-15}, author = {Morcos, Ari S. and
