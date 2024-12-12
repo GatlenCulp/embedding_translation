@@ -847,69 +847,54 @@ We can
 
     <li>
       <h3 id="evaluation-metric">Evaluation Metrics</h3>
-      <p>
-        For each dataset, we used an 80-20 train/test split to evaluate
-        performance. We make this split based on a random shuffling of the
-        documents. We choose to split the dataset at the document level instead
-        of the chunk or embedding level, since this was the easiest unit of
-        seperation between datapoints.
-      </p>
       <ul>
-        <li>
-          Our <b>initial metrics</b> aimed corroborate the work in our reference
-          paper:
-          <i>
-            Beyond Benchmarks: Evaluating Embedding Model Similarity for
-            Retrieval Augmented Generation Systems
-          </i>
-          <dt-cite key="caspari2024benchmarksevaluatingembeddingmodel"></dt-cite
-          >. We look primarily into
-          <a
-            href="http://datumorphism.leima.is/cards/machine-learning/measurement/centered-kernel-alignment/"
-            ><b> CKA (Centered Kernel Alignment) </b></a
-          >
-          <!-- We look into the same <b>CKA</b>, <b>Rank</b>, and <b>Jaccard Index</b> metrics to -->
-          <!-- https://datumorphism.leima.is/cards/machine-learning/measurement/centered-kernel-alignment/ -->
-          <!-- TODO: Rank and Jaccard Index, also maybe Adriano can explain this -->
-          , a metric to measure the similarity between feature representations
-          between neural networks. We compare these metrics with the past
-          results and against those of the stitched embeddings. That is to say,
-          if on a single datset we stitch the embeddings of model \(A\) to the
-          embeddings of model \(B\) then we look at the CKA, Rank, and Jaccard
-          Index of the image of the map with the embeddings from model \(B\).
-          <!-- TODO: This last part of doing the stitched embeddings -->
+        <li style="margin-bottom: 1.5em; display: flex; gap: 1em; align-items: baseline;">
+          <i class="fas fa-chart-bar" style="color: #666; width: 1.5em; text-align: center"></i>
+          <div>
+            Our <b>initial metrics</b> aimed corroborate the work in our reference paper:
+            <i>Beyond Benchmarks: Evaluating Embedding Model Similarity for Retrieval Augmented Generation Systems</i>
+            <dt-cite key="caspari2024benchmarksevaluatingembeddingmodel"></dt-cite>. We look primarily into
+            <a href="http://datumorphism.leima.is/cards/machine-learning/measurement/centered-kernel-alignment/"><b>CKA (Centered Kernel Alignment)</b></a>
+            <!-- We look into the same <b>CKA</b>, <b>Rank</b>, and <b>Jaccard Index</b> metrics to -->
+            <!-- https://datumorphism.leima.is/cards/machine-learning/measurement/centered-kernel-alignment/ -->
+            <!-- TODO: Rank and Jaccard Index, also maybe Adriano can explain this -->
+            , a metric to measure the similarity between feature representations between neural networks. We compare these metrics with the past
+            results and against those of the stitched embeddings. That is to say, if on a single datset we stitch the embeddings of model \(A\) to the
+            embeddings of model \(B\) then we look at the CKA, Rank, and Jaccard Index of the image of the map with the embeddings from model \(B\).
+            <!-- TODO: This last part of doing the stitched embeddings -->
+          </div>
         </li>
         <!-- Note: Adriano maybe wants to swap intial with linear connectivity -->
-        <li>
-          Our <b>linear connectivity-alignment metrics</b> are the train and
-          validation accuracy of our stitching models, which we measure by
-          <b>Mean Squared Error (MSE)</b>. To make this more interpretable, we
-          also provide: <b>mean absolute error (MAE)</b> on the validation set,
-          explained <b>variance ratio</b> between the stitched embeddings and
-          the target embeddings,
-          <!-- TODO? -->
-          explained <b>absolute variation</b>
-          between the stitched embeddings and the target embeddings. We also
-          plot
-          <!-- TODO? -->
-          the <b>eigenvalues/singular values</b> of the stitched embeddings and
-          compare their affine shifts to the means of the embedding datasets.
-          This helps us qualitatively estimate whether the embedding matrix may
-          actually belong to a simpler class, such as a rotation.
-          <!-- TODO -->
+        <li style="margin-bottom: 1.5em; display: flex; gap: 1em; align-items: baseline;">
+          <i class="fas fa-ruler" style="color: #666; width: 1.5em; text-align: center"></i>
+          <div>
+            Our <b>linear connectivity-alignment metrics</b> are the train and validation accuracy of our stitching models, which we measure by
+            <b>Mean Squared Error (MSE)</b>. To make this more interpretable, we also provide: <b>mean absolute error (MAE)</b> on the validation set,
+            explained <b>variance ratio</b> between the stitched embeddings and the target embeddings,
+            <!-- TODO? -->
+            explained <b>absolute variation</b>
+            between the stitched embeddings and the target embeddings. We also plot
+            <!-- TODO? -->
+            the <b>eigenvalues/singular values</b> of the stitched embeddings and compare their affine shifts to the means of the embedding datasets.
+            This helps us qualitatively estimate whether the embedding matrix may actually belong to a simpler class, such as a rotation.
+            <!-- TODO -->
+          </div>
         </li>
-        <li>
-          Our <b>interpretation visualizations</b> include a <b>UMAP</b>,
-          <!--<b>PCA</b>, and
-          <b>t-SNE</b> visualization of the embeddings both before and after applying
-          the stitching function. -->
-          <!-- TODO: Fairly sure we are changing to visualize cycles or smthn -->
-          <!-- We use a clustering algorithm and partially
-          automated labeling to help illustrate whether the stitching function
-          preserves relations. We compare the clusters both before stitching,
-          after stitching, and for the target embeddings. We also include a few
-          kernel tables randomly chosen and cherry-picked to illustrate, from
-          another angle, whether relations are preserved. -->
+        <li style="margin-bottom: 1.5em; display: flex; gap: 1em; align-items: baseline;">
+          <i class="fas fa-eye" style="color: #666; width: 1.5em; text-align: center"></i>
+          <div>
+            Our <b>interpretation visualizations</b> include a <b>UMAP</b>.
+            <!--<b>PCA</b>, and
+            <b>t-SNE</b> visualization of the embeddings both before and after applying
+            the stitching function. -->
+            <!-- TODO: Fairly sure we are changing to visualize cycles or smthn -->
+            <!-- We use a clustering algorithm and partially
+            automated labeling to help illustrate whether the stitching function
+            preserves relations. We compare the clusters both before stitching,
+            after stitching, and for the target embeddings. We also include a few
+            kernel tables randomly chosen and cherry-picked to illustrate, from
+            another angle, whether relations are preserved. -->
+          </div>
         </li>
         <!-- <li>Generating embeddings on test datasets</li> -->
       </ul>
@@ -1328,7 +1313,8 @@ We can
   {2024-11-15}, publisher = {arXiv}, author = {Mehrotra, Anay and Zampetakis,
   Manolis and Kassianik, Paul and Nelson, Blaine and Anderson, Hyrum and Singer,
   Yaron and Karbasi, Amin}, month = oct, year = {2024}, note =
-  {arXiv:2312.02119} } @inproceedings{morcos_insights_2018, title = {Insights on
+  {arXiv:2312.02119} }
+  @inproceedings{morcos_insights_2018, title = {Insights on
   representational similarity in neural networks with canonical correlation},
   abstract = {Uses projection weighted CCA to study representational similarity
   across CNNs and RNNs...}, urldate = {2024-11-15}, author = {Morcos, Ari S. and
