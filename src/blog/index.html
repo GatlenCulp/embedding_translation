@@ -142,10 +142,10 @@ We can
 
   <p>
     The paper
-    <i
-      >Beyond Benchmarks: Evaluating Embedding Model Similarity for Retrieval
-      Augmented Generation Systems</i
-    >
+    <i>
+      Beyond Benchmarks: Evaluating Embedding Model Similarity for Retrieval
+      Augmented Generation Systems
+    </i>
     <dt-cite key="caspari2024benchmarksevaluatingembeddingmodel"></dt-cite>
     explored embedding model representational similarity through techniques like
     top-k search retrieval results and Centered Kernel Alignment (CKA). We take
@@ -199,10 +199,11 @@ We can
       $\mathcal{E}_M \subset \mathbb{R}^d$, where $d$ is the embedding
       dimension. While mathematically these may share the same dimension (e.g.,
       $d=1024$), each model's unique mapping creates a distinct semantic space.
-      <dt-fn
-        >Note: This is not a formal or rigorous definition, rather a useful
-        concept to name.</dt-fn
-      >
+      <!-- why isn't this rendering -->
+      <dt-fn>
+        Note: This is not a formal or rigorous definition, rather a useful
+        concept to name.
+      </dt-fn>
       <!-- subseteq not working -->
     </li>
 
@@ -214,7 +215,11 @@ We can
       , we call a linear transformation between two embedding spaces a "stitch".
       For models $A$ and $B$, a stitch $S_{A\rightarrow B}: \mathcal{E}_A
       \rightarrow \mathcal{E}_B$ is a linear map that attempts to preserve
-      semantic relationships. This
+      semantic relationships.
+      <dt-fn>
+        (Note: Throughout this blog post, we use the terms linear and affine
+        identically, much to the chagrin of mathematicians.)
+      </dt-fn>
     </li>
     <!-- Wait am I dumb, why did we use affine specifically and NOT linear? With Linear we
      could easily compose new translations by just doing the matrix multiplication. -->
@@ -844,27 +849,34 @@ We can
       <p>
         For each dataset, we used an 80-20 train/test split to evaluate
         performance. We make this split based on a random shuffling of the
-        documents (the permutation is selected uniformly at random from the set
-        of available permutations). We choose to split the dataset at the
-        document level instead of the chunk or embedding level, since this marks
-        the seperation between the inputs to our work and the outputs.
+        documents. We choose to split the dataset at the document level instead
+        of the chunk or embedding level, since this was the easiest unit of
+        seperation between datapoints.
       </p>
       <ul>
         <li>
-          Our <b>initial metrics</b> help corroborate the past work we are
-          primarily based off to:
-          <i
-            >Beyond Benchmarks: Evaluating Embedding Model Similarity for
-            Retrieval Augmented Generation Systems</i
-          >
+          Our <b>initial metrics</b> aimed corroborate the work in our reference
+          paper:
+          <i>
+            Beyond Benchmarks: Evaluating Embedding Model Similarity for
+            Retrieval Augmented Generation Systems
+          </i>
           <dt-cite key="caspari2024benchmarksevaluatingembeddingmodel"></dt-cite
-          >. We look into the same CKA, Rank, and Jaccard Index metrics to
-          compare with the past results. We then compare with the same metrics
-          applied on the linearly-mapped embeddings. That is to say, if on a
-          single datset we map <i>from</i> the embeddings of model X
-          <i>to</i> the embeddings of model Y then we look at the CKA, Rank, and
-          Jaccard Index of the image of the map with the embeddings from model
-          Y.
+          >. We look primarily into
+          <a
+            href="http://datumorphism.leima.is/cards/machine-learning/measurement/centered-kernel-alignment/"
+            ><b> CKA (Centered Kernel Alignment) </b></a
+          >
+          <!-- We look into the same <b>CKA</b>, <b>Rank</b>, and <b>Jaccard Index</b> metrics to -->
+          <!-- https://datumorphism.leima.is/cards/machine-learning/measurement/centered-kernel-alignment/ -->
+          <!-- TODO: Rank and Jaccard Index, also maybe Adriano can explain this -->
+          , a metric to measure the similarity between feature representations
+          between neural networks. We compare these metrics with the past
+          results and against those of the stitched embeddings. That is to say,
+          if on a single datset we stitch the embeddings of model \(A\) to the
+          embeddings of model \(B\) then we look at the CKA, Rank, and Jaccard
+          Index of the image of the map with the embeddings from model \(B\).
+          <!-- TODO: This last part of doing the stitched embeddings -->
         </li>
         <li>
           Our <b>linear connectivity-alignment metrics</b> are the train and
