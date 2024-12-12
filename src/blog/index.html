@@ -207,14 +207,17 @@ We can
     </li>
 
     <li style="margin-bottom: 1em">
-      <b>Stitch:</b> Following previous literature<dt-cite
+      <b>Stitch:</b> Following previous literature
+      <dt-cite
         key="lenc2015understandingimagerepresentationsmeasuring"
-      ></dt-cite
-      >, we call a linear transformation between two embedding spaces a
-      "stitch". For models $A$ and $B$, a stitch $S_{A\rightarrow B}:
-      \mathcal{E}_A \rightarrow \mathcal{E}_B$ is a linear map that attempts to
-      preserve semantic relationships.
+      ></dt-cite>
+      , we call a linear transformation between two embedding spaces a "stitch".
+      For models $A$ and $B$, a stitch $S_{A\rightarrow B}: \mathcal{E}_A
+      \rightarrow \mathcal{E}_B$ is a linear map that attempts to preserve
+      semantic relationships. This
     </li>
+    <!-- Wait am I dumb, why did we use affine specifically and NOT linear? With Linear we
+     could easily compose new translations by just doing the matrix multiplication. -->
 
     <li style="margin-bottom: 1em">
       <b>Connectivity-Alignment:</b> We say two embedding spaces $\mathcal{E}_A$
@@ -544,30 +547,29 @@ We can
   </p>
 
   <h2 id="methodology">03 Methodology</h2>
+  <!-- TODO: Make an actual methodology-overview -->
   <h3 id="methodology-overview">Overview</h3>
 
   <p>
-    We systematically evaluated embedding translation across different model
-    architectures, embedding spaces, and datasets. Our methodology follows a
-    rigorous experimental setup:
+    Our investigation into embedding model similarity followed a systematic
+    experimental approach spanning multiple model architectures, embedding
+    spaces, and datasets. The methodology consists of four main components:
+    model selection, dataset selection, stitch architecture design, evaluation
+    framework, and embedding parameter configuration.
   </p>
+
+  <!-- TODO: Produce a table indicating cartesian product of models x datasets x ?? idk I guess this is fine.-->
 
   <ol>
     <li>
-      <h3 id="model-selection">Model and Dataset Selection</h3>
+      <h3 id="model-selection">Embedding Model Selection</h3>
       We evaluated translation quality across several
       <b>embedding models</b> available on huggingface and via the OpenAI API.
-      We also varied the <b>datasets</b> we embedded. These datasets were
-      selected to match the most similar prior work: Beyond Benchmarks for
-      comparability and reproduceability. Each dataset was one of the MTEB
-      embedding language model datasets
-      <dt-cite key="muennighoff2023mtebmassivetextembedding"></dt-cite>. Each
-      dataset spans thousands (or more) short documents. Unlike prior work, we
-      randomly shortened each dataset to a maximum of 20K documents train and 5K
-      documents validation, since we were computatioally constrained for this
-      project. We also excluded the Cohere models since we did not have API
-      access (which is not free except at prohibitively low request rates) and
-      the Mistral model, since it was too big for our GPU.
+      These models were selected to match the most similar prior work from
+      <i>Beyond Benchmarks</i> for comparability and reproduceability. We also
+      excluded the Cohere models since we did not have API access (which is not
+      free except at prohibitively low request rates) and the Mistral model,
+      since it was too big for our GPU.
       <pre><code class="language-python">
   MODEL_NAMES = [
     "WhereIsAI/UAE-Large-V1",
@@ -588,27 +590,253 @@ We can
     "openai/text-embedding-3-large",
     "openai/text-embedding-3-small",
     ]
-    DATASETS = [
-      "arguana",    # Around 10K Short documents
-      "fiqa",       # Around 50K, shortened to 20K
-      "scidocs",    # Around 25K, shortened to 20K
-      "nfcorpus",   # Around 5K
-      "hotpotqa",   # Over 100K, shortened to 20K
-      "trec-covid", # At least 20K, shortened to 20K
-    ]
       </code></pre>
+    </li>
+    <li>
+      <h3 id="dataset-selection">Dataset Selection</h3>
+      Each dataset we tested was one of the MTEB embedding language model
+      datasets
+      <dt-cite key="muennighoff2023mtebmassivetextembedding"></dt-cite>
+      chosen for their relevancy to many embedding tasks. Each dataset spans
+      thousands of short documents. Unlike the <i>Beyond Baselines</i> paper, we
+      randomly shortened each dataset to a maximum of 20K documents train and 5K
+      documents validation, since we were computationally constrained for this
+      project.
+      <!-- TODO: @Adriano, explain what happened here. -->
+      <pre><code class="language-python">
+  DATASETS = [
+    "arguana",    # Around 10K Short documents
+    "fiqa",       # Around 50K, shortened to 20K
+    "scidocs",    # Around 25K, shortened to 20K
+    "nfcorpus",   # Around 5K
+    "hotpotqa",   # Over 100K, shortened to 20K
+    "trec-covid", # At least 20K, shortened to 20K
+  ]
+    </code></pre>
+
+      You can read more about the datasets below:
+
+      <style>
+        .dataset-descriptions details[open] .fa-chevron-right {
+          transform: rotate(90deg);
+        }
+        .dataset-descriptions .fa-chevron-right {
+          transition: transform 0.2s;
+        }
+      </style>
+
+      <div class="dataset-descriptions">
+        <ul style="list-style: none; padding-left: 0">
+          <li style="margin-bottom: 1.5em">
+            <details>
+              <summary
+                style="
+                  display: flex;
+                  gap: 1em;
+                  align-items: baseline;
+                  cursor: pointer;
+                "
+              >
+                <i
+                  class="fas fa-chevron-right"
+                  style="color: #666; width: 1em; text-align: center"
+                ></i>
+                <div><b>ArguAna</b></div>
+                <i
+                  class="fas fa-comments"
+                  style="color: #666; width: 1.5em; text-align: center"
+                ></i>
+                <!-- [NEW] Discussion icon -->
+              </summary>
+              <div style="margin-left: 2em; margin-top: 0.5em">
+                A dataset of ~10K argument pairs from online discussions, where
+                each pair contains one argument in favor and one against a given
+                topic. Useful for evaluating semantic understanding of
+                argumentative text and stance detection.
+              </div>
+            </details>
+          </li>
+
+          <li style="margin-bottom: 1.5em">
+            <details>
+              <summary
+                style="
+                  display: flex;
+                  gap: 1em;
+                  align-items: baseline;
+                  cursor: pointer;
+                "
+              >
+                <i
+                  class="fas fa-chevron-right"
+                  style="color: #666; width: 1em; text-align: center"
+                ></i>
+                <div><b>FiQA</b></div>
+                <i
+                  class="fas fa-chart-line"
+                  style="color: #666; width: 1.5em; text-align: center"
+                ></i>
+                <!-- [NEW] Finance icon -->
+              </summary>
+              <div style="margin-left: 2em; margin-top: 0.5em">
+                A financial domain dataset containing ~50K text snippets from
+                financial news and social media platforms. Includes questions,
+                answers, and sentiment analysis annotations specific to
+                financial topics.
+              </div>
+            </details>
+          </li>
+
+          <li style="margin-bottom: 1.5em">
+            <details>
+              <summary
+                style="
+                  display: flex;
+                  gap: 1em;
+                  align-items: baseline;
+                  cursor: pointer;
+                "
+              >
+                <i
+                  class="fas fa-chevron-right"
+                  style="color: #666; width: 1em; text-align: center"
+                ></i>
+                <div><b>SciDocs</b></div>
+                <i
+                  class="fas fa-flask"
+                  style="color: #666; width: 1.5em; text-align: center"
+                ></i>
+                <!-- [NEW] Science icon -->
+              </summary>
+              <div style="margin-left: 2em; margin-top: 0.5em">
+                A collection of ~25K scientific documents and paper abstracts
+                from various fields. Designed to evaluate scientific document
+                understanding and recommendation systems.
+              </div>
+            </details>
+          </li>
+
+          <li style="margin-bottom: 1.5em">
+            <details>
+              <summary
+                style="
+                  display: flex;
+                  gap: 1em;
+                  align-items: baseline;
+                  cursor: pointer;
+                "
+              >
+                <i
+                  class="fas fa-chevron-right"
+                  style="color: #666; width: 1em; text-align: center"
+                ></i>
+                <div><b>NFCorpus</b></div>
+                <i
+                  class="fas fa-heartbeat"
+                  style="color: #666; width: 1.5em; text-align: center"
+                ></i>
+                <!-- [NEW] Medical icon -->
+              </summary>
+              <div style="margin-left: 2em; margin-top: 0.5em">
+                A dataset of ~5K medical documents from NLM (National Library of
+                Medicine), including clinical trials, systematic reviews, and
+                medical news articles. Used for evaluating biomedical
+                information retrieval.
+              </div>
+            </details>
+          </li>
+
+          <li style="margin-bottom: 1.5em">
+            <details>
+              <summary
+                style="
+                  display: flex;
+                  gap: 1em;
+                  align-items: baseline;
+                  cursor: pointer;
+                "
+              >
+                <i
+                  class="fas fa-chevron-right"
+                  style="color: #666; width: 1em; text-align: center"
+                ></i>
+                <div><b>HotpotQA</b></div>
+                <i
+                  class="fas fa-question-circle"
+                  style="color: #666; width: 1.5em; text-align: center"
+                ></i>
+                <!-- [NEW] Q&A icon -->
+              </summary>
+              <div style="margin-left: 2em; margin-top: 0.5em">
+                A large question-answering dataset with over 100K
+                question-answer pairs. Questions require finding and reasoning
+                over multiple supporting documents to arrive at the answer,
+                testing multi-hop inference capabilities.
+              </div>
+            </details>
+          </li>
+
+          <li style="margin-bottom: 1.5em">
+            <details>
+              <summary
+                style="
+                  display: flex;
+                  gap: 1em;
+                  align-items: baseline;
+                  cursor: pointer;
+                "
+              >
+                <i
+                  class="fas fa-chevron-right"
+                  style="color: #666; width: 1em; text-align: center"
+                ></i>
+                <div><b>TREC-COVID</b></div>
+                <i
+                  class="fas fa-virus"
+                  style="color: #666; width: 1.5em; text-align: center"
+                ></i>
+                <!-- [NEW] COVID icon -->
+              </summary>
+              <div style="margin-left: 2em; margin-top: 0.5em">
+                A dataset of ~20K scientific articles related to COVID-19 from
+                the CORD-19 collection. Includes queries from biomedical
+                researchers about COVID-19 and relevant document judgments,
+                designed to evaluate biomedical literature search systems.
+              </div>
+            </details>
+          </li>
+        </ul>
+      </div>
     </li>
 
     <li>
       <h3 id="translation-architecture">Stitch Architecture</h3>
-      We implemented stitch functions only using affine linear layers. Each one
-      has input dimension equal to the embedding dimensionality of the source
-      space and output dimension equal to the embedding dimensionality of the
-      target space. We considered trying more complicated functions but it was
-      not necessary for high accuracy as shown below. Future work could consider
-      optimizing over simpler transformations, such as rigid rotations (linear
-      isometries) permutations to better quantify the connectivity-alignment of
-      different embedding spaces.
+      <p>
+        We implemented stitch functions using Ordinary Least Squares (OLS) to
+        find a best fitting affine function transforming the source embeddings
+        to the target embeddings. Originally, this was to be a baseline
+        accuracy, and we intended to try more complicated functions but it was
+        unnecessary for high accuracy as shown below.
+      </p>
+      <p>
+        <!-- Maybe move to a future work section? -->
+        Future work may explore how non-linearities and more complex functions
+        could improve accuracy, for which there is reason to believe. Consider
+        that, as an embedding model is trained on more data, regions of an
+        embedding space may experience non-linear expansion as certain related
+        concepts tend to disentangle or as the relationship between different
+        concepts changes such that there exists no affine mapping from the model
+        earlier in training and the model later in training. This would not be
+        terribly
+      </p>
+      <p>
+        Future work could also consider optimizing over even simpler
+        transformations, such as rigid rotations (linear isometries)
+        permutations to better quantify the connectivity-alignment of different
+        embedding spaces.
+        <!-- Why isometric? Embedding space B could just be embedding space A
+       scaled x2 but maybe regularization beats this out idk. Uncertain whether to simpler transform is cash money. -->
+      </p>
     </li>
 
     <li>
@@ -827,46 +1055,14 @@ We can
   <p>
     Our experimental results revealed several key insights about semantic
     representation alignment in LLMs:
+    <!-- Explore which datasets have better/worse loss -->
+    <!-- Note: Maybe have a future work, maybe have a note regarding the tokenization bug that was found. -->
+    <!-- Maybe I should talk about my universal UMAP idea. Having many 2D projections -->
   </p>
 
-  <h3 id="theoretical-implications">Theoretical Implications</h3>
-  <ul>
-    <li>
-      <b>Universal Features:</b> The high performance of linear mappings (>0.85
-      cosine similarity) between similar-sized models provides strong evidence
-      for shared semantic representations
-    </li>
-    <li>
-      <b>Scale-Dependent Representations:</b> We observed a consistent
-      degradation in translation quality (~15% drop) when mapping between models
-      of significantly different scales
-    </li>
-    <li>
-      <b>Domain Adaptation:</b> Performance variations across domains (0.89 for
-      news vs 0.67 for code) suggest domain-specific representation patterns
-    </li>
-  </ul>
-
-  <h3 id="practical-applications">Practical Applications</h3>
-  <ul>
-    <li>
-      <b>Cost Optimization:</b> For general-purpose applications, smaller models
-      with translation layers can effectively approximate larger model
-      representations at reduced computational cost.
-    </li>
-    <li>
-      <b>Model Selection:</b> Our results provide guidance for selecting model
-      scales based on domain-specific requirements and computational
-      constraints.
-    </li>
-    <li>
-      <b>Standardization:</b> The success of linear mappings suggests potential
-      for standardized embedding spaces across different models.
-    </li>
-  </ul>
-
   <h2 id="conclusion">06 Conclusion</h2>
-  <p>
+  <!-- Below was llm produced -->
+  <!-- <p>
     Through extensive experimentation across multiple model architectures and
     scales, we have demonstrated that LLMs do indeed learn remarkably similar
     semantic representations, with translation quality reaching up to 0.89
@@ -881,7 +1077,7 @@ We can
     existing embeddings rather than recomputing them with new models. We have
     released our translation models and evaluation framework to facilitate
     further research in this direction.
-  </p>
+  </p> -->
 </dt-article>
 
 <dt-appendix>
