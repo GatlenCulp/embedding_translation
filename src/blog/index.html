@@ -1,8 +1,15 @@
-<!DOCTYPE html>
+<!doctype html>
 <meta charset="utf-8" />
 <script src="./libs/distillpub.template.v1.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+/>
+<script
+  id="MathJax-script"
+  async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+></script>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/9.4.3/mermaid.min.js"></script>
 <script>
@@ -59,21 +66,35 @@ We can
 <dt-article class="centered">
   <div class="l-middle">
     <figure>
-      <img src="./header.png" alt="Header visualization of semantic alignment across language models"
-        style="width: 100%; max-height: 400px; object-fit: cover" />
+      <img
+        src="./header.png"
+        alt="Header visualization of semantic alignment across language models"
+        style="width: 100%; max-height: 400px; object-fit: cover"
+      />
     </figure>
   </div>
   <h1 id="title">
-    LEAD: Linear Embedding Alignment across Deep Neural Network Language Models' Representations
+    LEAD: Linear Embedding Alignment across Deep Neural Network Language Models'
+    Representations
   </h1>
 
-  <div class="authors-section l-middle" style="text-align: center; margin-top: 2em">
+  <div
+    class="authors-section l-middle"
+    style="text-align: center; margin-top: 2em"
+  >
     <div class="authors" style="margin-bottom: 1em">
       <span style="font-size: 1.2em">
-        <a href="https://gatlen.notion.site" style="text-decoration: none; color: #333">Gatlen Culp</a>
+        <a
+          href="https://gatlen.notion.site"
+          style="text-decoration: none; color: #333"
+          >Gatlen Culp</a
+        >
         <span style="color: #666; margin: 0 0.5em">·</span>
-        <a href="https://superurop.mit.edu/scholars/adriano-hernandez/"
-          style="text-decoration: none; color: #333">Adriano Hernandez</a>
+        <a
+          href="https://superurop.mit.edu/scholars/adriano-hernandez/"
+          style="text-decoration: none; color: #333"
+          >Adriano Hernandez</a
+        >
       </span>
     </div>
 
@@ -89,266 +110,327 @@ We can
   <h2 id="abstract">Abstract</h2>
   <p>
     Recent advances in Large Language Models (LLMs) have demonstrated their
-    remarkable ability to capture semantic information. We investigate whether different
-    language embedding models learn similar semantic representations despite variations in
-    architecture, training data, and initialization. While previous work explored model similarity
-    through top-k results and Centered Kernel Alignment (CKA), yielding mixed results, we introduce
-    a linear connectivity analysis approach: training linear mappings between embedding spaces.
-    We define two spaces as connectivity-aligned if these mappings achieve low mean squared error,
-    indicating approximate bijectivity.
+    remarkable ability to capture semantic information. We investigate whether
+    different language embedding models learn similar semantic representations
+    despite variations in architecture, training data, and initialization. While
+    previous work explored model similarity through top-k results and Centered
+    Kernel Alignment (CKA), yielding mixed results, we introduce a linear
+    connectivity analysis approach: training linear mappings between embedding
+    spaces. We define two spaces as connectivity-aligned if these mappings
+    achieve low mean squared error, indicating approximate bijectivity.
   </p>
   <p>
-    Our analysis spans 6 embedding datasets (5,000-20,000 documents) and 18 models
-    (between 20-30 layers, including both open-source and OpenAI models). Results demonstrate significant
-    connectivity-alignment between most models' semantic spaces, with notable exceptions.
-    These findings support both the Linear Representation Hypothesis and, more tentatively,
-    the Platonic Representation Hypothesis. Practically, our approach could reduce the cost of
-    merging embedding datasets by a factor of 20 or more.
-
-    Our datasets, code, and results are publicly available on GitHub and Hugging Face.
+    Our analysis spans 6 embedding datasets (5,000-20,000 documents) and 18
+    models (between 20-30 layers, including both open-source and OpenAI models).
+    Results demonstrate significant connectivity-alignment between most models'
+    semantic spaces, with notable exceptions. These findings support both the
+    Linear Representation Hypothesis and, more tentatively, the Platonic
+    Representation Hypothesis. Practically, our approach could reduce the cost
+    of merging embedding datasets by a factor of 20 or more. Our datasets, code,
+    and results are publicly available on GitHub and Hugging Face.
   </p>
 
   <h2 id="introduction">00 Introduction & Terminology</h2>
   <p>
-    Modern language models convert text into dense vectors called embeddings, which capture semantic meaning in a
-    high-dimensional space. We investigate whether different models learn similar semantic representations despite
-    variations in architecture, training data, and initialization. If these representations are indeed (approximately)
-    universal, we could leverage this to efficiently translate between different models' embeddings.
+    Modern language models convert text into dense vectors called embeddings,
+    which capture semantic meaning in a high-dimensional space. We investigate
+    whether different models learn similar semantic representations despite
+    variations in architecture, training data, and initialization. If these
+    representations are indeed (approximately) universal, we could leverage this
+    to efficiently translate between different models' embeddings.
   </p>
 
   <p>
-    The paper <i>Beyond Benchmarks: Evaluating Embedding Model Similarity for Retrieval Augmented
-      Generation Systems</i>
-    <dt-cite key="caspari2024benchmarksevaluatingembeddingmodel"></dt-cite> explored embedding model representational
-    similarity through techniques like top-k search retrieval results and Centered Kernel Alignment (CKA).
-    We take their methodology expand upon it here by systematically studying whether there exists a method
-    to cheaply determine and translate between embeddings of models with similar characteristics.
-    Our approach reveals whether models learn similar semantic features that can be recovered through
-    linear transformations, even if those features are encoded differently across models.
+    The paper
+    <i
+      >Beyond Benchmarks: Evaluating Embedding Model Similarity for Retrieval
+      Augmented Generation Systems</i
+    >
+    <dt-cite key="caspari2024benchmarksevaluatingembeddingmodel"></dt-cite>
+    explored embedding model representational similarity through techniques like
+    top-k search retrieval results and Centered Kernel Alignment (CKA). We take
+    their methodology expand upon it here by systematically studying whether
+    there exists a method to cheaply determine and translate between embeddings
+    of models with similar characteristics. Our approach reveals whether models
+    learn similar semantic features that can be recovered through linear
+    transformations, even if those features are encoded differently across
+    models.
   </p>
 
   <div class="l-page side">
-      <div class="l-page">
-        <figure class="diagram-container">
-          <!-- First, create a container for the diagram -->
-           <!-- Don't format :( -->
-          <div class="mermaid"> 
-            graph TD
-                %% Define the main text input
-                Text[/"Input Text t"/]
-                
-                %% Define embedding spaces as subgraphs
-                subgraph "Embedding Space A"
-                    %% EA[("Model A's Space")]
-                    NativeA["Native Embedding A(t)"]
-                end
-                
-                subgraph "Embedding Space B"
-                    %% EB[("Model B's Space")]
-                    NativeB["Native Embedding B(t)"]
-                    StitchedAB["Stitched Embeddings S(A(t))"]
-                end
-                
-                %% Define the models and transformations
-                ModelA["Model A"]
-                ModelB["Model B"]
-                Stitch{"Stitch S\n(from A to B)"}
-                
-                %% Define the relationships
-                Text --> ModelA
-                Text --> ModelB
-                ModelA --> NativeA
-                ModelB --> NativeB
-                NativeA --> Stitch
-                Stitch --> StitchedAB
-                
-                %% Add labels for evaluation
-                MSE{{"MSE( S(A(t)), B(t) ) < ε"}}
-                
-                StitchedAB -.-> MSE
-                NativeB -.-> MSE
-                
-                %% Add styling
-                classDef space fill:#f0f4f8,stroke:#a3bffa
-                classDef model fill:#ebf4ff,stroke:#63b3ed
-                classDef stitch fill:#faf5ff,stroke:#b794f4
-                classDef evaluation fill:#f0fff4,stroke:#68d391
-                
-                class EA,EB space
-                class ModelA,ModelB model
-                class Stitch stitch
-                class MSE evaluation
-          </div>
-          <figcaption>
-            Relationship between native embeddings, stitched embeddings, and embedding spaces.
-            The diagram shows how input text is embedded by different models and how embeddings
-            can be transformed between spaces using stitches.
-          </figcaption>
-        </figure>
-      </div>
+    <div class="l-page">
+      <figure class="diagram-container">
+        <!-- First, create a container for the diagram -->
+        <!-- Don't format :( -->
+        <div class="mermaid">
+          graph TD %% Define the main text input Text[/"Input Text t"/] %%
+          Define embedding spaces as subgraphs subgraph "Embedding Space A" %%
+          EA[("Model A's Space")] NativeA["Native Embedding A(t)"] end subgraph
+          "Embedding Space B" %% EB[("Model B's Space")] NativeB["Native
+          Embedding B(t)"] StitchedAB["Stitched Embeddings S(A(t))"] end %%
+          Define the models and transformations ModelA["Model A"] ModelB["Model
+          B"] Stitch{"Stitch S\n(from A to B)"} %% Define the relationships Text
+          --> ModelA Text --> ModelB ModelA --> NativeA ModelB --> NativeB
+          NativeA --> Stitch Stitch --> StitchedAB %% Add labels for evaluation
+          MSE{{"MSE( S(A(t)), B(t) ) < ε"}} StitchedAB -.-> MSE NativeB -.-> MSE
+          %% Add styling classDef space fill:#f0f4f8,stroke:#a3bffa classDef
+          model fill:#ebf4ff,stroke:#63b3ed classDef stitch
+          fill:#faf5ff,stroke:#b794f4 classDef evaluation
+          fill:#f0fff4,stroke:#68d391 class EA,EB space class ModelA,ModelB
+          model class Stitch stitch class MSE evaluation
+        </div>
+        <figcaption>
+          Relationship between native embeddings, stitched embeddings, and
+          embedding spaces. The diagram shows how input text is embedded by
+          different models and how embeddings can be transformed between spaces
+          using stitches.
+        </figcaption>
+      </figure>
+    </div>
   </div>
 
-  <p>
-    We define key terminology and notation used throughout this paper:
-  </p>
+  <p>We define key terminology and notation used throughout this paper:</p>
 
   <ul style="list-style: none; padding-left: 0">
     <li style="margin-bottom: 1em">
-      <b>Embedding Space:</b> The set of all possible embeddings produced by a specific model,
-      along with their feature composition, and relationships to one another. For a model $M$, we denote its 
-      embedding space as $\mathcal{E}_M \subset \mathbb{R}^d$, where $d$ is the embedding dimension. While mathematically
-      these may share the same dimension (e.g., $d=1024$), each model's unique mapping creates a distinct semantic space.
-      <dt-fn>Note: This is not a formal or rigorous definition, rather a useful concept to name.</dt-fn>
+      <b>Embedding Space:</b> The set of all possible embeddings produced by a
+      specific model, along with their feature composition, and relationships to
+      one another. For a model $M$, we denote its embedding space as
+      $\mathcal{E}_M \subset \mathbb{R}^d$, where $d$ is the embedding
+      dimension. While mathematically these may share the same dimension (e.g.,
+      $d=1024$), each model's unique mapping creates a distinct semantic space.
+      <dt-fn
+        >Note: This is not a formal or rigorous definition, rather a useful
+        concept to name.</dt-fn
+      >
       <!-- subseteq not working -->
     </li>
 
     <li style="margin-bottom: 1em">
       <b>Stitch:</b> Following previous literature<dt-cite
-        key="lenc2015understandingimagerepresentationsmeasuring"></dt-cite>,
-      we call a linear transformation between two embedding spaces a "stitch". For models $A$ and $B$,
-      a stitch $S_{A\rightarrow B}: \mathcal{E}_A \rightarrow \mathcal{E}_B$ is a linear map
-      that attempts to preserve semantic relationships.
+        key="lenc2015understandingimagerepresentationsmeasuring"
+      ></dt-cite
+      >, we call a linear transformation between two embedding spaces a
+      "stitch". For models $A$ and $B$, a stitch $S_{A\rightarrow B}:
+      \mathcal{E}_A \rightarrow \mathcal{E}_B$ is a linear map that attempts to
+      preserve semantic relationships.
     </li>
 
     <li style="margin-bottom: 1em">
-      <b>Connectivity-Alignment:</b> We say two embedding spaces $\mathcal{E}_A$ and $\mathcal{E}_B$ are connectivity-aligned
-      if there exists a stitch $S_{A\rightarrow B}$ that achieves low mean squared error:
-      $$\text{MSE}(S_{A\rightarrow B}) = \frac{1}{n}\sum_{i=1}^n \|S_{A\rightarrow B}(x_i) - y_i\|^2 < \epsilon$$
-      where $x_i \in \mathcal{E}_A$, $y_i \in \mathcal{E}_B$ are corresponding embeddings, and $\epsilon$ is a threshold.
-      This indicates the spaces preserve similar semantic features, albeit potentially encoded differently.
-      <dt-fn>This is perhaps analagous to (approximate) isomorphism for vector spaces.</dt-fn>
+      <b>Connectivity-Alignment:</b> We say two embedding spaces $\mathcal{E}_A$
+      and $\mathcal{E}_B$ are connectivity-aligned if there exists a stitch
+      $S_{A\rightarrow B}$ that achieves low mean squared error:
+      $$\text{MSE}(S_{A\rightarrow B}) = \frac{1}{n}\sum_{i=1}^n
+      \|S_{A\rightarrow B}(x_i) - y_i\|^2 < \epsilon$$ where $x_i \in
+      \mathcal{E}_A$, $y_i \in \mathcal{E}_B$ are corresponding embeddings, and
+      $\epsilon$ is a threshold. This indicates the spaces preserve similar
+      semantic features, albeit potentially encoded differently.
+      <dt-fn
+        >This is perhaps analagous to (approximate) isomorphism for vector
+        spaces.</dt-fn
+      >
     </li>
 
     <li style="margin-bottom: 1em">
-      <b>Native vs. Stitched Embeddings:</b> For a text input $t$ and model $M$, we denote its native embedding as 
-      $M(t) \in \mathcal{E}_M$. When we map embeddings from model $A$ to model $B$'s space using a stitch, 
-      we denote the stitched embedding as $S_{A\rightarrow B}(A(t)) \in \mathcal{E}_B$.
+      <b>Native vs. Stitched Embeddings:</b> For a text input $t$ and model $M$,
+      we denote its native embedding as $M(t) \in \mathcal{E}_M$. When we map
+      embeddings from model $A$ to model $B$'s space using a stitch, we denote
+      the stitched embedding as $S_{A\rightarrow B}(A(t)) \in \mathcal{E}_B$.
     </li>
   </ul>
 
-
   <p>
-    Our key hypothesis is that embedding models of similar scale (parameters, training data size, etc.)
-    are connectivity-aligned. The results confirm this is a common phenomenon across many widely-used models,
-    though some interesting exceptions exist.
+    Our key hypothesis is that embedding models of similar scale (parameters,
+    training data size, etc.) are connectivity-aligned. The results confirm this
+    is a common phenomenon across many widely-used models, though some
+    interesting exceptions exist.
     <!-- Are there exceptions we found? delete/change otherwise -->
-    This finding has both theoretical implications for understanding
-    how language models represent meaning and practical applications for efficient embedding translation.
+    This finding has both theoretical implications for understanding how
+    language models represent meaning and practical applications for efficient
+    embedding translation.
   </p>
 
   <h2 id="motivation">01 Motivation</h2>
 
   <p>
-    Imagine you've just spent weeks processing millions of documents through a language model to create semantic search
-    capabilities. Then, a more powerful model is released – but recomputing all those embeddings would cost thousands of
-    dollars and days of processing time. What if there was a better way?
+    Imagine you've just spent weeks processing millions of documents through a
+    language model to create semantic search capabilities. Then, a more powerful
+    model is released – but recomputing all those embeddings would cost
+    thousands of dollars and days of processing time. What if there was a better
+    way?
   </p>
 
   <div class="l-page side">
     <figure>
       <img src="./figs/mantis.gif" alt="Exploring a dataset with MantisAI" />
-      <figcaption>Exploring semantic relationships in data with MantisAI's visualization tools</figcaption>
+      <figcaption>
+        Exploring semantic relationships in data with MantisAI's visualization
+        tools
+      </figcaption>
     </figure>
   </div>
 
   <h3 id="origin">The Origin Story</h3>
   <p>
-    This research emerged from real-world challenges at <a href="https://home.withmantis.com/">MantisAI</a>, where we
-    help organizations understand and visualize large document collections. Our customers frequently needed to switch
-    between different embedding models – sometimes prioritizing accuracy, other times speed or cost. But each switch
-    required reprocessing entire datasets, creating significant computational overhead and compatibility challenges
-    between workspaces.
+    This research emerged from real-world challenges at
+    <a href="https://home.withmantis.com/">MantisAI</a>, where we help
+    organizations understand and visualize large document collections. Our
+    customers frequently needed to switch between different embedding models –
+    sometimes prioritizing accuracy, other times speed or cost. But each switch
+    required reprocessing entire datasets, creating significant computational
+    overhead and compatibility challenges between workspaces.
   </p>
 
-  <ul>
-    <li>
-      <i class="fas fa-flask"></i>
+  <ul style="list-style: none; padding-left: 0">
+    <li
+      style="
+        margin-bottom: 1.5em;
+        display: flex;
+        gap: 1em;
+        align-items: baseline;
+      "
+    >
+      <i
+        class="fas fa-flask"
+        style="color: #666; width: 1.5em; text-align: center"
+      ></i>
       <div>
-        <p>
-          <b>Theoretical Foundations:</b> Our work investigates two fundamental hypotheses about how neural networks
-          understand language. The <a href="https://phillipi.github.io/prh/">Platonic Representation Hypothesis</a>
-          suggests that models naturally converge toward similar ways of representing meaning, even when trained
-          differently. The Linear Representation Hypothesis proposes these representations are linearly decomposable,
-          allowing simple transformations between models.
-        </p>
+        <b>Theoretical Foundations:</b> Our work investigates two fundamental
+        hypotheses about how neural networks understand language. The
+        <a href="https://phillipi.github.io/prh/"
+          >Platonic Representation Hypothesis</a
+        >
+        suggests that models naturally converge toward similar ways of
+        representing meaning, even when trained differently. The Linear
+        Representation Hypothesis proposes these representations are linearly
+        decomposable, allowing simple transformations between models.
       </div>
     </li>
 
-    <li>
-      <i class="fas fa-rocket"></i>
+    <li
+      style="
+        margin-bottom: 1.5em;
+        display: flex;
+        gap: 1em;
+        align-items: baseline;
+      "
+    >
+      <i
+        class="fas fa-rocket"
+        style="color: #666; width: 1.5em; text-align: center"
+      ></i>
       <div>
-        <p>
-          <b>Practical Impact:</b> The implications are significant: organizations could reduce computational costs by
-          up to 95% using lightweight translation layers instead of recomputing embeddings with only a small cost in quality.
-          
-          Since these linear layers are approximately 1/20th the size of full embedding models, tasks like merging visualization datasets become
-          dramatically more efficient. This efficiency extends beyond cost savings to environmental impact, making AI
-          systems more sustainable. This interoperability could encourage dataset producers to publish their text embeddings alongside
-          the data itself to bootstrap fast and inexpensive training and even mix-and-matching decoders that have been trained on the embeddings
-          produced by another model.
-        </p>
+        <b>Practical Impact:</b> The implications are significant: organizations
+        could reduce computational costs by up to 95% using lightweight
+        translation layers instead of recomputing embeddings with only a small
+        cost in quality. Since these linear layers are approximately 1/20th the
+        size of full embedding models, tasks like merging visualization datasets
+        become dramatically more efficient. This efficiency extends beyond cost
+        savings to environmental impact, making AI systems more sustainable.
+        This interoperability could encourage dataset producers to publish their
+        text embeddings alongside the data itself to bootstrap fast and
+        inexpensive training and even mix-and-matching decoders or distillations
+        that have been trained on the embeddings produced by another model.
+        While not directly explored in our research, this methodology could be
+        helpful in identifying dissimilar representations in models for better
+        knowledge distillation
+        <dt-cite
+          key="sahlgren2021sentenceembeddingsensembledistillation"
+        ></dt-cite>
+        or potentially for interpretabiltiy or data attribution
       </div>
     </li>
 
-    <li>
-      <i class="fas fa-microscope"></i>
+    <li
+      style="
+        margin-bottom: 1.5em;
+        display: flex;
+        gap: 1em;
+        align-items: baseline;
+      "
+    >
+      <i
+        class="fas fa-microscope"
+        style="color: #666; width: 1.5em; text-align: center"
+      ></i>
       <div>
-        <p>
-          <b>Research Questions:</b> We explore three interconnected questions: First, are embedding models linearly
-          connectivity-aligned? Second, what is the minimal complexity needed for effective translation between
-          embedding spaces? Finally, which types of models share more similar representations? Understanding these
-          relationships could revolutionize how we deploy and scale AI systems.
-        </p>
+        <b>Research Questions:</b> We explore three interconnected questions:
+        First, are embedding models linearly connectivity-aligned? Second, what
+        is the minimal complexity needed for effective translation between
+        embedding spaces? Finally, which types of models share more similar
+        representations? Understanding these relationships could revolutionize
+        how we deploy and scale AI systems.
       </div>
     </li>
   </ul>
 
   <h3>Looking Forward</h3>
   <p>
-    Beyond immediate applications in cost reduction and efficiency, this research opens new possibilities for AI
-    development. Understanding how different models encode similar information could lead to more efficient training
-    procedures, better model architectures, and eventually, standardized intermediate embedding spaces that facilitate
-    easier interoperability between AI systems.
+    Beyond immediate applications in cost reduction and efficiency, this
+    research opens new possibilities for AI development. Understanding how
+    different models encode similar information could lead to more efficient
+    training procedures, better model architectures, and eventually,
+    standardized intermediate embedding spaces that facilitate easier
+    interoperability between AI systems.
   </p>
 
   <h2 id="relevant-work">02 Relevant Work</h2>
-  <!-- Think we maybe jumped into this a bit too soon
-  <hr/> cool 
-  -->
-  <!-- aka relevant work -->
 
   <p>
-    There is ample evidence supporting the idea that neural network representations may be
-    aligned to some degree. Some notable observations include:
+    There is ample evidence supporting the idea that neural network
+    representations may be aligned to some degree. Some notable observations
+    include:
   </p>
-  <!-- TODO: Maybe include the thing about embedding triangulation pascal mentioned -->
+  <div class="l-page side">
+    <figure>
+      <img
+        src="./figs/platonic_rep.jpg"
+        alt="Exploring a dataset with MantisAI"
+      />
+      <figcaption>
+        Diagram illustrating the platonic representaton hypothesis
+      </figcaption>
+    </figure>
+  </div>
   <ul style="list-style: none; padding-left: 0">
-    <li style="
+    <li
+      style="
         margin-bottom: 1.5em;
         display: flex;
         gap: 1em;
         align-items: baseline;
-      ">
-      <i class="fas fa-chart-line" style="color: #666; width: 1.5em; text-align: center"></i>
+      "
+    >
+      <i
+        class="fas fa-chart-line"
+        style="color: #666; width: 1.5em; text-align: center"
+      ></i>
       <div>
-        <b>Scaling Laws and Platonic Representations:</b> recent work
-        has provided strong evidence that many different neural network models, even those trained on different
-        datasets,
-        or different sensory modalities, converge to a shared representation of the world <dt-cite
-          key="huh_platonic_2024"></dt-cite>. Scaling
-        laws based on quantized models of learning <dt-cite key="michaud2024quantizationmodelneuralscaling"></dt-cite>
-        <dt-cite key="song2024resourcemodelneuralscaling"></dt-cite> also suggest at a compelling world-view in which
-        different models, despite differing in architecture, training data, or training methodology, converge to shared
-        representations of the world.
+        <b>Scaling Laws and Platonic Representations:</b> recent work has
+        provided strong evidence that many different neural network models, even
+        those trained on different datasets, or different sensory modalities,
+        converge to a shared representation of the world
+        <dt-cite key="huh_platonic_2024"></dt-cite>. Scaling laws based on
+        quantized models of learning
+        <dt-cite key="michaud2024quantizationmodelneuralscaling"></dt-cite>
+        <dt-cite key="song2024resourcemodelneuralscaling"></dt-cite> also
+        suggest at a compelling world-view in which different models, despite
+        differing in architecture, training data, or training methodology,
+        converge to shared representations of the world.
       </div>
     </li>
-    <li style="
+    <li
+      style="
         margin-bottom: 1.5em;
         display: flex;
         gap: 1em;
         align-items: baseline;
-      ">
-      <i class="fas fa-network-wired" style="color: #666; width: 1.5em; text-align: center"></i>
+      "
+    >
+      <i
+        class="fas fa-network-wired"
+        style="color: #666; width: 1.5em; text-align: center"
+      ></i>
       <div>
         <b>Functionally similar components across neural networks:</b> For
         instance, induction heads have been observed in different language
@@ -361,13 +443,18 @@ We can
         representations, and the language setting is relatively less explored.
       </div>
     </li>
-    <li style="
+    <li
+      style="
         margin-bottom: 1.5em;
         display: flex;
         gap: 1em;
         align-items: baseline;
-      ">
-      <i class="fas fa-brain" style="color: #666; width: 1.5em; text-align: center"></i>
+      "
+    >
+      <i
+        class="fas fa-brain"
+        style="color: #666; width: 1.5em; text-align: center"
+      ></i>
       <div>
         <b>Consistent representations and behaviors:</b> Previous work has shown
         that different transformers exhibit consistent attention patterns for
@@ -382,13 +469,18 @@ We can
         a common representational substrate across models.
       </div>
     </li>
-    <li style="
+    <li
+      style="
         margin-bottom: 1.5em;
         display: flex;
         gap: 1em;
         align-items: baseline;
-      ">
-      <i class="fas fa-shield-halved" style="color: #666; width: 1.5em; text-align: center"></i>
+      "
+    >
+      <i
+        class="fas fa-shield-halved"
+        style="color: #666; width: 1.5em; text-align: center"
+      ></i>
       <div>
         <b>Attack transferability:</b> Red-teaming and jailbreak prompts often
         transfer across different models, including black-box ones
@@ -400,13 +492,18 @@ We can
         that multiple models rely on similar internal structures.
       </div>
     </li>
-    <li style="
+    <li
+      style="
         margin-bottom: 1.5em;
         display: flex;
         gap: 1em;
         align-items: baseline;
-      ">
-      <i class="fas fa-layer-group" style="color: #666; width: 1.5em; text-align: center"></i>
+      "
+    >
+      <i
+        class="fas fa-layer-group"
+        style="color: #666; width: 1.5em; text-align: center"
+      ></i>
       <div>
         <b>Mechanistic interpretability (MI) and feature superposition:</b> The
         feature superposition theory
@@ -420,13 +517,21 @@ We can
     </li>
   </ul>
   <p>
-    At the same time <b>Representational similarity tools are becoming mature enough to explore such questions more
-      deeply
-      and empirically</b> and are percolating across both the machine learning and neuroscience communities <dt-cite
-      key="sucholutsky2024gettingalignedrepresentationalalignment"></dt-cite>.
-    For example, in <a href="https://representational-alignment.github.io/">ICLR there was a workshop in the year of
-      writing this (2024)</a>.
-    Techniques such as CKA <dt-cite key="kornblith_similarity_2019"></dt-cite>, stitching
+    At the same time
+    <b
+      >Representational similarity tools are becoming mature enough to explore
+      such questions more deeply and empirically</b
+    >
+    and are percolating across both the machine learning and neuroscience
+    communities
+    <dt-cite
+      key="sucholutsky2024gettingalignedrepresentationalalignment"
+    ></dt-cite
+    >. For example, in
+    <a href="https://representational-alignment.github.io/"
+      >ICLR there was a workshop in the year of writing this (2024)</a
+    >. Techniques such as CKA
+    <dt-cite key="kornblith_similarity_2019"></dt-cite>, stitching
     <dt-cite key="bansal_revisiting_2021"></dt-cite>, CCA,
     <dt-cite key="noauthor_canonical_2024"></dt-cite>
     <dt-cite key="andrew_deep_2013"></dt-cite> Orthogonal Procrustes
@@ -434,50 +539,35 @@ We can
     representational similarity analysis in neuroscience
     <dt-cite key="haxby_decoding_2014"></dt-cite>
     <dt-cite key="kriegeskorte_representational_2008"></dt-cite>
-    <dt-cite key="yousefnezhad_deep_2021"></dt-cite>, have matured, making
-    it feasible to systematically investigate such questions.
+    <dt-cite key="yousefnezhad_deep_2021"></dt-cite>, have matured, making it
+    feasible to systematically investigate such questions.
   </p>
-  <p>
-    The work
-    <!-- TODO: Talk about owler https://arxiv.org/pdf/2407.08275v1 
-     https://github.com/casparil/embedding-model-similarity
-     We also probably need to note that we borrowed some of their code
-    -->
-  </p>
-
-  <!-- Note: feels slightly out of place but seems good to provide at some point
-  <p>
-    As a bit of terminology, will name embedding spaces after the original
-    embedding model that maps data onto that space. Embeddings generated from
-    the original model will be called <b>native embeddings</b> while embeddings
-    generated by another model and mapped onto the embedding space of the native
-    model will be called <b>stitched embeddings</b>.
-  </p> -->
-  <!-- Also this feel quite repetitive gahh -->
-
 
   <h2 id="methodology">03 Methodology</h2>
   <h3 id="methodology-overview">Overview</h3>
 
   <p>
-    We systematically evaluated embedding translation across different model architectures,
-    embedding spaces, and datasets. Our methodology follows a rigorous experimental setup:
+    We systematically evaluated embedding translation across different model
+    architectures, embedding spaces, and datasets. Our methodology follows a
+    rigorous experimental setup:
   </p>
 
   <ol>
     <li>
       <h3 id="model-selection">Model and Dataset Selection</h3>
-      We evaluated translation quality across several <b>embedding models</b> available on huggingface
-      and via the OpenAI API. We also varied the <b>datasets</b> we embedded. These datasets were selected to match the
-      most similar
-      prior work: Beyond Benchmarks for comparability and reproduceability.
-      Each dataset was one of the MTEB embedding language model datasets <dt-cite
-        key="muennighoff2023mtebmassivetextembedding"></dt-cite>.
-      Each dataset spans thousands (or more) short documents. Unlike prior work, we randomly shortened
-      each dataset to a maximum of 20K documents train and 5K documents validation, since we were
-      computatioally constrained for this project. We also excluded the Cohere models since we did not have API
-      access (which is not free except at prohibitively low request rates) and the Mistral model, since it was too big
-      for our GPU.
+      We evaluated translation quality across several
+      <b>embedding models</b> available on huggingface and via the OpenAI API.
+      We also varied the <b>datasets</b> we embedded. These datasets were
+      selected to match the most similar prior work: Beyond Benchmarks for
+      comparability and reproduceability. Each dataset was one of the MTEB
+      embedding language model datasets
+      <dt-cite key="muennighoff2023mtebmassivetextembedding"></dt-cite>. Each
+      dataset spans thousands (or more) short documents. Unlike prior work, we
+      randomly shortened each dataset to a maximum of 20K documents train and 5K
+      documents validation, since we were computatioally constrained for this
+      project. We also excluded the Cohere models since we did not have API
+      access (which is not free except at prohibitively low request rates) and
+      the Mistral model, since it was too big for our GPU.
       <pre><code class="language-python">
   MODEL_NAMES = [
     "WhereIsAI/UAE-Large-V1",
@@ -511,53 +601,68 @@ We can
 
     <li>
       <h3 id="translation-architecture">Stitch Architecture</h3>
-      We implemented stitch functions only using affine linear layers. Each one has input dimension equal to the
-      embedding dimensionality
-      of the source space and output dimension equal to the embedding dimensionality of the target space. We considered
-      trying more complicated
-      functions but it was not necessary for high accuracy as shown below. Future work could consider optimizing over
-      simpler transformations, such as
-      rigid rotations (linear isometries) permutations to better quantify the connectivity-alignment of different
-      embedding spaces.
+      We implemented stitch functions only using affine linear layers. Each one
+      has input dimension equal to the embedding dimensionality of the source
+      space and output dimension equal to the embedding dimensionality of the
+      target space. We considered trying more complicated functions but it was
+      not necessary for high accuracy as shown below. Future work could consider
+      optimizing over simpler transformations, such as rigid rotations (linear
+      isometries) permutations to better quantify the connectivity-alignment of
+      different embedding spaces.
     </li>
 
     <li>
       <h3 id="evaluation-data">Evaluation Data</h3>
       <p>
-        For each dataset, we used an 80-20 train/test split to evaluate performance. We make this split based on a
-        random shuffling of the documents (the permutation
-        is selected uniformly at random from the set of available permutations). We choose to split the dataset at the
-        document level instead of the chunk or embedding level,
-        since this marks the seperation between the inputs to our work and the outputs.
+        For each dataset, we used an 80-20 train/test split to evaluate
+        performance. We make this split based on a random shuffling of the
+        documents (the permutation is selected uniformly at random from the set
+        of available permutations). We choose to split the dataset at the
+        document level instead of the chunk or embedding level, since this marks
+        the seperation between the inputs to our work and the outputs.
       </p>
       <ul>
-        <li>Our <b>initial metrics</b> help corroborate the past work we are primarily based off to:
-          <i>Beyond Benchmarks: Evaluating Embedding Model Similarity for Retrieval Augmented Generation Systems</i>
-          <dt-cite key="caspari2024benchmarksevaluatingembeddingmodel"></dt-cite>.
-          We look into the same CKA, Rank, and Jaccard Index metrics to compare with the past results. We then compare
-          with the
-          same metrics applied on the linearly-mapped embeddings. That is to say, if on a single datset we map
-          <i>from</i> the embeddings of model X <i>to</i> the embeddings of model Y
-          then we look at the CKA, Rank, and Jaccard Index of the image of the map with the embeddings from model Y.
+        <li>
+          Our <b>initial metrics</b> help corroborate the past work we are
+          primarily based off to:
+          <i
+            >Beyond Benchmarks: Evaluating Embedding Model Similarity for
+            Retrieval Augmented Generation Systems</i
+          >
+          <dt-cite key="caspari2024benchmarksevaluatingembeddingmodel"></dt-cite
+          >. We look into the same CKA, Rank, and Jaccard Index metrics to
+          compare with the past results. We then compare with the same metrics
+          applied on the linearly-mapped embeddings. That is to say, if on a
+          single datset we map <i>from</i> the embeddings of model X
+          <i>to</i> the embeddings of model Y then we look at the CKA, Rank, and
+          Jaccard Index of the image of the map with the embeddings from model
+          Y.
         </li>
-        <li>Our <b>linear connectivity-alignment metrics</b> are the train and validation accuracy of our stitching
-          models, which we measure by mean squared error (MSE). To make this more interpretable, we also provide:
-          <b>(1)</b> mean absolute error (MAE) on the validation set, <b>(2)</b> explained variance ratio between the
-          stitched embeddings and the target embeddings,
-          <b>(3)</b> explained absolute variation between the stitched embeddings and the target embeddings. We also
+        <li>
+          Our <b>linear connectivity-alignment metrics</b> are the train and
+          validation accuracy of our stitching models, which we measure by mean
+          squared error (MSE). To make this more interpretable, we also provide:
+          <b>(1)</b> mean absolute error (MAE) on the validation set,
+          <b>(2)</b> explained variance ratio between the stitched embeddings
+          and the target embeddings, <b>(3)</b> explained absolute variation
+          between the stitched embeddings and the target embeddings. We also
           plot <b>(4)</b> the eigenvalues/singular values of the stitch linear
-          embedding matrices and compare their affine shifts to the means of the embedding datasets. This helps us
-          qualitatively estimate whether the embedding matrix may actually
-          belong to a simpler class, such as a rotation.
+          embedding matrices and compare their affine shifts to the means of the
+          embedding datasets. This helps us qualitatively estimate whether the
+          embedding matrix may actually belong to a simpler class, such as a
+          rotation.
         </li>
         <!-- TODO: ADRIANO should we not also do a kernel difference or is that CKA? -->
         <!-- TODO: ADRIANO should we do edit distance or some kind of search similarity metric that is better? -->
-        <li>Our <b>interpretation visualizations</b> include a UMAP, PCA, and t-SNE visualization of the embeddings
-          both before and after applying the stitching function. We use a clustering algorithm and partially automated
-          labeling to help illustrate whether the stitching function preserves relations. We compare the clusters both
-          before stitching, after stitching, and for the target embeddings. We also include a few kernel tables randomly
-          chosen
-          and cherry-picked to illustrate, from another angle, whether relations are preserved.
+        <li>
+          Our <b>interpretation visualizations</b> include a UMAP, PCA, and
+          t-SNE visualization of the embeddings both before and after applying
+          the stitching function. We use a clustering algorithm and partially
+          automated labeling to help illustrate whether the stitching function
+          preserves relations. We compare the clusters both before stitching,
+          after stitching, and for the target embeddings. We also include a few
+          kernel tables randomly chosen and cherry-picked to illustrate, from
+          another angle, whether relations are preserved.
         </li>
         <!-- <li>Generating embeddings on test datasets</li> -->
       </ul>
@@ -565,20 +670,20 @@ We can
     <li>
       <h3 id="evaluation-data">Embedding Parameters</h3>
       <p>
-        We used the parameters illustrated in this section for the embedding models which are visible in the code
-        below. The datasets are comprised of documents and sample queries (for reproduceable top-K search results
-        analysis). We embed each seperately appending a prefix as visible below, like in the prior work.
-        Unlike the prior work we use an OpenAI text splitter with a fixed model. This allows us to ensure
-        that we compare the exact same text's emebeddings across models---a subtle bug that we reported
-        to the authors of <i>Beyond Benchmarks</i> <dt-cite
-          key="caspari2024benchmarksevaluatingembeddingmodel"></dt-cite>
-        though we do not find qualitatively different results before linearly connecting the embedding spaces.
-
-        As previously mentioned, we reduce and split both query and document datasets to up to 20K and 5K documents
-        respectively.
-
-        Then, we chunk each document into at least one chunk and embed each chunk with each model. The default
-        SentenceTransformers
+        We used the parameters illustrated in this section for the embedding
+        models which are visible in the code below. The datasets are comprised
+        of documents and sample queries (for reproduceable top-K search results
+        analysis). We embed each seperately appending a prefix as visible below,
+        like in the prior work. Unlike the prior work we use an OpenAI text
+        splitter with a fixed model. This allows us to ensure that we compare
+        the exact same text's emebeddings across models---a subtle bug that we
+        reported to the authors of <i>Beyond Benchmarks</i>
+        <dt-cite key="caspari2024benchmarksevaluatingembeddingmodel"></dt-cite>
+        though we do not find qualitatively different results before linearly
+        connecting the embedding spaces. As previously mentioned, we reduce and
+        split both query and document datasets to up to 20K and 5K documents
+        respectively. Then, we chunk each document into at least one chunk and
+        embed each chunk with each model. The default SentenceTransformers
         <code class="language-python">encode</code> function is used.
       </p>
       <pre><code class="language-python">
@@ -658,12 +763,17 @@ We can
   </div>
 
   <figure>
-    <iframe src="figs/cka_matrix_on_arguana.html" width="800" height="600" frameborder="0" scrolling="no"></iframe>
+    <iframe
+      src="figs/cka_matrix_on_arguana.html"
+      width="800"
+      height="600"
+      frameborder="0"
+      scrolling="no"
+    ></iframe>
     <figcaption>
       CKA Matrix on Arguana measuring representational similarity.
     </figcaption>
   </figure>
-
 
   <h3 id="translation-quality">Translation Quality vs Model Scale</h3>
   <p>
@@ -779,19 +889,24 @@ We can
 
   <p style="margin-bottom: 1em">If you found this work useful, please cite:</p>
 
-  <div style="
+  <div
+    style="
       background: #f5f6f7;
       padding: 1.5em;
       border-radius: 8px;
       margin-bottom: 1em;
-    ">
-    <pre style="
-        font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    "
+  >
+    <pre
+      style="
+        font-family: &quot;Consolas&quot;, &quot;Monaco&quot;,
+          &quot;Courier New&quot;, monospace;
         font-size: 0.9em;
         margin: 0;
         white-space: pre-wrap;
         word-wrap: break-word;
-      ">
+      "
+    >
 @article{culp_hern_embed_stitch_2024,
     title     = {The Alignment of Semantic Representations Across Language Models},
     author    = {Culp, Gatlen* and Hernandez, Adriano*},
@@ -806,7 +921,8 @@ We can
                 semantic representations despite variations in architecture, training
                 data, and initialization, revealing significant alignment between
                 models' semantic spaces.}
-}</pre>
+}</pre
+    >
   </div>
 
   <!-- <div style="display: flex; gap: 1em; margin-top: 1em">
@@ -839,860 +955,652 @@ We can
   <h3>💻 Use our code</h3>
   <p style="margin-top: 1.5em; font-size: 0.9em; color: #666">
     Our code will eventually be made public here:
-    <a
-      href="https://github.com/GatlenCulp/embedding_translation">https://github.com/GatlenCulp/embedding_translation</a>
+    <a href="https://github.com/GatlenCulp/embedding_translation"
+      >https://github.com/GatlenCulp/embedding_translation</a
+    >
   </p>
 
-
-  @inproceedings{andrew_deep_2013,
-  title = {Deep {Canonical} {Correlation} {Analysis}},
-  url = {https://proceedings.mlr.press/v28/andrew13.html},
-  abstract = {We introduce Deep Canonical Correlation Analysis (DCCA), a method to learn complex nonlinear
-  transformations of two views of data such that the resulting representations are highly linearly correlated...},
-  language = {en},
-  urldate = {2024-11-15},
-  booktitle = {Proceedings of the 30th {International} {Conference} on {Machine} {Learning}},
-  publisher = {PMLR},
-  author = {Andrew, Galen and Arora, Raman and Bilmes, Jeff and Livescu, Karen},
-  month = may,
-  year = {2013},
-  note = {ISSN: 1938-7228},
-  pages = {1247--1255}
-  }
-
-  @misc{andriushchenko_jailbreaking_2024,
-  title = {Jailbreaking {Leading} {Safety}-{Aligned} {LLMs} with {Simple} {Adaptive} {Attacks}},
-  url = {http://arxiv.org/abs/2404.02151},
-  doi = {10.48550/arXiv.2404.02151},
-  abstract = {We show that even the most recent safety-aligned LLMs are not robust to simple adaptive jailbreaking
-  attacks...},
-  urldate = {2024-11-15},
-  publisher = {arXiv},
-  author = {Andriushchenko, Maksym and Croce, Francesco and Flammarion, Nicolas},
-  month = oct,
-  year = {2024},
-  note = {arXiv:2404.02151},
-  keywords = {Computer Science - Machine Learning, AI, Security}
-  }
-
-  @article{anthropic,
-  title = {Towards {Monosemanticity}: {Decomposing} {Language} {Models} {With} {Dictionary} {Learning}},
-  author = {Bricken, Trenton and Templeton, Adly and Batson, Joshua and Chen, Brian and Jermyn, Adam and Conerly, Tom
-  and Turner, Nicholas L. and Anil, Cem and Denison, Carson and Askell, Amanda and Lasenby, Robert and Wu, Yifan and
-  Kravec, Shauna and Schiefer, Nicholas and Maxwell, Tim and Joseph, Nicholas and Tamkin, Alex and Nguyen, Karina and
-  McLean, Brayden and Burke, Josiah E. and Hume, Tristan and Carter, Shan and Henighan, Tom and Olah, Chris},
-  url =
+  @inproceedings{andrew_deep_2013, title = {Deep {Canonical} {Correlation}
+  {Analysis}}, url = {https://proceedings.mlr.press/v28/andrew13.html}, abstract
+  = {We introduce Deep Canonical Correlation Analysis (DCCA), a method to learn
+  complex nonlinear transformations of two views of data such that the resulting
+  representations are highly linearly correlated...}, language = {en}, urldate =
+  {2024-11-15}, booktitle = {Proceedings of the 30th {International}
+  {Conference} on {Machine} {Learning}}, publisher = {PMLR}, author = {Andrew,
+  Galen and Arora, Raman and Bilmes, Jeff and Livescu, Karen}, month = may, year
+  = {2013}, note = {ISSN: 1938-7228}, pages = {1247--1255} }
+  @misc{andriushchenko_jailbreaking_2024, title = {Jailbreaking {Leading}
+  {Safety}-{Aligned} {LLMs} with {Simple} {Adaptive} {Attacks}}, url =
+  {http://arxiv.org/abs/2404.02151}, doi = {10.48550/arXiv.2404.02151}, abstract
+  = {We show that even the most recent safety-aligned LLMs are not robust to
+  simple adaptive jailbreaking attacks...}, urldate = {2024-11-15}, publisher =
+  {arXiv}, author = {Andriushchenko, Maksym and Croce, Francesco and Flammarion,
+  Nicolas}, month = oct, year = {2024}, note = {arXiv:2404.02151}, keywords =
+  {Computer Science - Machine Learning, AI, Security} } @article{anthropic,
+  title = {Towards {Monosemanticity}: {Decomposing} {Language} {Models} {With}
+  {Dictionary} {Learning}}, author = {Bricken, Trenton and Templeton, Adly and
+  Batson, Joshua and Chen, Brian and Jermyn, Adam and Conerly, Tom and Turner,
+  Nicholas L. and Anil, Cem and Denison, Carson and Askell, Amanda and Lasenby,
+  Robert and Wu, Yifan and Kravec, Shauna and Schiefer, Nicholas and Maxwell,
+  Tim and Joseph, Nicholas and Tamkin, Alex and Nguyen, Karina and McLean,
+  Brayden and Burke, Josiah E. and Hume, Tristan and Carter, Shan and Henighan,
+  Tom and Olah, Chris}, url =
   {https://www.anthropic.com/research/towards-monosemanticity-decomposing-language-models-with-dictionary-learning},
-  abstract = {Anthropic is an AI safety and research company...},
-  language = {en},
-  urldate = {2024-11-15},
-  year = {2023}
-  }
-
-  @inproceedings{bansal_revisiting_2021,
-  title = {Revisiting {Model} {Stitching} to {Compare} {Neural} {Representations}},
-  volume = {34},
-  url = {https://proceedings.neurips.cc/paper/2021/hash/01ded4259d101feb739b06c399e9cd9c-Abstract.html},
-  urldate = {2024-11-15},
-  booktitle = {Advances in {Neural} {Information} {Processing} {Systems}},
-  publisher = {Curran Associates, Inc.},
-  author = {Bansal, Yamini and Nakkiran, Preetum and Barak, Boaz},
-  year = {2021},
-  pages = {225--236}
-  }
-
-  @misc{box-rep-sim,
-  url = {https://uchicago.app.box.com/s/ymyt6ushjg94l1aauutgwq256w30mhbg}
-  }
-
-  @article{cammarata_curve_2020,
-  title = {Curve {Detectors}},
-  volume = {5},
-  issn = {2476-0757},
-  url = {https://distill.pub/2020/circuits/curve-detectors},
-  doi = {10.23915/distill.00024.003},
-  abstract = {Part one of a three part deep dive into the curve neuron family.},
-  language = {en},
-  number = {6},
-  urldate = {2024-11-15},
-  journal = {Distill},
-  author = {Cammarata, Nick and Goh, Gabriel and Carter, Shan and Schubert, Ludwig and Petrov, Michael and Olah, Chris},
-  month = jun,
-  year = {2020},
-  pages = {e00024.003}
-  }
-
-  @misc{chao_jailbreaking_2024,
-  title = {Jailbreaking {Black} {Box} {Large} {Language} {Models} in {Twenty} {Queries}},
-  url = {http://arxiv.org/abs/2310.08419},
-  doi = {10.48550/arXiv.2310.08419},
-  abstract = {We propose Prompt Automatic Iterative Refinement (PAIR), a method that generates semantic jailbreaks with
-  only black-box access...},
-  urldate = {2024-11-15},
-  publisher = {arXiv},
-  author = {Chao, Patrick and Robey, Alexander and Dobriban, Edgar and Hassani, Hamed and Pappas, George J. and Wong,
-  Eric},
-  month = jul,
-  year = {2024},
-  note = {arXiv:2310.08419}
-  }
-
-  @misc{song2024resourcemodelneuralscaling,
-  title={A Resource Model For Neural Scaling Law},
-  author={Jinyeop Song and Ziming Liu and Max Tegmark and Jeff Gore},
-  year={2024},
-  eprint={2402.05164},
-  archivePrefix={arXiv},
-  primaryClass={cs.LG},
-  url={https://arxiv.org/abs/2402.05164},
-  }
-
-  @misc{caspari2024benchmarksevaluatingembeddingmodel,
-  title={Beyond Benchmarks: Evaluating Embedding Model Similarity for Retrieval Augmented Generation Systems},
-  author={Laura Caspari and Kanishka Ghosh Dastidar and Saber Zerhoudi and Jelena Mitrovic and Michael Granitzer},
-  year={2024},
-  eprint={2407.08275},
-  archivePrefix={arXiv},
-  primaryClass={cs.IR},
-  url={https://arxiv.org/abs/2407.08275},
-  }
-
-  @misc{lenc2015understandingimagerepresentationsmeasuring,
-  title={Understanding image representations by measuring their equivariance and equivalence},
-  author={Karel Lenc and Andrea Vedaldi},
-  year={2015},
-  eprint={1411.5908},
-  archivePrefix={arXiv},
-  primaryClass={cs.CV},
-  url={https://arxiv.org/abs/1411.5908},
-  }
-
-  @misc{cunningham_sparse_2023,
-  title = {Sparse {Autoencoders} {Find} {Highly} {Interpretable} {Features} in {Language} {Models}},
-  url = {http://arxiv.org/abs/2309.08600},
-  doi = {10.48550/arXiv.2309.08600},
-  abstract = {We show that sparse autoencoders can resolve superposition in language models...},
-  urldate = {2024-11-15},
-  publisher = {arXiv},
-  author = {Cunningham, Hoagy and Ewart, Aidan and Riggs, Logan and Huben, Robert and Sharkey, Lee},
-  month = oct,
-  year = {2023},
-  note = {arXiv:2309.08600}
-  }
-
-  @inproceedings{eberle-etal-2022-transformer,
-  title = {Do Transformer Models Show Similar Attention Patterns to Task-Specific Human Gaze?},
-  author = {Eberle, Oliver and Brandl, Stephanie and Pilot, Jonas and S{\o}gaard, Anders},
-  booktitle = {Proceedings of the 60th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long
-  Papers)},
-  month = may,
-  year = {2022},
-  address = {Dublin, Ireland},
-  publisher = {Association for Computational Linguistics},
-  url = {https://aclanthology.org/2022.acl-long.296},
-  doi = {10.18653/v1/2022.acl-long.296},
-  pages = {4295--4309}
-  }
-
-  @article{haxby_decoding_2014,
-  title = {Decoding {Neural} {Representational} {Spaces} {Using} {Multivariate} {Pattern} {Analysis}},
-  volume = {37},
-  issn = {0147-006X, 1545-4126},
-  url = {https://www.annualreviews.org/doi/10.1146/annurev-neuro-062012-170325},
-  doi = {10.1146/annurev-neuro-062012-170325},
-  abstract = {A review discussing methods for decoding human neural activity...},
-  language = {en},
-  number = {1},
-  urldate = {2024-11-15},
-  journal = {Annual Review of Neuroscience},
-  author = {Haxby, James V. and Connolly, Andrew C. and Guntupalli, J. Swaroop},
-  month = jul,
-  year = {2014},
-  pages = {435--456}
-  }
-
-  @misc{hernandez_model_2023,
-  title = {Model {Stitching}: {Looking} {For} {Functional} {Similarity} {Between} {Representations}},
-  url = {http://arxiv.org/abs/2303.11277},
-  doi = {10.48550/arXiv.2303.11277},
-  abstract = {Model stitching is a methodology to compare neural network representations by measuring their interchangeability...},
-  urldate = {2024-11-15},
-  publisher = {arXiv},
-  author = {Hernandez, Adriano and Dangovski, Rumen and Lu, Peter Y. and Soljacic, Marin},
-  month = aug,
-  year = {2023},
-  note = {arXiv:2303.11277}
-  }
-
-  @misc{park2024linearrepresentationhypothesisgeometry,
-  title={The Linear Representation Hypothesis and the Geometry of Large Language Models},
-  author={Kiho Park and Yo Joong Choe and Victor Veitch},
-  year={2024},
-  eprint={2311.03658},
-  archivePrefix={arXiv},
-  primaryClass={cs.CL},
-  url={https://arxiv.org/abs/2311.03658},
-  }
-
-  @misc{huh_platonic_2024,
-  title = {The {Platonic} {Representation} {Hypothesis}},
-  url = {http://arxiv.org/abs/2405.07987},
-  doi = {10.48550/arXiv.2405.07987},
-  abstract = {We argue that representations in AI models are converging, driving toward a shared statistical model of reality...},
-  urldate = {2024-11-15},
-  publisher = {arXiv},
-  author = {Huh, Minyoung and Cheung, Brian and Wang, Tongzhou and Isola, Phillip},
-  month = jul,
-  year = {2024},
-  note = {arXiv:2405.07987}
-  }
-
-  @misc{michaud2024quantizationmodelneuralscaling,
-  title={The Quantization Model of Neural Scaling},
-  author={Eric J. Michaud and Ziming Liu and Uzay Girit and Max Tegmark},
-  year={2024},
-  eprint={2303.13506},
-  archivePrefix={arXiv},
-  primaryClass={cs.LG},
-  url={https://arxiv.org/abs/2303.13506},
-  }
-
-  @article{klabunde_similarity_2023,
-  title = {Similarity of {Neural} {Network} {Models}: {A} {Survey} of {Functional} and {Representational} {Measures}},
-  url = {https://arxiv.org/abs/2305.06329},
-  doi = {10.48550/ARXIV.2305.06329},
-  abstract = {A survey of measures for functional and representational similarity in neural networks...},
-  urldate = {2024-11-15},
-  author = {Klabunde, Max and Schumacher, Tobias and Strohmaier, Markus and Lemmerich, Florian},
-  year = {2023}
-  }
-
-  @article{Klabunde2023TowardsMR,
-  title = {Towards Measuring Representational Similarity of Large Language Models},
-  author = {Klabunde, Max and Ben Amor, Mehdi and Granitzer, Michael and Lemmerich, Florian},
-  journal = {ArXiv},
-  year = {2023},
-  volume = {abs/2312.02730},
-  url = {https://arxiv.org/abs/2312.02730}
-  }
-
-  @misc{kornblith_similarity_2019,
-  title = {Similarity of {Neural} {Network} {Representations} {Revisited}},
-  url = {http://arxiv.org/abs/1905.00414},
-  doi = {10.48550/arXiv.1905.00414},
-  abstract = {Examines methods for comparing neural network representations based on CCA and introduces CKA...},
-  urldate = {2024-11-15},
-  publisher = {arXiv},
-  author = {Kornblith, Simon and Norouzi, Mohammad and Lee, Honglak and Hinton, Geoffrey},
-  month = jul,
-  year = {2019},
-  keywords = {Machine Learning}
-  }
-
-  @article{kriegeskorte_representational_2008,
-  title = {Representational similarity analysis - connecting the branches of systems neuroscience},
-  volume = {2},
-  issn = {1662-5137},
-  url = {https://www.frontiersin.org/articles/10.3389/neuro.06.004.2008/full},
-  doi = {10.3389/neuro.06.004.2008},
-  abstract = {A framework to quantitatively relate brain-activity measurement, behavior, and computational modeling via
-  RSA...},
-  language = {en},
-  urldate = {2024-11-15},
-  journal = {Frontiers in Systems Neuroscience},
-  author = {Kriegeskorte, Nikolaus and Mur, Marieke and Bandettini, Peter A.},
-  month = nov,
-  year = {2008}
-  }
-
-  @misc{li2016convergentlearningdifferentneural,
-  title = {Convergent Learning: Do different neural networks learn the same representations?},
-  author = {Li, Yixuan and Yosinski, Jason and Clune, Jeff and Lipson, Hod and Hopcroft, John},
-  year = {2016},
-  eprint = {1511.07543},
-  archiveprefix = {arXiv},
-  primaryclass = {cs.LG},
-  url = {https://arxiv.org/abs/1511.07543}
-  }
-
-  @misc{mehrotra_tree_2024,
-  title = {Tree of {Attacks}: {Jailbreaking} {Black}-{Box} {LLMs} {Automatically}},
-  url = {http://arxiv.org/abs/2312.02119},
-  doi = {10.48550/arXiv.2312.02119},
-  abstract = {We present Tree of Attacks with Pruning (TAP), an automated method for generating jailbreaks that requires
-  only black-box access...},
-  urldate = {2024-11-15},
-  publisher = {arXiv},
-  author = {Mehrotra, Anay and Zampetakis, Manolis and Kassianik, Paul and Nelson, Blaine and Anderson, Hyrum and
-  Singer, Yaron and Karbasi, Amin},
-  month = oct,
-  year = {2024},
-  note = {arXiv:2312.02119}
-  }
-
-  @inproceedings{morcos_insights_2018,
-  title = {Insights on representational similarity in neural networks with canonical correlation},
-  abstract = {Uses projection weighted CCA to study representational similarity across CNNs and RNNs...},
-  urldate = {2024-11-15},
-  author = {Morcos, Ari S. and Raghu, Maithra and Bengio, Samy},
-  month = jun,
-  year = {2018}
-  }
-
-  @misc{nguyen_wide_2021,
-  title = {Do {Wide} and {Deep} {Networks} {Learn} the {Same} {Things}? {Uncovering} {How} {Neural} {Network}
-  {Representations} {Vary} with {Width} and {Depth}},
-  url = {http://arxiv.org/abs/2010.15327},
-  doi = {10.48550/arXiv.2010.15327},
-  abstract = {Investigates how varying depth and width affects model hidden representations...},
-  urldate = {2024-11-15},
-  publisher = {arXiv},
-  author = {Nguyen, Thao and Raghu, Maithra and Kornblith, Simon},
-  month = apr,
-  year = {2021},
-  keywords = {Computer Science - Machine Learning}
-  }
-
-  @misc{noauthor_20_scaling_lawspdf_nodate,
-  title = {20\_scaling\_laws.pdf},
-  url =
+  abstract = {Anthropic is an AI safety and research company...}, language =
+  {en}, urldate = {2024-11-15}, year = {2023} }
+  @inproceedings{bansal_revisiting_2021, title = {Revisiting {Model} {Stitching}
+  to {Compare} {Neural} {Representations}}, volume = {34}, url =
+  {https://proceedings.neurips.cc/paper/2021/hash/01ded4259d101feb739b06c399e9cd9c-Abstract.html},
+  urldate = {2024-11-15}, booktitle = {Advances in {Neural} {Information}
+  {Processing} {Systems}}, publisher = {Curran Associates, Inc.}, author =
+  {Bansal, Yamini and Nakkiran, Preetum and Barak, Boaz}, year = {2021}, pages =
+  {225--236} } @misc{box-rep-sim, url =
+  {https://uchicago.app.box.com/s/ymyt6ushjg94l1aauutgwq256w30mhbg} }
+  @article{cammarata_curve_2020, title = {Curve {Detectors}}, volume = {5}, issn
+  = {2476-0757}, url = {https://distill.pub/2020/circuits/curve-detectors}, doi
+  = {10.23915/distill.00024.003}, abstract = {Part one of a three part deep dive
+  into the curve neuron family.}, language = {en}, number = {6}, urldate =
+  {2024-11-15}, journal = {Distill}, author = {Cammarata, Nick and Goh, Gabriel
+  and Carter, Shan and Schubert, Ludwig and Petrov, Michael and Olah, Chris},
+  month = jun, year = {2020}, pages = {e00024.003} }
+  @misc{chao_jailbreaking_2024, title = {Jailbreaking {Black} {Box} {Large}
+  {Language} {Models} in {Twenty} {Queries}}, url =
+  {http://arxiv.org/abs/2310.08419}, doi = {10.48550/arXiv.2310.08419}, abstract
+  = {We propose Prompt Automatic Iterative Refinement (PAIR), a method that
+  generates semantic jailbreaks with only black-box access...}, urldate =
+  {2024-11-15}, publisher = {arXiv}, author = {Chao, Patrick and Robey,
+  Alexander and Dobriban, Edgar and Hassani, Hamed and Pappas, George J. and
+  Wong, Eric}, month = jul, year = {2024}, note = {arXiv:2310.08419} }
+  @misc{song2024resourcemodelneuralscaling, title={A Resource Model For Neural
+  Scaling Law}, author={Jinyeop Song and Ziming Liu and Max Tegmark and Jeff
+  Gore}, year={2024}, eprint={2402.05164}, archivePrefix={arXiv},
+  primaryClass={cs.LG}, url={https://arxiv.org/abs/2402.05164}, }
+  @misc{caspari2024benchmarksevaluatingembeddingmodel, title={Beyond Benchmarks:
+  Evaluating Embedding Model Similarity for Retrieval Augmented Generation
+  Systems}, author={Laura Caspari and Kanishka Ghosh Dastidar and Saber Zerhoudi
+  and Jelena Mitrovic and Michael Granitzer}, year={2024}, eprint={2407.08275},
+  archivePrefix={arXiv}, primaryClass={cs.IR},
+  url={https://arxiv.org/abs/2407.08275}, }
+  @misc{lenc2015understandingimagerepresentationsmeasuring, title={Understanding
+  image representations by measuring their equivariance and equivalence},
+  author={Karel Lenc and Andrea Vedaldi}, year={2015}, eprint={1411.5908},
+  archivePrefix={arXiv}, primaryClass={cs.CV},
+  url={https://arxiv.org/abs/1411.5908}, } @misc{cunningham_sparse_2023, title =
+  {Sparse {Autoencoders} {Find} {Highly} {Interpretable} {Features} in
+  {Language} {Models}}, url = {http://arxiv.org/abs/2309.08600}, doi =
+  {10.48550/arXiv.2309.08600}, abstract = {We show that sparse autoencoders can
+  resolve superposition in language models...}, urldate = {2024-11-15},
+  publisher = {arXiv}, author = {Cunningham, Hoagy and Ewart, Aidan and Riggs,
+  Logan and Huben, Robert and Sharkey, Lee}, month = oct, year = {2023}, note =
+  {arXiv:2309.08600} } @inproceedings{eberle-etal-2022-transformer, title = {Do
+  Transformer Models Show Similar Attention Patterns to Task-Specific Human
+  Gaze?}, author = {Eberle, Oliver and Brandl, Stephanie and Pilot, Jonas and
+  S{\o}gaard, Anders}, booktitle = {Proceedings of the 60th Annual Meeting of
+  the Association for Computational Linguistics (Volume 1: Long Papers)}, month
+  = may, year = {2022}, address = {Dublin, Ireland}, publisher = {Association
+  for Computational Linguistics}, url =
+  {https://aclanthology.org/2022.acl-long.296}, doi =
+  {10.18653/v1/2022.acl-long.296}, pages = {4295--4309} }
+  @article{haxby_decoding_2014, title = {Decoding {Neural} {Representational}
+  {Spaces} {Using} {Multivariate} {Pattern} {Analysis}}, volume = {37}, issn =
+  {0147-006X, 1545-4126}, url =
+  {https://www.annualreviews.org/doi/10.1146/annurev-neuro-062012-170325}, doi =
+  {10.1146/annurev-neuro-062012-170325}, abstract = {A review discussing methods
+  for decoding human neural activity...}, language = {en}, number = {1}, urldate
+  = {2024-11-15}, journal = {Annual Review of Neuroscience}, author = {Haxby,
+  James V. and Connolly, Andrew C. and Guntupalli, J. Swaroop}, month = jul,
+  year = {2014}, pages = {435--456} } @misc{hernandez_model_2023, title = {Model
+  {Stitching}: {Looking} {For} {Functional} {Similarity} {Between}
+  {Representations}}, url = {http://arxiv.org/abs/2303.11277}, doi =
+  {10.48550/arXiv.2303.11277}, abstract = {Model stitching is a methodology to
+  compare neural network representations by measuring their
+  interchangeability...}, urldate = {2024-11-15}, publisher = {arXiv}, author =
+  {Hernandez, Adriano and Dangovski, Rumen and Lu, Peter Y. and Soljacic,
+  Marin}, month = aug, year = {2023}, note = {arXiv:2303.11277} }
+  @misc{park2024linearrepresentationhypothesisgeometry, title={The Linear
+  Representation Hypothesis and the Geometry of Large Language Models},
+  author={Kiho Park and Yo Joong Choe and Victor Veitch}, year={2024},
+  eprint={2311.03658}, archivePrefix={arXiv}, primaryClass={cs.CL},
+  url={https://arxiv.org/abs/2311.03658}, } @misc{huh_platonic_2024, title =
+  {The {Platonic} {Representation} {Hypothesis}}, url =
+  {http://arxiv.org/abs/2405.07987}, doi = {10.48550/arXiv.2405.07987}, abstract
+  = {We argue that representations in AI models are converging, driving toward a
+  shared statistical model of reality...}, urldate = {2024-11-15}, publisher =
+  {arXiv}, author = {Huh, Minyoung and Cheung, Brian and Wang, Tongzhou and
+  Isola, Phillip}, month = jul, year = {2024}, note = {arXiv:2405.07987} }
+  @misc{michaud2024quantizationmodelneuralscaling, title={The Quantization Model
+  of Neural Scaling}, author={Eric J. Michaud and Ziming Liu and Uzay Girit and
+  Max Tegmark}, year={2024}, eprint={2303.13506}, archivePrefix={arXiv},
+  primaryClass={cs.LG}, url={https://arxiv.org/abs/2303.13506}, }
+  @article{klabunde_similarity_2023, title = {Similarity of {Neural} {Network}
+  {Models}: {A} {Survey} of {Functional} and {Representational} {Measures}}, url
+  = {https://arxiv.org/abs/2305.06329}, doi = {10.48550/ARXIV.2305.06329},
+  abstract = {A survey of measures for functional and representational
+  similarity in neural networks...}, urldate = {2024-11-15}, author = {Klabunde,
+  Max and Schumacher, Tobias and Strohmaier, Markus and Lemmerich, Florian},
+  year = {2023} } @article{Klabunde2023TowardsMR, title = {Towards Measuring
+  Representational Similarity of Large Language Models}, author = {Klabunde, Max
+  and Ben Amor, Mehdi and Granitzer, Michael and Lemmerich, Florian}, journal =
+  {ArXiv}, year = {2023}, volume = {abs/2312.02730}, url =
+  {https://arxiv.org/abs/2312.02730} } @misc{kornblith_similarity_2019, title =
+  {Similarity of {Neural} {Network} {Representations} {Revisited}}, url =
+  {http://arxiv.org/abs/1905.00414}, doi = {10.48550/arXiv.1905.00414}, abstract
+  = {Examines methods for comparing neural network representations based on CCA
+  and introduces CKA...}, urldate = {2024-11-15}, publisher = {arXiv}, author =
+  {Kornblith, Simon and Norouzi, Mohammad and Lee, Honglak and Hinton,
+  Geoffrey}, month = jul, year = {2019}, keywords = {Machine Learning} }
+  @article{kriegeskorte_representational_2008, title = {Representational
+  similarity analysis - connecting the branches of systems neuroscience}, volume
+  = {2}, issn = {1662-5137}, url =
+  {https://www.frontiersin.org/articles/10.3389/neuro.06.004.2008/full}, doi =
+  {10.3389/neuro.06.004.2008}, abstract = {A framework to quantitatively relate
+  brain-activity measurement, behavior, and computational modeling via RSA...},
+  language = {en}, urldate = {2024-11-15}, journal = {Frontiers in Systems
+  Neuroscience}, author = {Kriegeskorte, Nikolaus and Mur, Marieke and
+  Bandettini, Peter A.}, month = nov, year = {2008} }
+  @misc{li2016convergentlearningdifferentneural, title = {Convergent Learning:
+  Do different neural networks learn the same representations?}, author = {Li,
+  Yixuan and Yosinski, Jason and Clune, Jeff and Lipson, Hod and Hopcroft,
+  John}, year = {2016}, eprint = {1511.07543}, archiveprefix = {arXiv},
+  primaryclass = {cs.LG}, url = {https://arxiv.org/abs/1511.07543} }
+  @misc{mehrotra_tree_2024, title = {Tree of {Attacks}: {Jailbreaking}
+  {Black}-{Box} {LLMs} {Automatically}}, url =
+  {http://arxiv.org/abs/2312.02119}, doi = {10.48550/arXiv.2312.02119}, abstract
+  = {We present Tree of Attacks with Pruning (TAP), an automated method for
+  generating jailbreaks that requires only black-box access...}, urldate =
+  {2024-11-15}, publisher = {arXiv}, author = {Mehrotra, Anay and Zampetakis,
+  Manolis and Kassianik, Paul and Nelson, Blaine and Anderson, Hyrum and Singer,
+  Yaron and Karbasi, Amin}, month = oct, year = {2024}, note =
+  {arXiv:2312.02119} } @inproceedings{morcos_insights_2018, title = {Insights on
+  representational similarity in neural networks with canonical correlation},
+  abstract = {Uses projection weighted CCA to study representational similarity
+  across CNNs and RNNs...}, urldate = {2024-11-15}, author = {Morcos, Ari S. and
+  Raghu, Maithra and Bengio, Samy}, month = jun, year = {2018} }
+  @misc{nguyen_wide_2021, title = {Do {Wide} and {Deep} {Networks} {Learn} the
+  {Same} {Things}? {Uncovering} {How} {Neural} {Network} {Representations}
+  {Vary} with {Width} and {Depth}}, url = {http://arxiv.org/abs/2010.15327}, doi
+  = {10.48550/arXiv.2010.15327}, abstract = {Investigates how varying depth and
+  width affects model hidden representations...}, urldate = {2024-11-15},
+  publisher = {arXiv}, author = {Nguyen, Thao and Raghu, Maithra and Kornblith,
+  Simon}, month = apr, year = {2021}, keywords = {Computer Science - Machine
+  Learning} } @misc{noauthor_20_scaling_lawspdf_nodate, title =
+  {20\_scaling\_laws.pdf}, url =
   {https://www.dropbox.com/scl/fi/xhnv84zx78u0l8o1o4pce/20_scaling_laws.pdf?dl=0&e=1&rlkey=ucg32vqlxgadea3enzh90qaop},
-  abstract = {Shared with Dropbox},
-  language = {en},
-  urldate = {2024-11-15}
-  }
-
-  @misc{noauthor_canonical_2024,
-  title = {Canonical correlation},
-  url = {https://en.wikipedia.org/w/index.php?title=Canonical_correlation&oldid=1246555266},
+  abstract = {Shared with Dropbox}, language = {en}, urldate = {2024-11-15} }
+  @misc{noauthor_canonical_2024, title = {Canonical correlation}, url =
+  {https://en.wikipedia.org/w/index.php?title=Canonical_correlation&oldid=1246555266},
   abstract = {An explanation of canonical-correlation analysis (CCA)...},
-  language = {en},
-  urldate = {2024-11-15},
-  journal = {Wikipedia},
-  month = sep,
-  year = {2024}
-  }
-
-  @misc{noauthor_mantis_nodate,
-  title = {Mantis},
-  url = {https://home.withmantis.com/},
-  urldate = {2024-11-15}
-  }
-
-  @misc{noauthor_model_nodate,
-  title = {Model {Stitching}: {Looking} {For} {Functional} {Similarity} {Between} {Representations}}},
-  url =
+  language = {en}, urldate = {2024-11-15}, journal = {Wikipedia}, month = sep,
+  year = {2024} } @misc{noauthor_mantis_nodate, title = {Mantis}, url =
+  {https://home.withmantis.com/}, urldate = {2024-11-15} }
+  @misc{noauthor_model_nodate, title = {Model {Stitching}: {Looking} {For}
+  {Functional} {Similarity} {Between} {Representations}}}, url =
   {https://scholar.google.com/citations?view_op=view_citation&hl=en&user=evT71z8AAAAJ&citation_for_view=evT71z8AAAAJ:u5HHmVD_uO8C},
-  abstract = {Short summary referencing model stitching and functional similarity.},
-  urldate = {2024-11-15}
-  }
-
-  @misc{noauthor_representational_nodate,
+  abstract = {Short summary referencing model stitching and functional
+  similarity.}, urldate = {2024-11-15} } @misc{noauthor_representational_nodate,
   title = {Representational {Similarity} in {Neural} {Networks} | {Elicit}}},
-  url = {https://elicit.com/notebook/ca8a9992-4e9e-4478-b991-7229cd640ba2#18080183417d138da0d0dc40dc987bc5},
-  urldate = {2024-11-15}
-  }
-
-  @misc{noauthor_simon_nodate,
-  title = {Simon {Kornblith} - {AI} + {Science} {Talk} {Part} 1\&2.pdf | Powered by Box},
-  url = {https://uchicago.app.box.com/s/ymyt6ushjg94l1aauutgwq256w30mhbg},
-  language = {en-US},
-  urldate = {2024-11-15}
-  }
-
-  @article{olah2020zoom,
-  author = {Olah, Chris and Cammarata, Nick and Schubert, Ludwig and Goh, Gabriel and Petrov, Michael and Carter, Shan},
-  title = {Zoom In: An Introduction to Circuits},
-  journal = {Distill},
-  year = {2020},
-  note = {https://distill.pub/2020/circuits/zoom-in},
-  doi = {10.23915/distill.00024.001}
-  }
-
-  @article{olsson2022context,
-  title = {In-context Learning and Induction Heads},
-  author = {Olsson, Catherine and Elhage, Nelson and Nanda, Neel and Joseph, Nicholas and DasSarma, Nova and Henighan,
-  Tom and Mann, Ben and Askell, Amanda and Bai, Yuntao and Chen, Anna and Conerly, Tom and Drain, Dawn and Ganguli, Deep
-  and Hatfield-Dodds, Zac and Hernandez, Danny and Johnston, Scott and Jones, Andy and Kernion, Jackson and Lovitt,
-  Liane and Ndousse, Kamal and Amodei, Dario and Brown, Tom and Clark, Jack and Kaplan, Jared and McCandlish, Sam and
-  Olah, Chris},
-  year = {2022},
-  journal = {Transformer Circuits Thread},
-  note = {https://transformer-circuits.pub/2022/in-context-learning-and-induction-heads/index.html}
-  }
-
-  @misc{pliny_elder-pliniusl1b3rt4s_2024,
-  title = {elder-plinius/{L1B3RT4S}},
-  url = {https://github.com/elder-plinius/L1B3RT4S},
-  abstract = {TOTALLY HARMLESS LIBERATION PROMPTS FOR GOOD LIL AI'S},
-  urldate = {2024-11-15},
-  author = {pliny},
-  month = nov,
-  year = {2024}
-  }
-
-  @misc{radford_learning_2021,
-  title = {Learning {Transferable} {Visual} {Models} {From} {Natural} {Language} {Supervision}},
-  url = {http://arxiv.org/abs/2103.00020},
-  doi = {10.48550/arXiv.2103.00020},
-  abstract = {Introduces CLIP, trained on (image, text) pairs to learn visual representations...},
-  urldate = {2024-11-15},
-  publisher = {arXiv},
-  author = {Radford, Alec and Kim, Jong Wook and Hallacy, Chris and Ramesh, Aditya and Goh, Gabriel and Agarwal,
-  Sandhini and Sastry, Girish and Askell, Amanda and Mishkin, Pamela and Clark, Jack and Krueger, Gretchen and
-  Sutskever, Ilya},
-  month = feb,
-  year = {2021},
-  keywords = {Computer Vision, Representation Learning}
-  }
-
-  @article{schubert2021high-low,
-  author = {Schubert, Ludwig and Voss, Chelsea and Cammarata, Nick and Goh, Gabriel and Olah, Chris},
-  title = {High-Low Frequency Detectors},
-  journal = {Distill},
-  year = {2021},
-  note = {https://distill.pub/2020/circuits/frequency-edges},
-  doi = {10.23915/distill.00024.005}
-  }
-
-  @article{yousefnezhad_deep_2021,
-  title = {Deep {Representational} {Similarity} {Learning} for {Analyzing} {Neural} {Signatures} in {Task}-based {fMRI}
-  {Dataset}},
-  volume = {19},
-  issn = {1539-2791, 1559-0089},
-  url = {https://link.springer.com/10.1007/s12021-020-09494-4},
-  doi = {10.1007/s12021-020-09494-4},
-  abstract = {Introduces DRSL, a deep extension of RSA suitable for analyzing similarities between cognitive tasks in
-  large fMRI datasets...},
-  language = {en},
-  number = {3},
-  urldate = {2024-11-15},
-  journal = {Neuroinformatics},
-  author = {Yousefnezhad, Muhammad and Sawalha, Jeffrey and Selvitella, Alessandro and Zhang, Daoqiang},
-  month = jul,
-  year = {2021},
-  pages = {417--431}
-  }
-
-  @misc{zhou_object_2015,
-  title = {Object {Detectors} {Emerge} in {Deep} {Scene} {CNNs}},
-  url = {http://arxiv.org/abs/1412.6856},
-  doi = {10.48550/arXiv.1412.6856},
-  abstract = {Demonstrates that object detectors emerge as a byproduct of training CNNs for scene classification...},
-  urldate = {2024-11-15},
-  publisher = {arXiv},
-  author = {Zhou, Bolei and Khosla, Aditya and Lapedriza, Agata and Oliva, Aude and Torralba, Antonio},
-  month = apr,
-  year = {2015}
-  }
-
-  @misc{zou_universal_2023,
-  title = {Universal and {Transferable} {Adversarial} {Attacks} on {Aligned} {Language} {Models}},
-  url = {http://arxiv.org/abs/2307.15043},
-  doi = {10.48550/arXiv.2307.15043},
-  abstract = {Proposes an approach to automatically produce adversarial suffixes for LLMs, achieving attacks that
-  transfer to many models...},
-  urldate = {2024-11-15},
-  publisher = {arXiv},
-  author = {Zou, Andy and Wang, Zifan and Carlini, Nicholas and Nasr, Milad and Kolter, J. Zico and Fredrikson, Matt},
-  month = dec,
-  year = {2023}
-  }
-
-  @misc{sucholutsky2024gettingalignedrepresentationalalignment,
-  title={Getting aligned on representational alignment},
-  author={Ilia Sucholutsky and Lukas Muttenthaler and Adrian Weller and Andi Peng and Andreea Bobu and Been Kim and
-  Bradley C. Love and Christopher J. Cueva and Erin Grant and Iris Groen and Jascha Achterberg and Joshua B. Tenenbaum
-  and Katherine M. Collins and Katherine L. Hermann and Kerem Oktar and Klaus Greff and Martin N. Hebart and Nathan
-  Cloos and Nikolaus Kriegeskorte and Nori Jacoby and Qiuyi Zhang and Raja Marjieh and Robert Geirhos and Sherol Chen
-  and Simon Kornblith and Sunayana Rane and Talia Konkle and Thomas P. O'Connell and Thomas Unterthiner and Andrew K.
-  Lampinen and Klaus-Robert Müller and Mariya Toneva and Thomas L. Griffiths},
-  year={2024},
-  eprint={2310.13018},
-  archivePrefix={arXiv},
-  primaryClass={q-bio.NC},
-  url={https://arxiv.org/abs/2310.13018},
-  }
+  url =
+  {https://elicit.com/notebook/ca8a9992-4e9e-4478-b991-7229cd640ba2#18080183417d138da0d0dc40dc987bc5},
+  urldate = {2024-11-15} } @misc{noauthor_simon_nodate, title = {Simon
+  {Kornblith} - {AI} + {Science} {Talk} {Part} 1\&2.pdf | Powered by Box}, url =
+  {https://uchicago.app.box.com/s/ymyt6ushjg94l1aauutgwq256w30mhbg}, language =
+  {en-US}, urldate = {2024-11-15} } @article{olah2020zoom, author = {Olah, Chris
+  and Cammarata, Nick and Schubert, Ludwig and Goh, Gabriel and Petrov, Michael
+  and Carter, Shan}, title = {Zoom In: An Introduction to Circuits}, journal =
+  {Distill}, year = {2020}, note = {https://distill.pub/2020/circuits/zoom-in},
+  doi = {10.23915/distill.00024.001} } @article{olsson2022context, title =
+  {In-context Learning and Induction Heads}, author = {Olsson, Catherine and
+  Elhage, Nelson and Nanda, Neel and Joseph, Nicholas and DasSarma, Nova and
+  Henighan, Tom and Mann, Ben and Askell, Amanda and Bai, Yuntao and Chen, Anna
+  and Conerly, Tom and Drain, Dawn and Ganguli, Deep and Hatfield-Dodds, Zac and
+  Hernandez, Danny and Johnston, Scott and Jones, Andy and Kernion, Jackson and
+  Lovitt, Liane and Ndousse, Kamal and Amodei, Dario and Brown, Tom and Clark,
+  Jack and Kaplan, Jared and McCandlish, Sam and Olah, Chris}, year = {2022},
+  journal = {Transformer Circuits Thread}, note =
+  {https://transformer-circuits.pub/2022/in-context-learning-and-induction-heads/index.html}
+  } @misc{pliny_elder-pliniusl1b3rt4s_2024, title = {elder-plinius/{L1B3RT4S}},
+  url = {https://github.com/elder-plinius/L1B3RT4S}, abstract = {TOTALLY
+  HARMLESS LIBERATION PROMPTS FOR GOOD LIL AI'S}, urldate = {2024-11-15}, author
+  = {pliny}, month = nov, year = {2024} } @misc{radford_learning_2021, title =
+  {Learning {Transferable} {Visual} {Models} {From} {Natural} {Language}
+  {Supervision}}, url = {http://arxiv.org/abs/2103.00020}, doi =
+  {10.48550/arXiv.2103.00020}, abstract = {Introduces CLIP, trained on (image,
+  text) pairs to learn visual representations...}, urldate = {2024-11-15},
+  publisher = {arXiv}, author = {Radford, Alec and Kim, Jong Wook and Hallacy,
+  Chris and Ramesh, Aditya and Goh, Gabriel and Agarwal, Sandhini and Sastry,
+  Girish and Askell, Amanda and Mishkin, Pamela and Clark, Jack and Krueger,
+  Gretchen and Sutskever, Ilya}, month = feb, year = {2021}, keywords =
+  {Computer Vision, Representation Learning} } @article{schubert2021high-low,
+  author = {Schubert, Ludwig and Voss, Chelsea and Cammarata, Nick and Goh,
+  Gabriel and Olah, Chris}, title = {High-Low Frequency Detectors}, journal =
+  {Distill}, year = {2021}, note =
+  {https://distill.pub/2020/circuits/frequency-edges}, doi =
+  {10.23915/distill.00024.005} } @article{yousefnezhad_deep_2021, title = {Deep
+  {Representational} {Similarity} {Learning} for {Analyzing} {Neural}
+  {Signatures} in {Task}-based {fMRI} {Dataset}}, volume = {19}, issn =
+  {1539-2791, 1559-0089}, url =
+  {https://link.springer.com/10.1007/s12021-020-09494-4}, doi =
+  {10.1007/s12021-020-09494-4}, abstract = {Introduces DRSL, a deep extension of
+  RSA suitable for analyzing similarities between cognitive tasks in large fMRI
+  datasets...}, language = {en}, number = {3}, urldate = {2024-11-15}, journal =
+  {Neuroinformatics}, author = {Yousefnezhad, Muhammad and Sawalha, Jeffrey and
+  Selvitella, Alessandro and Zhang, Daoqiang}, month = jul, year = {2021}, pages
+  = {417--431} } @misc{zhou_object_2015, title = {Object {Detectors} {Emerge} in
+  {Deep} {Scene} {CNNs}}, url = {http://arxiv.org/abs/1412.6856}, doi =
+  {10.48550/arXiv.1412.6856}, abstract = {Demonstrates that object detectors
+  emerge as a byproduct of training CNNs for scene classification...}, urldate =
+  {2024-11-15}, publisher = {arXiv}, author = {Zhou, Bolei and Khosla, Aditya
+  and Lapedriza, Agata and Oliva, Aude and Torralba, Antonio}, month = apr, year
+  = {2015} } @misc{zou_universal_2023, title = {Universal and {Transferable}
+  {Adversarial} {Attacks} on {Aligned} {Language} {Models}}, url =
+  {http://arxiv.org/abs/2307.15043}, doi = {10.48550/arXiv.2307.15043}, abstract
+  = {Proposes an approach to automatically produce adversarial suffixes for
+  LLMs, achieving attacks that transfer to many models...}, urldate =
+  {2024-11-15}, publisher = {arXiv}, author = {Zou, Andy and Wang, Zifan and
+  Carlini, Nicholas and Nasr, Milad and Kolter, J. Zico and Fredrikson, Matt},
+  month = dec, year = {2023} }
+  @misc{sucholutsky2024gettingalignedrepresentationalalignment, title={Getting
+  aligned on representational alignment}, author={Ilia Sucholutsky and Lukas
+  Muttenthaler and Adrian Weller and Andi Peng and Andreea Bobu and Been Kim and
+  Bradley C. Love and Christopher J. Cueva and Erin Grant and Iris Groen and
+  Jascha Achterberg and Joshua B. Tenenbaum and Katherine M. Collins and
+  Katherine L. Hermann and Kerem Oktar and Klaus Greff and Martin N. Hebart and
+  Nathan Cloos and Nikolaus Kriegeskorte and Nori Jacoby and Qiuyi Zhang and
+  Raja Marjieh and Robert Geirhos and Sherol Chen and Simon Kornblith and
+  Sunayana Rane and Talia Konkle and Thomas P. O'Connell and Thomas Unterthiner
+  and Andrew K. Lampinen and Klaus-Robert Müller and Mariya Toneva and Thomas L.
+  Griffiths}, year={2024}, eprint={2310.13018}, archivePrefix={arXiv},
+  primaryClass={q-bio.NC}, url={https://arxiv.org/abs/2310.13018}, }
 </dt-appendix>
 
 <script type="text/bibliography">
-  @inproceedings{andrew_deep_2013,
-    title     = {Deep {Canonical} {Correlation} {Analysis}},
-    url       = {https://proceedings.mlr.press/v28/andrew13.html},
-    abstract  = {We introduce Deep Canonical Correlation Analysis (DCCA), a method to learn complex nonlinear transformations of two views of data such that the resulting representations are highly linearly correlated...},
-    language  = {en},
-    urldate   = {2024-11-15},
-    booktitle = {Proceedings of the 30th {International} {Conference} on {Machine} {Learning}},
-    publisher = {PMLR},
-    author    = {Andrew, Galen and Arora, Raman and Bilmes, Jeff and Livescu, Karen},
-    month     = may,
-    year      = {2013},
-    note      = {ISSN: 1938-7228},
-    pages     = {1247--1255}
-  }
-  @misc{andriushchenko_jailbreaking_2024,
-    title     = {Jailbreaking {Leading} {Safety}-{Aligned} {LLMs} with {Simple} {Adaptive} {Attacks}},
-    url       = {http://arxiv.org/abs/2404.02151},
-    doi       = {10.48550/arXiv.2404.02151},
-    abstract  = {We show that even the most recent safety-aligned LLMs are not robust to simple adaptive jailbreaking attacks...},
-    urldate   = {2024-11-15},
-    publisher = {arXiv},
-    author    = {Andriushchenko, Maksym and Croce, Francesco and Flammarion, Nicolas},
-    month     = oct,
-    year      = {2024},
-    note      = {arXiv:2404.02151},
-    keywords  = {Computer Science - Machine Learning, AI, Security}
-  }
+    @inproceedings{andrew_deep_2013,
+      title     = {Deep {Canonical} {Correlation} {Analysis}},
+      url       = {https://proceedings.mlr.press/v28/andrew13.html},
+      abstract  = {We introduce Deep Canonical Correlation Analysis (DCCA), a method to learn complex nonlinear transformations of two views of data such that the resulting representations are highly linearly correlated...},
+      language  = {en},
+      urldate   = {2024-11-15},
+      booktitle = {Proceedings of the 30th {International} {Conference} on {Machine} {Learning}},
+      publisher = {PMLR},
+      author    = {Andrew, Galen and Arora, Raman and Bilmes, Jeff and Livescu, Karen},
+      month     = may,
+      year      = {2013},
+      note      = {ISSN: 1938-7228},
+      pages     = {1247--1255}
+    }
+    @misc{andriushchenko_jailbreaking_2024,
+      title     = {Jailbreaking {Leading} {Safety}-{Aligned} {LLMs} with {Simple} {Adaptive} {Attacks}},
+      url       = {http://arxiv.org/abs/2404.02151},
+      doi       = {10.48550/arXiv.2404.02151},
+      abstract  = {We show that even the most recent safety-aligned LLMs are not robust to simple adaptive jailbreaking attacks...},
+      urldate   = {2024-11-15},
+      publisher = {arXiv},
+      author    = {Andriushchenko, Maksym and Croce, Francesco and Flammarion, Nicolas},
+      month     = oct,
+      year      = {2024},
+      note      = {arXiv:2404.02151},
+      keywords  = {Computer Science - Machine Learning, AI, Security}
+    }
 
-  @article{anthropic,
-    title    = {Towards {Monosemanticity}: {Decomposing} {Language} {Models} {With} {Dictionary} {Learning}},
-    author   = {Bricken, Trenton and Templeton, Adly and Batson, Joshua and Chen, Brian and Jermyn, Adam and Conerly, Tom and Turner, Nicholas L. and Anil, Cem and Denison, Carson and Askell, Amanda and Lasenby, Robert and Wu, Yifan and Kravec, Shauna and Schiefer, Nicholas and Maxwell, Tim and Joseph, Nicholas and Tamkin, Alex and Nguyen, Karina and McLean, Brayden and Burke, Josiah E. and Hume, Tristan and Carter, Shan and Henighan, Tom and Olah, Chris},
-    url      = {https://www.anthropic.com/research/towards-monosemanticity-decomposing-language-models-with-dictionary-learning},
-    abstract = {Anthropic is an AI safety and research company...},
-    language = {en},
-    urldate  = {2024-11-15},
-    year     = {2023}
-  }
+    @article{anthropic,
+      title    = {Towards {Monosemanticity}: {Decomposing} {Language} {Models} {With} {Dictionary} {Learning}},
+      author   = {Bricken, Trenton and Templeton, Adly and Batson, Joshua and Chen, Brian and Jermyn, Adam and Conerly, Tom and Turner, Nicholas L. and Anil, Cem and Denison, Carson and Askell, Amanda and Lasenby, Robert and Wu, Yifan and Kravec, Shauna and Schiefer, Nicholas and Maxwell, Tim and Joseph, Nicholas and Tamkin, Alex and Nguyen, Karina and McLean, Brayden and Burke, Josiah E. and Hume, Tristan and Carter, Shan and Henighan, Tom and Olah, Chris},
+      url      = {https://www.anthropic.com/research/towards-monosemanticity-decomposing-language-models-with-dictionary-learning},
+      abstract = {Anthropic is an AI safety and research company...},
+      language = {en},
+      urldate  = {2024-11-15},
+      year     = {2023}
+    }
 
-  @inproceedings{bansal_revisiting_2021,
-    title     = {Revisiting {Model} {Stitching} to {Compare} {Neural} {Representations}},
-    volume    = {34},
-    url       = {https://proceedings.neurips.cc/paper/2021/hash/01ded4259d101feb739b06c399e9cd9c-Abstract.html},
-    urldate   = {2024-11-15},
-    booktitle = {Advances in {Neural} {Information} {Processing} {Systems}},
-    publisher = {Curran Associates, Inc.},
-    author    = {Bansal, Yamini and Nakkiran, Preetum and Barak, Boaz},
-    year      = {2021},
-    pages     = {225--236}
-  }
+    @inproceedings{bansal_revisiting_2021,
+      title     = {Revisiting {Model} {Stitching} to {Compare} {Neural} {Representations}},
+      volume    = {34},
+      url       = {https://proceedings.neurips.cc/paper/2021/hash/01ded4259d101feb739b06c399e9cd9c-Abstract.html},
+      urldate   = {2024-11-15},
+      booktitle = {Advances in {Neural} {Information} {Processing} {Systems}},
+      publisher = {Curran Associates, Inc.},
+      author    = {Bansal, Yamini and Nakkiran, Preetum and Barak, Boaz},
+      year      = {2021},
+      pages     = {225--236}
+    }
 
-  @misc{box-rep-sim,
-    url = {https://uchicago.app.box.com/s/ymyt6ushjg94l1aauutgwq256w30mhbg}
-  }
+    @misc{box-rep-sim,
+      url = {https://uchicago.app.box.com/s/ymyt6ushjg94l1aauutgwq256w30mhbg}
+    }
 
-  @article{cammarata_curve_2020,
-    title    = {Curve {Detectors}},
-    volume   = {5},
-    issn     = {2476-0757},
-    url      = {https://distill.pub/2020/circuits/curve-detectors},
-    doi      = {10.23915/distill.00024.003},
-    abstract = {Part one of a three part deep dive into the curve neuron family.},
-    language = {en},
-    number   = {6},
-    urldate  = {2024-11-15},
-    journal  = {Distill},
-    author   = {Cammarata, Nick and Goh, Gabriel and Carter, Shan and Schubert, Ludwig and Petrov, Michael and Olah, Chris},
-    month    = jun,
-    year     = {2020},
-    pages    = {e00024.003}
-  }
+    @article{cammarata_curve_2020,
+      title    = {Curve {Detectors}},
+      volume   = {5},
+      issn     = {2476-0757},
+      url      = {https://distill.pub/2020/circuits/curve-detectors},
+      doi      = {10.23915/distill.00024.003},
+      abstract = {Part one of a three part deep dive into the curve neuron family.},
+      language = {en},
+      number   = {6},
+      urldate  = {2024-11-15},
+      journal  = {Distill},
+      author   = {Cammarata, Nick and Goh, Gabriel and Carter, Shan and Schubert, Ludwig and Petrov, Michael and Olah, Chris},
+      month    = jun,
+      year     = {2020},
+      pages    = {e00024.003}
+    }
 
-  @misc{chao_jailbreaking_2024,
-    title     = {Jailbreaking {Black} {Box} {Large} {Language} {Models} in {Twenty} {Queries}},
-    url       = {http://arxiv.org/abs/2310.08419},
-    doi       = {10.48550/arXiv.2310.08419},
-    abstract  = {We propose Prompt Automatic Iterative Refinement (PAIR), a method that generates semantic jailbreaks with only black-box access...},
-    urldate   = {2024-11-15},
-    publisher = {arXiv},
-    author    = {Chao, Patrick and Robey, Alexander and Dobriban, Edgar and Hassani, Hamed and Pappas, George J. and Wong, Eric},
-    month     = jul,
-    year      = {2024},
-    note      = {arXiv:2310.08419}
-  }
+    @misc{chao_jailbreaking_2024,
+      title     = {Jailbreaking {Black} {Box} {Large} {Language} {Models} in {Twenty} {Queries}},
+      url       = {http://arxiv.org/abs/2310.08419},
+      doi       = {10.48550/arXiv.2310.08419},
+      abstract  = {We propose Prompt Automatic Iterative Refinement (PAIR), a method that generates semantic jailbreaks with only black-box access...},
+      urldate   = {2024-11-15},
+      publisher = {arXiv},
+      author    = {Chao, Patrick and Robey, Alexander and Dobriban, Edgar and Hassani, Hamed and Pappas, George J. and Wong, Eric},
+      month     = jul,
+      year      = {2024},
+      note      = {arXiv:2310.08419}
+    }
 
-  @misc{cunningham_sparse_2023,
-    title     = {Sparse {Autoencoders} {Find} {Highly} {Interpretable} {Features} in {Language} {Models}},
-    url       = {http://arxiv.org/abs/2309.08600},
-    doi       = {10.48550/arXiv.2309.08600},
-    abstract  = {We show that sparse autoencoders can resolve superposition in language models...},
-    urldate   = {2024-11-15},
-    publisher = {arXiv},
-    author    = {Cunningham, Hoagy and Ewart, Aidan and Riggs, Logan and Huben, Robert and Sharkey, Lee},
-    month     = oct,
-    year      = {2023},
-    note      = {arXiv:2309.08600}
-  }
+    @misc{cunningham_sparse_2023,
+      title     = {Sparse {Autoencoders} {Find} {Highly} {Interpretable} {Features} in {Language} {Models}},
+      url       = {http://arxiv.org/abs/2309.08600},
+      doi       = {10.48550/arXiv.2309.08600},
+      abstract  = {We show that sparse autoencoders can resolve superposition in language models...},
+      urldate   = {2024-11-15},
+      publisher = {arXiv},
+      author    = {Cunningham, Hoagy and Ewart, Aidan and Riggs, Logan and Huben, Robert and Sharkey, Lee},
+      month     = oct,
+      year      = {2023},
+      note      = {arXiv:2309.08600}
+    }
 
-  @inproceedings{eberle-etal-2022-transformer,
-    title     = {Do Transformer Models Show Similar Attention Patterns to Task-Specific Human Gaze?},
-    author    = {Eberle, Oliver and Brandl, Stephanie and Pilot, Jonas and S{\o}gaard, Anders},
-    booktitle = {Proceedings of the 60th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)},
-    month     = may,
-    year      = {2022},
-    address   = {Dublin, Ireland},
-    publisher = {Association for Computational Linguistics},
-    url       = {https://aclanthology.org/2022.acl-long.296},
-    doi       = {10.18653/v1/2022.acl-long.296},
-    pages     = {4295--4309}
-  }
+    @inproceedings{eberle-etal-2022-transformer,
+      title     = {Do Transformer Models Show Similar Attention Patterns to Task-Specific Human Gaze?},
+      author    = {Eberle, Oliver and Brandl, Stephanie and Pilot, Jonas and S{\o}gaard, Anders},
+      booktitle = {Proceedings of the 60th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)},
+      month     = may,
+      year      = {2022},
+      address   = {Dublin, Ireland},
+      publisher = {Association for Computational Linguistics},
+      url       = {https://aclanthology.org/2022.acl-long.296},
+      doi       = {10.18653/v1/2022.acl-long.296},
+      pages     = {4295--4309}
+    }
 
-  @article{haxby_decoding_2014,
-    title    = {Decoding {Neural} {Representational} {Spaces} {Using} {Multivariate} {Pattern} {Analysis}},
-    volume   = {37},
-    issn     = {0147-006X, 1545-4126},
-    url      = {https://www.annualreviews.org/doi/10.1146/annurev-neuro-062012-170325},
-    doi      = {10.1146/annurev-neuro-062012-170325},
-    abstract = {A review discussing methods for decoding human neural activity...},
-    language = {en},
-    number   = {1},
-    urldate  = {2024-11-15},
-    journal  = {Annual Review of Neuroscience},
-    author   = {Haxby, James V. and Connolly, Andrew C. and Guntupalli, J. Swaroop},
-    month    = jul,
-    year     = {2014},
-    pages    = {435--456}
-  }
+    @article{haxby_decoding_2014,
+      title    = {Decoding {Neural} {Representational} {Spaces} {Using} {Multivariate} {Pattern} {Analysis}},
+      volume   = {37},
+      issn     = {0147-006X, 1545-4126},
+      url      = {https://www.annualreviews.org/doi/10.1146/annurev-neuro-062012-170325},
+      doi      = {10.1146/annurev-neuro-062012-170325},
+      abstract = {A review discussing methods for decoding human neural activity...},
+      language = {en},
+      number   = {1},
+      urldate  = {2024-11-15},
+      journal  = {Annual Review of Neuroscience},
+      author   = {Haxby, James V. and Connolly, Andrew C. and Guntupalli, J. Swaroop},
+      month    = jul,
+      year     = {2014},
+      pages    = {435--456}
+    }
 
-  @misc{hernandez_model_2023,
-    title     = {Model {Stitching}: {Looking} {For} {Functional} {Similarity} {Between} {Representations}},
-    url       = {http://arxiv.org/abs/2303.11277},
-    doi       = {10.48550/arXiv.2303.11277},
-    abstract  = {Model stitching is a methodology to compare neural network representations by measuring their interchangeability...},
-    urldate   = {2024-11-15},
-    publisher = {arXiv},
-    author    = {Hernandez, Adriano and Dangovski, Rumen and Lu, Peter Y. and Soljacic, Marin},
-    month     = aug,
-    year      = {2023},
-    note      = {arXiv:2303.11277}
-  }
+    @misc{hernandez_model_2023,
+      title     = {Model {Stitching}: {Looking} {For} {Functional} {Similarity} {Between} {Representations}},
+      url       = {http://arxiv.org/abs/2303.11277},
+      doi       = {10.48550/arXiv.2303.11277},
+      abstract  = {Model stitching is a methodology to compare neural network representations by measuring their interchangeability...},
+      urldate   = {2024-11-15},
+      publisher = {arXiv},
+      author    = {Hernandez, Adriano and Dangovski, Rumen and Lu, Peter Y. and Soljacic, Marin},
+      month     = aug,
+      year      = {2023},
+      note      = {arXiv:2303.11277}
+    }
 
-  @misc{huh_platonic_2024,
-    title     = {The {Platonic} {Representation} {Hypothesis}},
-    url       = {http://arxiv.org/abs/2405.07987},
-    doi       = {10.48550/arXiv.2405.07987},
-    abstract  = {We argue that representations in AI models are converging, driving toward a shared statistical model of reality...},
-    urldate   = {2024-11-15},
-    publisher = {arXiv},
-    author    = {Huh, Minyoung and Cheung, Brian and Wang, Tongzhou and Isola, Phillip},
-    month     = jul,
-    year      = {2024},
-    note      = {arXiv:2405.07987}
-  }
+    @misc{huh_platonic_2024,
+      title     = {The {Platonic} {Representation} {Hypothesis}},
+      url       = {http://arxiv.org/abs/2405.07987},
+      doi       = {10.48550/arXiv.2405.07987},
+      abstract  = {We argue that representations in AI models are converging, driving toward a shared statistical model of reality...},
+      urldate   = {2024-11-15},
+      publisher = {arXiv},
+      author    = {Huh, Minyoung and Cheung, Brian and Wang, Tongzhou and Isola, Phillip},
+      month     = jul,
+      year      = {2024},
+      note      = {arXiv:2405.07987}
+    }
 
-  @article{klabunde_similarity_2023,
-    title    = {Similarity of {Neural} {Network} {Models}: {A} {Survey} of {Functional} and {Representational} {Measures}},
-    url      = {https://arxiv.org/abs/2305.06329},
-    doi      = {10.48550/ARXIV.2305.06329},
-    abstract = {A survey of measures for functional and representational similarity in neural networks...},
-    urldate  = {2024-11-15},
-    author   = {Klabunde, Max and Schumacher, Tobias and Strohmaier, Markus and Lemmerich, Florian},
-    year     = {2023}
-  }
+    @article{klabunde_similarity_2023,
+      title    = {Similarity of {Neural} {Network} {Models}: {A} {Survey} of {Functional} and {Representational} {Measures}},
+      url      = {https://arxiv.org/abs/2305.06329},
+      doi      = {10.48550/ARXIV.2305.06329},
+      abstract = {A survey of measures for functional and representational similarity in neural networks...},
+      urldate  = {2024-11-15},
+      author   = {Klabunde, Max and Schumacher, Tobias and Strohmaier, Markus and Lemmerich, Florian},
+      year     = {2023}
+    }
 
-  @article{Klabunde2023TowardsMR,
-    title   = {Towards Measuring Representational Similarity of Large Language Models},
-    author  = {Klabunde, Max and Ben Amor, Mehdi and Granitzer, Michael and Lemmerich, Florian},
-    journal = {ArXiv},
-    year    = {2023},
-    volume  = {abs/2312.02730},
-    url     = {https://arxiv.org/abs/2312.02730}
-  }
+    @article{Klabunde2023TowardsMR,
+      title   = {Towards Measuring Representational Similarity of Large Language Models},
+      author  = {Klabunde, Max and Ben Amor, Mehdi and Granitzer, Michael and Lemmerich, Florian},
+      journal = {ArXiv},
+      year    = {2023},
+      volume  = {abs/2312.02730},
+      url     = {https://arxiv.org/abs/2312.02730}
+    }
 
-  @misc{kornblith_similarity_2019,
-    title     = {Similarity of {Neural} {Network} {Representations} {Revisited}},
-    url       = {http://arxiv.org/abs/1905.00414},
-    doi       = {10.48550/arXiv.1905.00414},
-    abstract  = {Examines methods for comparing neural network representations based on CCA and introduces CKA...},
-    urldate   = {2024-11-15},
-    publisher = {arXiv},
-    author    = {Kornblith, Simon and Norouzi, Mohammad and Lee, Honglak and Hinton, Geoffrey},
-    month     = jul,
-    year      = {2019},
-    keywords  = {Machine Learning}
-  }
+    @misc{kornblith_similarity_2019,
+      title     = {Similarity of {Neural} {Network} {Representations} {Revisited}},
+      url       = {http://arxiv.org/abs/1905.00414},
+      doi       = {10.48550/arXiv.1905.00414},
+      abstract  = {Examines methods for comparing neural network representations based on CCA and introduces CKA...},
+      urldate   = {2024-11-15},
+      publisher = {arXiv},
+      author    = {Kornblith, Simon and Norouzi, Mohammad and Lee, Honglak and Hinton, Geoffrey},
+      month     = jul,
+      year      = {2019},
+      keywords  = {Machine Learning}
+    }
 
-  @article{kriegeskorte_representational_2008,
-    title    = {Representational similarity analysis - connecting the branches of systems neuroscience},
-    volume   = {2},
-    issn     = {1662-5137},
-    url      = {https://www.frontiersin.org/articles/10.3389/neuro.06.004.2008/full},
-    doi      = {10.3389/neuro.06.004.2008},
-    abstract = {A framework to quantitatively relate brain-activity measurement, behavior, and computational modeling via RSA...},
-    language = {en},
-    urldate  = {2024-11-15},
-    journal  = {Frontiers in Systems Neuroscience},
-    author   = {Kriegeskorte, Nikolaus and Mur, Marieke and Bandettini, Peter A.},
-    month    = nov,
-    year     = {2008}
-  }
+    @article{kriegeskorte_representational_2008,
+      title    = {Representational similarity analysis - connecting the branches of systems neuroscience},
+      volume   = {2},
+      issn     = {1662-5137},
+      url      = {https://www.frontiersin.org/articles/10.3389/neuro.06.004.2008/full},
+      doi      = {10.3389/neuro.06.004.2008},
+      abstract = {A framework to quantitatively relate brain-activity measurement, behavior, and computational modeling via RSA...},
+      language = {en},
+      urldate  = {2024-11-15},
+      journal  = {Frontiers in Systems Neuroscience},
+      author   = {Kriegeskorte, Nikolaus and Mur, Marieke and Bandettini, Peter A.},
+      month    = nov,
+      year     = {2008}
+    }
 
-  @misc{li2016convergentlearningdifferentneural,
-    title         = {Convergent Learning: Do different neural networks learn the same representations?},
-    author        = {Li, Yixuan and Yosinski, Jason and Clune, Jeff and Lipson, Hod and Hopcroft, John},
-    year          = {2016},
-    eprint        = {1511.07543},
-    archiveprefix = {arXiv},
-    primaryclass  = {cs.LG},
-    url           = {https://arxiv.org/abs/1511.07543}
-  }
+    @misc{li2016convergentlearningdifferentneural,
+      title         = {Convergent Learning: Do different neural networks learn the same representations?},
+      author        = {Li, Yixuan and Yosinski, Jason and Clune, Jeff and Lipson, Hod and Hopcroft, John},
+      year          = {2016},
+      eprint        = {1511.07543},
+      archiveprefix = {arXiv},
+      primaryclass  = {cs.LG},
+      url           = {https://arxiv.org/abs/1511.07543}
+    }
 
-  @misc{mehrotra_tree_2024,
-    title     = {Tree of {Attacks}: {Jailbreaking} {Black}-{Box} {LLMs} {Automatically}},
-    url       = {http://arxiv.org/abs/2312.02119},
-    doi       = {10.48550/arXiv.2312.02119},
-    abstract  = {We present Tree of Attacks with Pruning (TAP), an automated method for generating jailbreaks that requires only black-box access...},
-    urldate   = {2024-11-15},
-    publisher = {arXiv},
-    author    = {Mehrotra, Anay and Zampetakis, Manolis and Kassianik, Paul and Nelson, Blaine and Anderson, Hyrum and Singer, Yaron and Karbasi, Amin},
-    month     = oct,
-    year      = {2024},
-    note      = {arXiv:2312.02119}
-  }
+    @misc{mehrotra_tree_2024,
+      title     = {Tree of {Attacks}: {Jailbreaking} {Black}-{Box} {LLMs} {Automatically}},
+      url       = {http://arxiv.org/abs/2312.02119},
+      doi       = {10.48550/arXiv.2312.02119},
+      abstract  = {We present Tree of Attacks with Pruning (TAP), an automated method for generating jailbreaks that requires only black-box access...},
+      urldate   = {2024-11-15},
+      publisher = {arXiv},
+      author    = {Mehrotra, Anay and Zampetakis, Manolis and Kassianik, Paul and Nelson, Blaine and Anderson, Hyrum and Singer, Yaron and Karbasi, Amin},
+      month     = oct,
+      year      = {2024},
+      note      = {arXiv:2312.02119}
+    }
 
-  @inproceedings{morcos_insights_2018,
-    title    = {Insights on representational similarity in neural networks with canonical correlation},
-    abstract = {Uses projection weighted CCA to study representational similarity across CNNs and RNNs...},
-    urldate  = {2024-11-15},
-    author   = {Morcos, Ari S. and Raghu, Maithra and Bengio, Samy},
-    month    = jun,
-    year     = {2018}
-  }
+    @inproceedings{morcos_insights_2018,
+      title    = {Insights on representational similarity in neural networks with canonical correlation},
+      abstract = {Uses projection weighted CCA to study representational similarity across CNNs and RNNs...},
+      urldate  = {2024-11-15},
+      author   = {Morcos, Ari S. and Raghu, Maithra and Bengio, Samy},
+      month    = jun,
+      year     = {2018}
+    }
 
-  @misc{nguyen_wide_2021,
-    title     = {Do {Wide} and {Deep} {Networks} {Learn} the {Same} {Things}? {Uncovering} {How} {Neural} {Network} {Representations} {Vary} with {Width} and {Depth}},
-    url       = {http://arxiv.org/abs/2010.15327},
-    doi       = {10.48550/arXiv.2010.15327},
-    abstract  = {Investigates how varying depth and width affects model hidden representations...},
-    urldate   = {2024-11-15},
-    publisher = {arXiv},
-    author    = {Nguyen, Thao and Raghu, Maithra and Kornblith, Simon},
-    month     = apr,
-    year      = {2021},
-    keywords  = {Computer Science - Machine Learning}
-  }
+    @misc{nguyen_wide_2021,
+      title     = {Do {Wide} and {Deep} {Networks} {Learn} the {Same} {Things}? {Uncovering} {How} {Neural} {Network} {Representations} {Vary} with {Width} and {Depth}},
+      url       = {http://arxiv.org/abs/2010.15327},
+      doi       = {10.48550/arXiv.2010.15327},
+      abstract  = {Investigates how varying depth and width affects model hidden representations...},
+      urldate   = {2024-11-15},
+      publisher = {arXiv},
+      author    = {Nguyen, Thao and Raghu, Maithra and Kornblith, Simon},
+      month     = apr,
+      year      = {2021},
+      keywords  = {Computer Science - Machine Learning}
+    }
 
-  @misc{noauthor_20_scaling_lawspdf_nodate,
-    title    = {20\_scaling\_laws.pdf},
-    url      = {https://www.dropbox.com/scl/fi/xhnv84zx78u0l8o1o4pce/20_scaling_laws.pdf?dl=0&e=1&rlkey=ucg32vqlxgadea3enzh90qaop},
-    abstract = {Shared with Dropbox},
-    language = {en},
-    urldate  = {2024-11-15}
-  }
+    @misc{noauthor_20_scaling_lawspdf_nodate,
+      title    = {20\_scaling\_laws.pdf},
+      url      = {https://www.dropbox.com/scl/fi/xhnv84zx78u0l8o1o4pce/20_scaling_laws.pdf?dl=0&e=1&rlkey=ucg32vqlxgadea3enzh90qaop},
+      abstract = {Shared with Dropbox},
+      language = {en},
+      urldate  = {2024-11-15}
+    }
 
-  @misc{noauthor_canonical_2024,
-    title    = {Canonical correlation},
-    url      = {https://en.wikipedia.org/w/index.php?title=Canonical_correlation&oldid=1246555266},
-    abstract = {An explanation of canonical-correlation analysis (CCA)...},
-    language = {en},
-    urldate  = {2024-11-15},
-    journal  = {Wikipedia},
-    month    = sep,
-    year     = {2024}
-  }
+    @misc{noauthor_canonical_2024,
+      title    = {Canonical correlation},
+      url      = {https://en.wikipedia.org/w/index.php?title=Canonical_correlation&oldid=1246555266},
+      abstract = {An explanation of canonical-correlation analysis (CCA)...},
+      language = {en},
+      urldate  = {2024-11-15},
+      journal  = {Wikipedia},
+      month    = sep,
+      year     = {2024}
+    }
 
-  @misc{noauthor_mantis_nodate,
-    title   = {Mantis},
-    url     = {https://home.withmantis.com/},
-    urldate = {2024-11-15}
-  }
+    @misc{noauthor_mantis_nodate,
+      title   = {Mantis},
+      url     = {https://home.withmantis.com/},
+      urldate = {2024-11-15}
+    }
 
-  @misc{noauthor_model_nodate,
-    title    = {Model {Stitching}: {Looking} {For} {Functional} {Similarity} {Between} {Representations}}},
-    url      = {https://scholar.google.com/citations?view_op=view_citation&hl=en&user=evT71z8AAAAJ&citation_for_view=evT71z8AAAAJ:u5HHmVD_uO8C},
-    abstract = {Short summary referencing model stitching and functional similarity.},
-    urldate  = {2024-11-15}
-  }
+    @misc{noauthor_model_nodate,
+      title    = {Model {Stitching}: {Looking} {For} {Functional} {Similarity} {Between} {Representations}}},
+      url      = {https://scholar.google.com/citations?view_op=view_citation&hl=en&user=evT71z8AAAAJ&citation_for_view=evT71z8AAAAJ:u5HHmVD_uO8C},
+      abstract = {Short summary referencing model stitching and functional similarity.},
+      urldate  = {2024-11-15}
+    }
 
-  @misc{noauthor_representational_nodate,
-    title   = {Representational {Similarity} in {Neural} {Networks} | {Elicit}}},
-    url     = {https://elicit.com/notebook/ca8a9992-4e9e-4478-b991-7229cd640ba2#18080183417d138da0d0dc40dc987bc5},
-    urldate = {2024-11-15}
-  }
+    @misc{noauthor_representational_nodate,
+      title   = {Representational {Similarity} in {Neural} {Networks} | {Elicit}}},
+      url     = {https://elicit.com/notebook/ca8a9992-4e9e-4478-b991-7229cd640ba2#18080183417d138da0d0dc40dc987bc5},
+      urldate = {2024-11-15}
+    }
 
-  @misc{noauthor_simon_nodate,
-    title    = {Simon {Kornblith} - {AI} + {Science} {Talk} {Part} 1\&2.pdf | Powered by Box},
-    url      = {https://uchicago.app.box.com/s/ymyt6ushjg94l1aauutgwq256w30mhbg},
-    language = {en-US},
-    urldate  = {2024-11-15}
-  }
+    @misc{noauthor_simon_nodate,
+      title    = {Simon {Kornblith} - {AI} + {Science} {Talk} {Part} 1\&2.pdf | Powered by Box},
+      url      = {https://uchicago.app.box.com/s/ymyt6ushjg94l1aauutgwq256w30mhbg},
+      language = {en-US},
+      urldate  = {2024-11-15}
+    }
 
-  @article{olah2020zoom,
-    author  = {Olah, Chris and Cammarata, Nick and Schubert, Ludwig and Goh, Gabriel and Petrov, Michael and Carter, Shan},
-    title   = {Zoom In: An Introduction to Circuits},
-    journal = {Distill},
-    year    = {2020},
-    note    = {https://distill.pub/2020/circuits/zoom-in},
-    doi     = {10.23915/distill.00024.001}
-  }
+    @article{olah2020zoom,
+      author  = {Olah, Chris and Cammarata, Nick and Schubert, Ludwig and Goh, Gabriel and Petrov, Michael and Carter, Shan},
+      title   = {Zoom In: An Introduction to Circuits},
+      journal = {Distill},
+      year    = {2020},
+      note    = {https://distill.pub/2020/circuits/zoom-in},
+      doi     = {10.23915/distill.00024.001}
+    }
 
-  @article{olsson2022context,
-    title   = {In-context Learning and Induction Heads},
-    author  = {Olsson, Catherine and Elhage, Nelson and Nanda, Neel and Joseph, Nicholas and DasSarma, Nova and Henighan, Tom and Mann, Ben and Askell, Amanda and Bai, Yuntao and Chen, Anna and Conerly, Tom and Drain, Dawn and Ganguli, Deep and Hatfield-Dodds, Zac and Hernandez, Danny and Johnston, Scott and Jones, Andy and Kernion, Jackson and Lovitt, Liane and Ndousse, Kamal and Amodei, Dario and Brown, Tom and Clark, Jack and Kaplan, Jared and McCandlish, Sam and Olah, Chris},
-    year    = {2022},
-    journal = {Transformer Circuits Thread},
-    note    = {https://transformer-circuits.pub/2022/in-context-learning-and-induction-heads/index.html}
-  }
+    @article{olsson2022context,
+      title   = {In-context Learning and Induction Heads},
+      author  = {Olsson, Catherine and Elhage, Nelson and Nanda, Neel and Joseph, Nicholas and DasSarma, Nova and Henighan, Tom and Mann, Ben and Askell, Amanda and Bai, Yuntao and Chen, Anna and Conerly, Tom and Drain, Dawn and Ganguli, Deep and Hatfield-Dodds, Zac and Hernandez, Danny and Johnston, Scott and Jones, Andy and Kernion, Jackson and Lovitt, Liane and Ndousse, Kamal and Amodei, Dario and Brown, Tom and Clark, Jack and Kaplan, Jared and McCandlish, Sam and Olah, Chris},
+      year    = {2022},
+      journal = {Transformer Circuits Thread},
+      note    = {https://transformer-circuits.pub/2022/in-context-learning-and-induction-heads/index.html}
+    }
 
-  @misc{pliny_elder-pliniusl1b3rt4s_2024,
-    title    = {elder-plinius/{L1B3RT4S}},
-    url      = {https://github.com/elder-plinius/L1B3RT4S},
-    abstract = {TOTALLY HARMLESS LIBERATION PROMPTS FOR GOOD LIL AI'S},
-    urldate  = {2024-11-15},
-    author   = {pliny},
-    month    = nov,
-    year     = {2024}
-  }
+    @misc{pliny_elder-pliniusl1b3rt4s_2024,
+      title    = {elder-plinius/{L1B3RT4S}},
+      url      = {https://github.com/elder-plinius/L1B3RT4S},
+      abstract = {TOTALLY HARMLESS LIBERATION PROMPTS FOR GOOD LIL AI'S},
+      urldate  = {2024-11-15},
+      author   = {pliny},
+      month    = nov,
+      year     = {2024}
+    }
 
-  @misc{radford_learning_2021,
-    title     = {Learning {Transferable} {Visual} {Models} {From} {Natural} {Language} {Supervision}},
-    url       = {http://arxiv.org/abs/2103.00020},
-    doi       = {10.48550/arXiv.2103.00020},
-    abstract  = {Introduces CLIP, trained on (image, text) pairs to learn visual representations...},
-    urldate   = {2024-11-15},
-    publisher = {arXiv},
-    author    = {Radford, Alec and Kim, Jong Wook and Hallacy, Chris and Ramesh, Aditya and Goh, Gabriel and Agarwal, Sandhini and Sastry, Girish and Askell, Amanda and Mishkin, Pamela and Clark, Jack and Krueger, Gretchen and Sutskever, Ilya},
-    month     = feb,
-    year      = {2021},
-    keywords  = {Computer Vision, Representation Learning}
-  }
+    @misc{radford_learning_2021,
+      title     = {Learning {Transferable} {Visual} {Models} {From} {Natural} {Language} {Supervision}},
+      url       = {http://arxiv.org/abs/2103.00020},
+      doi       = {10.48550/arXiv.2103.00020},
+      abstract  = {Introduces CLIP, trained on (image, text) pairs to learn visual representations...},
+      urldate   = {2024-11-15},
+      publisher = {arXiv},
+      author    = {Radford, Alec and Kim, Jong Wook and Hallacy, Chris and Ramesh, Aditya and Goh, Gabriel and Agarwal, Sandhini and Sastry, Girish and Askell, Amanda and Mishkin, Pamela and Clark, Jack and Krueger, Gretchen and Sutskever, Ilya},
+      month     = feb,
+      year      = {2021},
+      keywords  = {Computer Vision, Representation Learning}
+    }
 
-  @article{schubert2021high-low,
-    author  = {Schubert, Ludwig and Voss, Chelsea and Cammarata, Nick and Goh, Gabriel and Olah, Chris},
-    title   = {High-Low Frequency Detectors},
-    journal = {Distill},
-    year    = {2021},
-    note    = {https://distill.pub/2020/circuits/frequency-edges},
-    doi     = {10.23915/distill.00024.005}
-  }
+    @article{schubert2021high-low,
+      author  = {Schubert, Ludwig and Voss, Chelsea and Cammarata, Nick and Goh, Gabriel and Olah, Chris},
+      title   = {High-Low Frequency Detectors},
+      journal = {Distill},
+      year    = {2021},
+      note    = {https://distill.pub/2020/circuits/frequency-edges},
+      doi     = {10.23915/distill.00024.005}
+    }
 
-  @article{yousefnezhad_deep_2021,
-    title    = {Deep {Representational} {Similarity} {Learning} for {Analyzing} {Neural} {Signatures} in {Task}-based {fMRI} {Dataset}},
-    volume   = {19},
-    issn     = {1539-2791, 1559-0089},
-    url      = {https://link.springer.com/10.1007/s12021-020-09494-4},
-    doi      = {10.1007/s12021-020-09494-4},
-    abstract = {Introduces DRSL, a deep extension of RSA suitable for analyzing similarities between cognitive tasks in large fMRI datasets...},
-    language = {en},
-    number   = {3},
-    urldate  = {2024-11-15},
-    journal  = {Neuroinformatics},
-    author   = {Yousefnezhad, Muhammad and Sawalha, Jeffrey and Selvitella, Alessandro and Zhang, Daoqiang},
-    month    = jul,
-    year     = {2021},
-    pages    = {417--431}
-  }
+    @article{yousefnezhad_deep_2021,
+      title    = {Deep {Representational} {Similarity} {Learning} for {Analyzing} {Neural} {Signatures} in {Task}-based {fMRI} {Dataset}},
+      volume   = {19},
+      issn     = {1539-2791, 1559-0089},
+      url      = {https://link.springer.com/10.1007/s12021-020-09494-4},
+      doi      = {10.1007/s12021-020-09494-4},
+      abstract = {Introduces DRSL, a deep extension of RSA suitable for analyzing similarities between cognitive tasks in large fMRI datasets...},
+      language = {en},
+      number   = {3},
+      urldate  = {2024-11-15},
+      journal  = {Neuroinformatics},
+      author   = {Yousefnezhad, Muhammad and Sawalha, Jeffrey and Selvitella, Alessandro and Zhang, Daoqiang},
+      month    = jul,
+      year     = {2021},
+      pages    = {417--431}
+    }
 
-  @misc{zhou_object_2015,
-    title     = {Object {Detectors} {Emerge} in {Deep} {Scene} {CNNs}},
-    url       = {http://arxiv.org/abs/1412.6856},
-    doi       = {10.48550/arXiv.1412.6856},
-    abstract  = {Demonstrates that object detectors emerge as a byproduct of training CNNs for scene classification...},
-    urldate   = {2024-11-15},
-    publisher = {arXiv},
-    author    = {Zhou, Bolei and Khosla, Aditya and Lapedriza, Agata and Oliva, Aude and Torralba, Antonio},
-    month     = apr,
-    year      = {2015}
-  }
+    @misc{zhou_object_2015,
+      title     = {Object {Detectors} {Emerge} in {Deep} {Scene} {CNNs}},
+      url       = {http://arxiv.org/abs/1412.6856},
+      doi       = {10.48550/arXiv.1412.6856},
+      abstract  = {Demonstrates that object detectors emerge as a byproduct of training CNNs for scene classification...},
+      urldate   = {2024-11-15},
+      publisher = {arXiv},
+      author    = {Zhou, Bolei and Khosla, Aditya and Lapedriza, Agata and Oliva, Aude and Torralba, Antonio},
+      month     = apr,
+      year      = {2015}
+    }
 
-  @misc{zou_universal_2023,
-    title     = {Universal and {Transferable} {Adversarial} {Attacks} on {Aligned} {Language} {Models}},
-    url       = {http://arxiv.org/abs/2307.15043},
-    doi       = {10.48550/arXiv.2307.15043},
-    abstract  = {Proposes an approach to automatically produce adversarial suffixes for LLMs, achieving attacks that transfer to many models...},
-    urldate   = {2024-11-15},
-    publisher = {arXiv},
-    author    = {Zou, Andy and Wang, Zifan and Carlini, Nicholas and Nasr, Milad and Kolter, J. Zico and Fredrikson, Matt},
-    month     = dec,
-    year      = {2023}
+    @misc{zou_universal_2023,
+      title     = {Universal and {Transferable} {Adversarial} {Attacks} on {Aligned} {Language} {Models}},
+      url       = {http://arxiv.org/abs/2307.15043},
+      doi       = {10.48550/arXiv.2307.15043},
+      abstract  = {Proposes an approach to automatically produce adversarial suffixes for LLMs, achieving attacks that transfer to many models...},
+      urldate   = {2024-11-15},
+      publisher = {arXiv},
+      author    = {Zou, Andy and Wang, Zifan and Carlini, Nicholas and Nasr, Milad and Kolter, J. Zico and Fredrikson, Matt},
+      month     = dec,
+      year      = {2023}
+    }
+
+    @misc{sahlgren2021sentenceembeddingsensembledistillation,
+      title={Sentence Embeddings by Ensemble Distillation},
+      author={Fredrik Carlsson Magnus Sahlgren},
+      year={2021},
+      eprint={2104.06719},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2104.06719},
   }
 </script>
