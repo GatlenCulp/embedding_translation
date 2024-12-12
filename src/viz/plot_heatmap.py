@@ -84,7 +84,27 @@ def _plot_heatmap(
         yaxis_nticks=len(row_labels) if row_labels else None,
         xaxis_title=xaxis_title,
         yaxis_title=yaxis_title,
+        # Disable interactive elements
+        showlegend=False,
+        modebar_remove=[
+            "zoom",
+            "pan",
+            "lasso2d",
+            "zoomIn2d",
+            "zoomOut2d",
+            "autoScale2d",
+            "resetScale2d",
+            "hoverClosestCartesian",
+            "hoverCompareCartesian",
+            "toggleSpikelines",
+        ],
+        modebar_display=False,  # Removes the entire mode bar (including Plotly logo)
+        dragmode=False,  # Disables dragging/panning
     )
+
+    # Disable axis interactions
+    fig.update_xaxes(fixedrange=True)  # Disable zoom/pan on x-axis
+    fig.update_yaxes(fixedrange=True)  # Disable zoom/pan on y-axis
 
     logger.success("Heatmap created successfully")
     return fig

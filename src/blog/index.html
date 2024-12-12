@@ -11,6 +11,8 @@
   async
   src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
 ></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script> 
+
 <script>
   window.MathJax = {
     tex: {
@@ -122,7 +124,6 @@ We can
     by a factor of at least 20. Our datasets, code, and results are publicly available in github and huggingface. <!--- might have to remove this? make sure to cite the bug-->
     
   </p>
-  <!-- Honestly I don't know if this is such a great abstract. -->
 
   <h2 id="introduction">01 Background</h2>
   <!-- Think we maybe jumped into this a bit too soon
@@ -256,7 +257,7 @@ We can
   <p>
     At the same time <b>Representational similarity tools are becoming mature enough to explore such questions more deeply
       and empirically</b> and are percolating across both the machine learning and neuroscience communities <dt-cite key="sucholutsky2024gettingalignedrepresentationalalignment"></dt-cite>.
-      For example, in <a href="https://representational-alignment.github.io/">ICLR there was a workshop on it this year</a>.
+      For example, in <a href="https://representational-alignment.github.io/">ICLR there was a workshop in the year of writing this (2024)</a>.
       Techniques such as CKA <dt-cite key="kornblith_similarity_2019"></dt-cite>, stitching
     <dt-cite key="bansal_revisiting_2021"></dt-cite>, CCA,
     <dt-cite key="noauthor_canonical_2024"></dt-cite>
@@ -278,14 +279,14 @@ We can
     embeddings the <b>embedding space</b>.
     <!-- TODO: This is not an accurate use of vector space. If distinct embedding models A and B produce 1024 dim vectors,
      they are technically the same vector space mathematically. We might need a better definition of embedding space. -->
-    Our stitches are linear transformers between
+    Our stitches are linear transformations between
     pairs of embedding spaces. They are directional.
     <!-- Linear transformations? Also if we are using layers, maybe note. -->
   </p>
 
   <p>
-    Previous work explored <dt-cite key="caspari2024benchmarksevaluatingembeddingmodel"></dt-cite>
-    do a minor extent whether the representations may be similar for these different
+    Previous works explored <dt-cite key="caspari2024benchmarksevaluatingembeddingmodel"></dt-cite>
+    to a minor extent whether the representations may be similar for these different
     embedding spaces. We extend their work by training stitches between pairs of
     embedding spaces. If the mean squared error (MSE) is sufficiently low we consider these two spaces
     to be similar in a way that we call <b>connectivity-aligned</b>. This termonology
@@ -298,20 +299,10 @@ We can
     correlate (by definition). An easy way to interpret this, is that one space is using different "units"
     and that they are stored in different dimensions of the dense vector (though one space may also combine
     multiple dimensions). While connectivity-aligned spaces can differ in how they prioritize features, there
-    is a sense in which they have found the same ones. 
+    is a sense in which they have found the same ones.
     <!-- Gatlen Note: Again, not sure if we should move forward with the linear algebra
      analogy described above or maybe take some kind of information theoretic approach(?)
      I think about this a decent amount in terms of compression-->
-  </p>
-  <p>
-    We believe, gathering evidence to support whether embedding spaces are or are not connectivity-aligned will
-    motivate future interpretability and deep learning science research; for example, connectivity-alignment could
-    open the path for faster training algorithms which exploit this alignment to hone in on more
-    "correct" representations. In the nearer term, a confirmation of this fact could enable cross-dataset stitching when
-    merging visualization datasets (i.e. semantic clustering). Since linear layers are around 1/20th the size and
-    computational span of the embedding models we consider and often much less by proportion, stitching could enable
-    this sort of merging to be 1/20th as expensive.
-    <!-- Maybe move this to motivations. -->
   </p>
   <p>
     Our key hypothesis is that textual models of similar quality (parameters, training data size, etc.) are connectivity-aligned.
@@ -377,6 +368,12 @@ We can
       and safer, more-controllable and robust AI systems)
       <!-- Note: might want to include some background on these datasets -->
     </li>
+    <li>
+      <b>Linear Representation Hypothesis:</b> If a linearly transformation is enough to transform the embeddings from a diverse semantic dataset
+        into the embedding space to another with high accuracy, it would support that the features these LLMs
+        are representing are linearly decomposable.
+        <dt-cite key="park2024linearrepresentationhypothesisgeometry"></dt-cite>
+    </li>
     <!-- <li>
       <b>Model Compression Understanding:</b> Understand if smaller models are
       essentially compressed versions of larger models.? idk if we include
@@ -395,10 +392,7 @@ We can
       save time, money, and even space of the embedding vectors.
     </li>
     <li>
-      <b>Standardized Embeddings:</b> Contribute towards a universal embedding
-      space standard. Such a standard would make it easy to merge datasets
-      and abstract away the more tedious and time-intensive aspects of
-      data science, improving communication in the workspace.
+      <b>Standardized Embeddings Spaces:</b> If embeddings can be easily transformed between one embedding space and another
       <!-- Gah idk if we include this. Something like "translate all embeddings to this
        embedding space and publish your embeddings to save compute or smthn". Idk if we can
        just drop this point here. -->
@@ -407,6 +401,15 @@ We can
       <b>Model Distillation:</b> Gain insights on how semantic information
       scales with model size, informing better distillation approaches.
     </li> -->
+    <p>
+      We believe, gathering evidence to support whether embedding spaces are or are not connectivity-aligned will
+      motivate future interpretability and deep learning science research; for example, connectivity-alignment could
+      open the path for faster training algorithms which exploit this alignment to hone in on more
+      "correct" representations. In the nearer term, a confirmation of this fact could enable cross-dataset stitching when
+      merging visualization datasets (i.e. semantic clustering). Since linear layers are around 1/20th the size and
+      computational span of the embedding models we consider and often much less by proportion, stitching could enable
+      this sort of merging to be 1/20th as expensive.
+    </p>
   </ul>
 
   <h3 id="research-questions">Research Questions</h3>
@@ -608,13 +611,13 @@ We can
     </div>
 
     <figure>
-      <iframe
-        src="figs/cka_matrix_on_arguana.html"
-        width="100%"
-        height="800px"
-        frameborder="0"
-      >
-      </iframe>
+      <iframe 
+      src="figs/cka_matrix_on_arguana.html"
+      width="800" 
+      height="600" 
+      frameborder="0" 
+      scrolling="no"
+  ></iframe>
       <figcaption>
         CKA Matrix on Arguana measuring representational similarity.
       </figcaption>
@@ -978,6 +981,16 @@ We can
     note      = {arXiv:2303.11277}
   }
   
+  @misc{park2024linearrepresentationhypothesisgeometry,
+    title={The Linear Representation Hypothesis and the Geometry of Large Language Models}, 
+    author={Kiho Park and Yo Joong Choe and Victor Veitch},
+    year={2024},
+    eprint={2311.03658},
+    archivePrefix={arXiv},
+    primaryClass={cs.CL},
+    url={https://arxiv.org/abs/2311.03658}, 
+}
+
   @misc{huh_platonic_2024,
     title     = {The {Platonic} {Representation} {Hypothesis}},
     url       = {http://arxiv.org/abs/2405.07987},
@@ -1511,14 +1524,14 @@ We can
   }
 
   @misc{noauthor_model_nodate,
-    title    = {Model {Stitching}: {Looking} {For} {Functional} {Similarity} {Between} {Representations}},
+    title    = {Model {Stitching}: {Looking} {For} {Functional} {Similarity} {Between} {Representations}}},
     url      = {https://scholar.google.com/citations?view_op=view_citation&hl=en&user=evT71z8AAAAJ&citation_for_view=evT71z8AAAAJ:u5HHmVD_uO8C},
     abstract = {Short summary referencing model stitching and functional similarity.},
     urldate  = {2024-11-15}
   }
 
   @misc{noauthor_representational_nodate,
-    title   = {Representational {Similarity} in {Neural} {Networks} | {Elicit}},
+    title   = {Representational {Similarity} in {Neural} {Networks} | {Elicit}}},
     url     = {https://elicit.com/notebook/ca8a9992-4e9e-4478-b991-7229cd640ba2#18080183417d138da0d0dc40dc987bc5},
     urldate = {2024-11-15}
   }

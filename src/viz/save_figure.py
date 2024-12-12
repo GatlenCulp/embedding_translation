@@ -34,7 +34,7 @@ def _save_figure_html(
     try:
         fig.write_html(
             filepath,
-            include_plotlyjs="cdn",  # Use CDN to reduce file size
+            # include_plotlyjs="cdn",  # Use CDN to reduce file size
             full_html=True,
         )
         logger.success(f"Successfully saved HTML to {filepath}")
