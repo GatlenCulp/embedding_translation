@@ -31,7 +31,6 @@ from datetime import datetime
 from owlergpt.utils.cli_helpers import get_selected_folder, get_chroma_collections
 from owlergpt.modern.collection_utils import parse_collection_name, model2model_dimension
 
-
 class ModelInfo(BaseModel):
     model_name: str
     collection_name: str
