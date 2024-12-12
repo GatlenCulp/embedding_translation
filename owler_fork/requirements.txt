@@ -8,3 +8,6 @@ pydantic
 wandb
 tabulate
 einops
+loguru
+nbformat>=4.2.0
+kaleido
