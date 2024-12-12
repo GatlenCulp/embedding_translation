@@ -1013,7 +1013,8 @@ We can
     ></iframe>
     <figcaption>
       CKA Matrix measuring representational similarity between embedding models
-      with text sampled from ArguAna.
+      with text sampled from ArguAna. Note that the larger OpenAI models were
+      excluded from this metric due to time constraints.
     </figcaption>
   </figure>
 
@@ -1036,6 +1037,7 @@ We can
     matrix not included in the reference paper.
     <!-- idk if this explanation is required but word count go brr I guess -->
     <!-- Also I think the control was dimensionality 768? -->
+    <!-- Also heck this matrix may be messed up? GAAHH -->
   </p>
 
   <p>
@@ -1043,56 +1045,128 @@ We can
     from other embeddings, getting a similarity score of only \(0.10\) to
     \(0.16\) while the strongest similarities are all the way up to \(1.00\)
     (Approximately-complete similarity) between mxbai-embed-large-v1 and
-    UAE-Large-V1. Just looking at these preliminary similarity scores, we would
-    predict that these two models have stitch-connectivity.
+    UAE-Large-V1, models from different companies, both with embedding dimension
+    \(1024\). Just looking at these preliminary similarity scores, we
+    hypothesize that these two models have stitch-connectivity.
   </p>
-  <!-- TODO: Compare with -->
 
-  <!-- <h3 id="domain-performance"> (FILLER) Domain-Specific Performance</h3>
-  <p>Translation quality varied significantly across domains:</p>
-  <ul>
-    <li><b>News Articles:</b> 0.89 mean cosine similarity</li>
-    <li><b>Academic Papers:</b> 0.82 mean cosine similarity</li>
-    <li><b>Code Snippets:</b> 0.67 mean cosine similarity</li>
-  </ul> -->
+  <p>
+    The lowest similarity we observe is \(0.72\) between bge-small-en-v1.5 and
+    e5-large-v2 of dimensions \(384\) and \(1024\) respectively. Still quite a
+    high similarity in representations. We hypothesized models differing in
+    scale such as these would have a lower representational similarity and
+    hypothesize that these two models will not have stitch-connectivity.
+  </p>
+
+  <!-- A measurement of cka per difference in their dimensionality helpful? -->
+
+  <p>
+    Unfortunately, we were unable to evaluate the OpenAI models due to time constraints,
+    but we would expect that the CKA values between these models of even higher scale
+    and dimensionality than e5-large-v2 will have even less similarity with a smaller
+    model like bge-small-en-v1.5. We hypothesize that, when we analyze the stitch connectivity,
+    that the MSE will be even higher between bge-small-en-v1.5 and our largest model,
+    openai/text-embedding-3-large with dimension \(3072\).
+  </p>
 
   <h3 id="results-measuring-connectivity">Measuring Stitch-Connectivity</h3>
-  <div class="l-screen-inset">
+  <hr />
+  <div class="l-screen-inset" style="margin-left: 5em">
     <!-- Tab Navigation -->
+    <b style="margin-bottom: 1em"
+      >MSE and MAE of Affine Stitch Across Datasets</b
+    >
     <div class="dataset-tabs" style="margin-bottom: 1em">
-      <button class="tab-button active" onclick="showDataset('average')">
+      <button
+        class="tab-button active important"
+        onclick="showDataset('average')"
+      >
+        <i
+          class="fas fa-calculator"
+          style="color: #666; width: 1.5em; text-align: center"
+        ></i>
         Weighted Average
       </button>
       <button class="tab-button" onclick="showDataset('arguana')">
+        <i
+          class="fas fa-comments"
+          style="color: #666; width: 1.5em; text-align: center"
+        ></i>
         ArguAna
       </button>
-      <button class="tab-button" onclick="showDataset('fiqa')">FiQA</button>
+      <button class="tab-button" onclick="showDataset('fiqa')">
+        <i
+          class="fas fa-chart-line"
+          style="color: #666; width: 1.5em; text-align: center"
+        ></i>
+        FiQA
+      </button>
       <button class="tab-button" onclick="showDataset('scidocs')">
+        <i
+          class="fas fa-flask"
+          style="color: #666; width: 1.5em; text-align: center"
+        ></i>
         SciDocs
       </button>
       <button class="tab-button" onclick="showDataset('nfcorpus')">
+        <i
+          class="fas fa-heartbeat"
+          style="color: #666; width: 1.5em; text-align: center"
+        ></i>
         NFCorpus
       </button>
       <button class="tab-button" onclick="showDataset('hotpotqa')">
+        <i
+          class="fas fa-question-circle"
+          style="color: #666; width: 1.5em; text-align: center"
+        ></i>
         HotpotQA
       </button>
       <button class="tab-button" onclick="showDataset('trec-covid')">
+        <i
+          class="fas fa-virus"
+          style="color: #666; width: 1.5em; text-align: center"
+        ></i>
         TREC-COVID
       </button>
     </div>
 
     <!-- Tab Content -->
     <div class="dataset-content">
+      <style>
+        .dataset-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 2em;
+          max-width: 100%;
+          margin: 0 auto;
+        }
+
+        .dataset-grid figure {
+          margin: 0;
+          width: 100%;
+        }
+
+        .dataset-grid iframe {
+          width: 100%;
+          height: 600px;
+          border: none;
+        }
+
+        .dataset-grid figcaption {
+          margin-top: 1em;
+          text-align: center;
+          color: #666;
+        }
+      </style>
+
       <!-- Weighted Average -->
       <div id="average-content" class="tab-content active">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2em">
+        <div class="dataset-grid">
           <figure>
             <b>Mean Squared Error (MSE)</b>
             <iframe
               src="./figs/adriano/figs/html/weightedmean_olsaffine_mse_withlog_validation.html"
-              width="800"
-              height="600"
-              frameborder="0"
               scrolling="no"
             ></iframe>
             <figcaption>
@@ -1104,9 +1178,6 @@ We can
             <b>Mean Absolute Error (MAE)</b>
             <iframe
               src="./figs/adriano/figs/html/weightedmean_olsaffine_mae_withlog_validation.html"
-              width="800"
-              height="600"
-              frameborder="0"
               scrolling="no"
             ></iframe>
             <figcaption>
@@ -1117,17 +1188,13 @@ We can
         </div>
       </div>
 
-      <!-- Individual Dataset Tabs -->
       <!-- ArguAna -->
       <div id="arguana-content" class="tab-content">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2em">
+        <div class="dataset-grid">
           <figure>
             <b>Mean Squared Error (MSE)</b>
             <iframe
               src="./figs/adriano/figs/html/arguana_olsaffine_mse_withlog_validation.html"
-              width="800"
-              height="600"
-              frameborder="0"
               scrolling="no"
             ></iframe>
             <figcaption>
@@ -1139,9 +1206,6 @@ We can
             <b>Mean Absolute Error (MAE)</b>
             <iframe
               src="./figs/adriano/figs/html/arguana_olsaffine_mae_withlog_validation.html"
-              width="800"
-              height="600"
-              frameborder="0"
               scrolling="no"
             ></iframe>
             <figcaption>
@@ -1154,14 +1218,11 @@ We can
 
       <!-- FiQa -->
       <div id="fiqa-content" class="tab-content">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2em">
+        <div class="dataset-grid">
           <figure>
             <b>Mean Squared Error (MSE)</b>
             <iframe
               src="./figs/adriano/figs/html/fiqa_olsaffine_mse_withlog_validation.html"
-              width="800"
-              height="600"
-              frameborder="0"
               scrolling="no"
             ></iframe>
             <figcaption>
@@ -1173,9 +1234,6 @@ We can
             <b>Mean Absolute Error (MAE)</b>
             <iframe
               src="./figs/adriano/figs/html/fiqa_olsaffine_mae_withlog_validation.html"
-              width="800"
-              height="600"
-              frameborder="0"
               scrolling="no"
             ></iframe>
             <figcaption>
@@ -1188,14 +1246,11 @@ We can
 
       <!-- SciDocs -->
       <div id="scidocs-content" class="tab-content">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2em">
+        <div class="dataset-grid">
           <figure>
             <b>Mean Squared Error (MSE)</b>
             <iframe
               src="./figs/adriano/figs/html/scidocs_olsaffine_mse_withlog_validation.html"
-              width="800"
-              height="600"
-              frameborder="0"
               scrolling="no"
             ></iframe>
             <figcaption>
@@ -1207,9 +1262,6 @@ We can
             <b>Mean Absolute Error (MAE)</b>
             <iframe
               src="./figs/adriano/figs/html/scidocs_olsaffine_mae_withlog_validation.html"
-              width="800"
-              height="600"
-              frameborder="0"
               scrolling="no"
             ></iframe>
             <figcaption>
@@ -1222,14 +1274,11 @@ We can
 
       <!-- NfCorpus -->
       <div id="nfcorpus-content" class="tab-content">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2em">
+        <div class="dataset-grid">
           <figure>
             <b>Mean Squared Error (MSE)</b>
             <iframe
               src="./figs/adriano/figs/html/nfcorpus_olsaffine_mse_withlog_validation.html"
-              width="800"
-              height="600"
-              frameborder="0"
               scrolling="no"
             ></iframe>
             <figcaption>
@@ -1241,9 +1290,6 @@ We can
             <b>Mean Absolute Error (MAE)</b>
             <iframe
               src="./figs/adriano/figs/html/nfcorpus_olsaffine_mae_withlog_validation.html"
-              width="800"
-              height="600"
-              frameborder="0"
               scrolling="no"
             ></iframe>
             <figcaption>
@@ -1256,29 +1302,22 @@ We can
 
       <!-- HotPot QA -->
       <div id="hotpotqa-content" class="tab-content">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2em">
+        <div class="dataset-grid">
           <figure>
             <b>Mean Squared Error (MSE)</b>
             <iframe
               src="./figs/adriano/figs/html/hotpotqa_olsaffine_mse_withlog_validation.html"
-              width="800"
-              height="600"
-              frameborder="0"
               scrolling="no"
             ></iframe>
             <figcaption>
               Mean Squared Error (MSE) loss visualization across model pairs
               (Training Objective) - HotpotQA Dataset
-              <!-- <--- [CHANGED] Caption -->
             </figcaption>
           </figure>
           <figure>
             <b>Mean Absolute Error (MAE)</b>
             <iframe
               src="./figs/adriano/figs/html/hotpotqa_olsaffine_mae_withlog_validation.html"
-              width="800"
-              height="600"
-              frameborder="0"
               scrolling="no"
             ></iframe>
             <figcaption>
@@ -1291,14 +1330,11 @@ We can
 
       <!-- TrecCovid -->
       <div id="trec-covid-content" class="tab-content">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2em">
+        <div class="dataset-grid">
           <figure>
             <b>Mean Squared Error (MSE)</b>
             <iframe
-              src="./figs/adriano/figs/html/treccovid_olsaffine_mse_withlog_validation.html"
-              width="800"
-              height="600"
-              frameborder="0"
+              src="./figs/adriano/figs/html/trec-covid_olsaffine_mse_withlog_validation.html"
               scrolling="no"
             ></iframe>
             <figcaption>
@@ -1309,10 +1345,7 @@ We can
           <figure>
             <b>Mean Absolute Error (MAE)</b>
             <iframe
-              src="./figs/adriano/figs/html/treccovid_olsaffine_mae_withlog_validation.html"
-              width="800"
-              height="600"
-              frameborder="0"
+              src="./figs/adriano/figs/html/trec-covid_olsaffine_mae_withlog_validation.html"
               scrolling="no"
             ></iframe>
             <figcaption>
@@ -1358,6 +1391,25 @@ We can
     .tab-content.active {
       display: block;
     }
+
+    /* Important tab styling */
+    .dataset-tabs .tab-button.important {
+      border: 2px solid #ffd700;
+      font-weight: bold;
+      background-color: rgba(255, 215, 0, 0.05);
+    }
+
+    /* Important tab hover state */
+    .dataset-tabs .tab-button.important:hover {
+      background-color: rgba(255, 215, 0, 0.1);
+    }
+
+    /* Important tab active state - this will override the default active state */
+    .dataset-tabs .tab-button.important.active {
+      background-color: rgba(255, 215, 0, 0.2);
+      border: 2px solid #ffd700;
+      font-weight: bold;
+    }
   </style>
 
   <script>
@@ -1379,16 +1431,42 @@ We can
         .classList.add("active");
     }
   </script>
+  <hr />
+  <i>Note: The labels are not in the same order as in the CKA matrix.</i>
 
   <p>
-    The plots above show the mean errors in stitching from embeddings of the
-    source model (x-axis) to embeddings of the target model (y-axis). We decided
-    to sort this graph by dimension
-    <!-- Um why doesn't this match the actual dimension?? AAAA Base and large the same. HECK. Need to fix. -->
-    then org Lower values mean better results.
-    <!-- TODO: Include a random gaussian linear layer to see how well it performs. -->
-    As seen from the
+    The plots above show the log mean errors in stitching from embeddings of the
+    source model (x-axis) to embeddings of the target model (y-axis) using our
+    OLS-derived affine function.
   </p>
+
+  <p>
+    Calling
+  </p>
+
+  <!-- 
+          MODEL_NAMES = [
+        # MODEL_NAME                    EMBEDDING DIMENSION
+        "WhereIsAI/UAE-Large-V1",                    # 1024
+        "BAAI/bge-base-en-v1.5",                     # 768
+        "BAAI/bge-large-en-v1.5",                    # 1024
+        "BAAI/bge-small-en-v1.5",                    # 384
+        "intfloat/e5-base-v2",                       # 768
+        "intfloat/e5-large-v2",                      # 1024
+        "intfloat/e5-small-v2",                      # 384
+        "thenlper/gte-base",                         # 768
+        "thenlper/gte-large",                        # 1024
+        "thenlper/gte-small",                        # 384
+        "sentence-transformers/gtr-t5-base",         # 768
+        "sentence-transformers/gtr-t5-large",        # 768
+        "mixedbread-ai/mxbai-embed-large-v1",        # 1024
+        "sentence-transformers/sentence-t5-base",     # 768
+        "sentence-transformers/sentence-t5-large",    # 768
+        "openai/text-embedding-3-large",             # 3072
+        "openai/text-embedding-3-small",             # 1536
+        ]
+  
+  -->
 
   <h2 id="discussion">05 Discussion</h2>
   <p>
