@@ -1038,6 +1038,7 @@ We can
     <!-- idk if this explanation is required but word count go brr I guess -->
     <!-- Also I think the control was dimensionality 768? -->
     <!-- Also heck this matrix may be messed up? GAAHH -->
+     <!-- Do these support or line up with Beyond Benchmarks? -->
   </p>
 
   <p>
@@ -1074,7 +1075,7 @@ We can
   <div class="l-screen-inset" style="margin-left: 5em">
     <!-- Tab Navigation -->
     <b style="margin-bottom: 1em"
-      >MSE and MAE of Affine Stitch Across Datasets</b
+      >Validation MSE and MAE of Affine Stitch Across Datasets</b
     >
     <div class="dataset-tabs" style="margin-bottom: 1em">
       <button
@@ -1432,7 +1433,27 @@ We can
     }
   </script>
   <hr />
-  <i>Note: The labels are not in the same order as in the CKA matrix.</i>
+  <p><i>Note: The axis labels are not in the same order as in the CKA matrix.</i></p>
+
+  <p><b>At a Distance</b></p>
+
+  <div class="l-page side">
+    <figure>
+      <img src="./figs/MSE_top_performing.png" alt="Top performing stitches." />
+      <figcaption>
+        Top performing stitches
+      </figcaption>
+    </figure>
+  </div>
+
+  <div class="l-page side">
+    <figure>
+      <img src="./figs/MSE_worst_performing.png" alt="Least compatible native embedding space and worst performing stitches." />
+      <figcaption>
+        Least compatible native embedding space and worst performing stitches.
+      </figcaption>
+    </figure>
+  </div>
 
   <p>
     The plots above show the log mean errors in stitching from embeddings of the
@@ -1441,8 +1462,92 @@ We can
   </p>
 
   <p>
-    Calling
+    Overall, the affine stitches performed fairly well, ranging from a log MSE of \(-5.63\) (0.35% MSE) to \(-3.16\) (4.24% MSE).
   </p>
+
+
+  <p>
+    The top four performing stitches were:
+    <ol>
+      <li>
+        (\(-5.63\)) mxbai-embed-large-v1 to UAE-Large-V1
+      </li>
+      <li>
+        (\(-5.62\)) UAE-Large-V1 to mxbai-embed-large-v1
+      </li>
+      <li>
+        (\(-5.12\)) UAE-Large-V1 to bge-large-en-v1.5
+      </li>
+      <li>
+        (\(-5.11\)) bge-large-en-v1.5 to  UAE-Large-V1
+      </li>
+    </ol>
+  </p>
+
+  <p>
+    All of these models are of dimension \(1024\) and and we had hypothesized that they would do fairly well.
+  </p>
+
+  <p>
+    The bottom four performing stitches were all unsurprisingly stitched from bge-small-en-v1.5, one of our two smallest models with dimension
+    \(384\). We had hypothesized that this would be the case. The only decently performing stitch with this native space was bge-small-en-v1.5
+    to gte-small, another model of dimension \(384\). This too is unsurprising.
+  </p>
+
+  <p>
+    However, what caught us off guard is that stitches from gte-small to other embedding spaces performed on-par with models that were far larger, including OpenAI's
+    text-embedding-3-small, a model nearly 4 times its size. If text-emedding-3-small was storing a more expressive representation of semantic features than text-embedding-3-small,
+    then how come affine stitches had similar performance when operating from their embeddings? How come bge-small-en-v1.5
+  </p>
+
+
+  <!-- <p>
+    Calling back to our predictions from CKA in the previous section,
+  </p> -->
+
+  <p><b>Native Space Performance</b></p>
+
+
+
+  <div class="l-page side">
+    <figure>
+      <img src="./figs/MSE_varying_native_uae_large.png" alt="Highest-variance native embedding space." />
+      <figcaption>
+        Highest-variance native embedding space.
+      </figcaption>
+    </figure>
+  </div>
+
+  <div class="l-page side">
+    <figure>
+      <img src="./figs/MSE_largest_to_smallest.png" alt="Largest to smallest comparison." />
+      <figcaption>
+        Largest to smallest comparison.
+      </figcaption>
+    </figure>
+  </div>
+
+  <p><b>Target Space Performance</b></p>
+  <div class="l-page side">
+    <figure>
+      <img src="./figs/MSE_most_compatible_native.png" alt="Most compatible native embedding spaces." />
+      <figcaption>
+        Most compatible native embedding spaces.
+      </figcaption>
+    </figure>
+  </div>
+  <!-- Omg having a summary average column would be amazing + the random -->
+
+
+  <div class="l-page side">
+    <figure>
+      <img src="./figs/MSE_expected_worst_target.png" alt="Expected worst stitch performance to highest quality embedding space." />
+      <figcaption>
+        Expected worst stitch performance to highest quality embedding space.
+      </figcaption>
+    </figure>
+  </div>
+
 
   <!-- 
           MODEL_NAMES = [
