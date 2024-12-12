@@ -195,9 +195,10 @@ We can
     <li style="margin-bottom: 1em">
       <b>Embedding Space:</b> The set of all possible embeddings produced by a
       specific model, along with their feature composition, and relationships to
-      one another. For a model $M$, we denote its embedding space as
-      $\mathcal{E}_M \subset \mathbb{R}^d$, where $d$ is the embedding
+      one another. For a model \(M\), we denote its embedding space as
+      \(\mathcal{E}_M \subset \mathbb{R}^d\), where \(d\) is the embedding
       dimension. While mathematically these may share the same dimension (e.g.,
+      \(d=1024\)), each model's unique mapping creates a distinct semantic space.
       $d=1024$), each model's unique mapping creates a distinct semantic space.
       <!-- why isn't this rendering -->
       <dt-fn>
@@ -213,8 +214,8 @@ We can
         key="lenc2015understandingimagerepresentationsmeasuring"
       ></dt-cite>
       , we call a linear transformation between two embedding spaces a "stitch".
-      For models $A$ and $B$, a stitch $S_{A\rightarrow B}: \mathcal{E}_A
-      \rightarrow \mathcal{E}_B$ is a linear map that attempts to preserve
+      For models \(A\) and \(B\), a stitch \(S_{A\rightarrow B}: \mathcal{E}_A
+      \rightarrow \mathcal{E}_B\) is a linear map that attempts to preserve
       semantic relationships.
       <dt-fn>
         (Note: Throughout this blog post, we use the terms linear and affine
@@ -225,13 +226,13 @@ We can
      could easily compose new translations by just doing the matrix multiplication. -->
 
     <li style="margin-bottom: 1em">
-      <b>Connectivity-Alignment:</b> We say two embedding spaces $\mathcal{E}_A$
-      and $\mathcal{E}_B$ are connectivity-aligned if there exists a stitch
-      $S_{A\rightarrow B}$ that achieves low mean squared error:
-      $$\text{MSE}(S_{A\rightarrow B}) = \frac{1}{n}\sum_{i=1}^n
-      \|S_{A\rightarrow B}(x_i) - y_i\|^2 < \epsilon$$ where $x_i \in
-      \mathcal{E}_A$, $y_i \in \mathcal{E}_B$ are corresponding embeddings, and
-      $\epsilon$ is a threshold. This indicates the spaces preserve similar
+      <b>Connectivity-Alignment:</b> We say two embedding spaces \(\mathcal{E}_A\)
+      and \(\mathcal{E}_B\) are connectivity-aligned if there exists a stitch
+      \(S_{A\rightarrow B}\) that achieves low mean squared error:
+      \[\text{MSE}(S_{A\rightarrow B}) = \frac{1}{n}\sum_{i=1}^n
+      \|S_{A\rightarrow B}(x_i) - y_i\|^2 < \epsilon\] where \(x_i \in
+      \mathcal{E}_A\), \(y_i \in \mathcal{E}_B\) are corresponding embeddings, and
+      \(\epsilon\) is a threshold. This indicates the spaces preserve similar
       semantic features, albeit potentially encoded differently.
       <dt-fn
         >This is perhaps analagous to (approximate) isomorphism for vector
@@ -240,10 +241,10 @@ We can
     </li>
 
     <li style="margin-bottom: 1em">
-      <b>Native vs. Stitched Embeddings:</b> For a text input $t$ and model $M$,
-      we denote its native embedding as $M(t) \in \mathcal{E}_M$. When we map
-      embeddings from model $A$ to model $B$'s space using a stitch, we denote
-      the stitched embedding as $S_{A\rightarrow B}(A(t)) \in \mathcal{E}_B$.
+      <b>Native vs. Stitched Embeddings:</b> For a text input \(t\) and model \(M\),
+      we denote its native embedding as \(M(t) \in \mathcal{E}_M\). When we map
+      embeddings from model \(A\) to model \(B\)'s space using a stitch, we denote
+      the stitched embedding as \(S_{A\rightarrow B}(A(t)) \in \mathcal{E}_B\).
     </li>
   </ul>
 
@@ -845,7 +846,7 @@ We can
     </li>
 
     <li>
-      <h3 id="evaluation-data">Evaluation Data</h3>
+      <h3 id="evaluation-metric">Evaluation Metrics</h3>
       <p>
         For each dataset, we used an 80-20 train/test split to evaluate
         performance. We make this split based on a random shuffling of the
@@ -878,52 +879,61 @@ We can
           Index of the image of the map with the embeddings from model \(B\).
           <!-- TODO: This last part of doing the stitched embeddings -->
         </li>
+        <!-- Note: Adriano maybe wants to swap intial with linear connectivity -->
         <li>
           Our <b>linear connectivity-alignment metrics</b> are the train and
-          validation accuracy of our stitching models, which we measure by mean
-          squared error (MSE). To make this more interpretable, we also provide:
-          <b>(1)</b> mean absolute error (MAE) on the validation set,
-          <b>(2)</b> explained variance ratio between the stitched embeddings
-          and the target embeddings, <b>(3)</b> explained absolute variation
+          validation accuracy of our stitching models, which we measure by
+          <b>Mean Squared Error (MSE)</b>. To make this more interpretable, we
+          also provide: <b>mean absolute error (MAE)</b> on the validation set,
+          explained <b>variance ratio</b> between the stitched embeddings and
+          the target embeddings,
+          <!-- TODO? -->
+          explained <b>absolute variation</b>
           between the stitched embeddings and the target embeddings. We also
-          plot <b>(4)</b> the eigenvalues/singular values of the stitch linear
-          embedding matrices and compare their affine shifts to the means of the
-          embedding datasets. This helps us qualitatively estimate whether the
-          embedding matrix may actually belong to a simpler class, such as a
-          rotation.
+          plot
+          <!-- TODO? -->
+          the <b>eigenvalues/singular values</b> of the stitched embeddings and
+          compare their affine shifts to the means of the embedding datasets.
+          This helps us qualitatively estimate whether the embedding matrix may
+          actually belong to a simpler class, such as a rotation.
+          <!-- TODO -->
         </li>
-        <!-- TODO: ADRIANO should we not also do a kernel difference or is that CKA? -->
-        <!-- TODO: ADRIANO should we do edit distance or some kind of search similarity metric that is better? -->
         <li>
-          Our <b>interpretation visualizations</b> include a UMAP, PCA, and
-          t-SNE visualization of the embeddings both before and after applying
-          the stitching function. We use a clustering algorithm and partially
+          Our <b>interpretation visualizations</b> include a <b>UMAP</b>,
+          <!--<b>PCA</b>, and
+          <b>t-SNE</b> visualization of the embeddings both before and after applying
+          the stitching function. -->
+          <!-- TODO: Fairly sure we are changing to visualize cycles or smthn -->
+          <!-- We use a clustering algorithm and partially
           automated labeling to help illustrate whether the stitching function
           preserves relations. We compare the clusters both before stitching,
           after stitching, and for the target embeddings. We also include a few
           kernel tables randomly chosen and cherry-picked to illustrate, from
-          another angle, whether relations are preserved.
+          another angle, whether relations are preserved. -->
         </li>
         <!-- <li>Generating embeddings on test datasets</li> -->
       </ul>
     </li>
     <li>
-      <h3 id="evaluation-data">Embedding Parameters</h3>
+      <h3 id="embedding-parameters">Embedding Parameters</h3>
       <p>
-        We used the parameters illustrated in this section for the embedding
-        models which are visible in the code below. The datasets are comprised
-        of documents and sample queries (for reproduceable top-K search results
-        analysis). We embed each seperately appending a prefix as visible below,
-        like in the prior work. Unlike the prior work we use an OpenAI text
-        splitter with a fixed model. This allows us to ensure that we compare
-        the exact same text's emebeddings across models---a subtle bug that we
-        reported to the authors of <i>Beyond Benchmarks</i>
+        We used the parameters illustrated below for our embedding models. The
+        datasets are comprised of documents and sample queries (for
+        reproduceable top-K search results analysis). We embed each seperately
+        appending a prefix as visible below, like in the prior work. Unlike the
+        prior work we use an OpenAI text splitter with a fixed model. This
+        allows us to ensure that we compare the exact same text's emebeddings
+        across models --- a subtle bug that we reported to the authors of
+        <i>Beyond Benchmarks</i>
         <dt-cite key="caspari2024benchmarksevaluatingembeddingmodel"></dt-cite>
         though we do not find qualitatively different results before linearly
         connecting the embedding spaces. As previously mentioned, we reduce and
         split both query and document datasets to up to 20K and 5K documents
         respectively. Then, we chunk each document into at least one chunk and
-        embed each chunk with each model. The default SentenceTransformers
+        embed each chunk with each model. The default
+        <a href="https://huggingface.co/sentence-transformers"
+          >SentenceTransformers</a
+        >
         <code class="language-python">encode</code> function is used.
       </p>
       <pre><code class="language-python">
@@ -1168,8 +1178,7 @@ We can
     >
   </p>
 
-  @inproceedings{andrew_deep_2013, title = {Deep {Canonical} {Correlation}
-  {Analysis}}, url = {https://proceedings.mlr.press/v28/andrew13.html}, abstract
+  @inproceedings{andrew_deep_2013, title = {Deep {Canonical} {Correlation} {Analysis}}, url = {https://proceedings.mlr.press/v28/andrew13.html}, abstract
   = {We introduce Deep Canonical Correlation Analysis (DCCA), a method to learn
   complex nonlinear transformations of two views of data such that the resulting
   representations are highly linearly correlated...}, language = {en}, urldate =
