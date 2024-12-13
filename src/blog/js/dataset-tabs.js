@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
     id: 1,
     title: 'Validation MSE and MAE of Affine Stitch Across Datasets',
     datasets: [
-      { id: 'average', name: 'Weighted Average', icon: 'fa-calculator' },
+      { id: 'weightedmean', name: 'Weighted Average', icon: 'fa-calculator' },
       { id: 'arguana', name: 'ArguAna', icon: 'fa-comments' },
       { id: 'fiqa', name: 'FiQA', icon: 'fa-chart-line' },
       { id: 'scidocs', name: 'SciDocs', icon: 'fa-flask' },
