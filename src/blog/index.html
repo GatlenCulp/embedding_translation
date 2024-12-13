@@ -2572,7 +2572,7 @@
 
     <h3 id="results-measuring-connectivity">Measuring Stitch-Connectivity</h3>
     <hr />
-    <div class="l-screen-inset" style="margin-left: 5em">
+    <div class="l-screen-inset" style="margin-left: 5em" id="tab-system-1">
       <!-- Tab Navigation -->
       <b style="margin-bottom: 1em"
         >Validation MSE and MAE of Affine Stitch Across Datasets</b
@@ -2580,43 +2580,43 @@
       <div class="dataset-tabs" style="margin-bottom: 1em">
         <button
           class="tab-button active important"
-          onclick="showDataset('average')">
+          onclick="showDataset('average', 1)">
           <i
             class="fas fa-calculator"
             style="color: #666; width: 1.5em; text-align: center"></i>
           Weighted Average
         </button>
-        <button class="tab-button" onclick="showDataset('arguana')">
+        <button class="tab-button" onclick="showDataset('arguana', 1)">
           <i
             class="fas fa-comments"
             style="color: #666; width: 1.5em; text-align: center"></i>
           ArguAna
         </button>
-        <button class="tab-button" onclick="showDataset('fiqa')">
+        <button class="tab-button" onclick="showDataset('fiqa', 1)">
           <i
             class="fas fa-chart-line"
             style="color: #666; width: 1.5em; text-align: center"></i>
           FiQA
         </button>
-        <button class="tab-button" onclick="showDataset('scidocs')">
+        <button class="tab-button" onclick="showDataset('scidocs', 1)">
           <i
             class="fas fa-flask"
             style="color: #666; width: 1.5em; text-align: center"></i>
           SciDocs
         </button>
-        <button class="tab-button" onclick="showDataset('nfcorpus')">
+        <button class="tab-button" onclick="showDataset('nfcorpus', 1)">
           <i
             class="fas fa-heartbeat"
             style="color: #666; width: 1.5em; text-align: center"></i>
           NFCorpus
         </button>
-        <button class="tab-button" onclick="showDataset('hotpotqa')">
+        <button class="tab-button" onclick="showDataset('hotpotqa', 1)">
           <i
             class="fas fa-question-circle"
             style="color: #666; width: 1.5em; text-align: center"></i>
           HotpotQA
         </button>
-        <button class="tab-button" onclick="showDataset('trec-covid')">
+        <button class="tab-button" onclick="showDataset('trec-covid', 1)">
           <i
             class="fas fa-virus"
             style="color: #666; width: 1.5em; text-align: center"></i>
@@ -2628,7 +2628,7 @@
       <div class="dataset-content">
 
         <!-- Weighted Average -->
-        <div class="tab-content active" id="average-content">
+        <div class="tab-content active" id="average-content-1">
           <div class="dataset-grid">
             <figure>
               <b>Mean Squared Error (MSE)</b>
@@ -2654,7 +2654,7 @@
         </div>
 
         <!-- ArguAna -->
-        <div class="tab-content" id="arguana-content">
+        <div class="tab-content" id="arguana-content-1">
           <div class="dataset-grid">
             <figure>
               <b>Mean Squared Error (MSE)</b>
@@ -2680,7 +2680,7 @@
         </div>
 
         <!-- FiQa -->
-        <div class="tab-content" id="fiqa-content">
+        <div class="tab-content" id="fiqa-content-1">
           <div class="dataset-grid">
             <figure>
               <b>Mean Squared Error (MSE)</b>
@@ -2706,7 +2706,7 @@
         </div>
 
         <!-- SciDocs -->
-        <div class="tab-content" id="scidocs-content">
+        <div class="tab-content" id="scidocs-content-1">
           <div class="dataset-grid">
             <figure>
               <b>Mean Squared Error (MSE)</b>
@@ -2732,7 +2732,7 @@
         </div>
 
         <!-- NfCorpus -->
-        <div class="tab-content" id="nfcorpus-content">
+        <div class="tab-content" id="nfcorpus-content-1">
           <div class="dataset-grid">
             <figure>
               <b>Mean Squared Error (MSE)</b>
@@ -2758,7 +2758,7 @@
         </div>
 
         <!-- HotPot QA -->
-        <div class="tab-content" id="hotpotqa-content">
+        <div class="tab-content" id="hotpotqa-content-1">
           <div class="dataset-grid">
             <figure>
               <b>Mean Squared Error (MSE)</b>
@@ -2784,7 +2784,7 @@
         </div>
 
         <!-- TrecCovid -->
-        <div class="tab-content" id="trec-covid-content">
+        <div class="tab-content" id="trec-covid-content-1">
           <div class="dataset-grid">
             <figure>
               <b>Mean Squared Error (MSE)</b>
@@ -2812,21 +2812,29 @@
     </div>
 
     <script>
-      function showDataset(datasetId) {
-        // Hide all content
-        document.querySelectorAll(".tab-content").forEach((content) => {
+      function showDataset(datasetId, systemId) {
+        console.log("Running " + `tab-system-${systemId}`);
+        // Get the specific tab system container
+        const container = document.getElementById(`tab-system-${systemId}`);
+        if (!container) {
+          console.log("Container not found");
+          return;
+        }
+        
+        // Hide all content within this system
+        container.querySelectorAll(".tab-content").forEach((content) => {
           content.classList.remove("active");
         });
-
-        // Show selected content
-        document.getElementById(datasetId + "-content").classList.add("active");
-
-        // Update button states
-        document.querySelectorAll(".tab-button").forEach((button) => {
+    
+        // Show selected content - FIXED: use querySelector instead of getElementById
+        container.querySelector(`#${datasetId}-content-${systemId}`).classList.add("active");  // <--- [CHANGED] getElementById -> querySelector
+    
+        // Update button states within this system
+        container.querySelectorAll(".tab-button").forEach((button) => {
           button.classList.remove("active");
         });
-        document
-          .querySelector(`[onclick="showDataset('${datasetId}')"]`)
+        container
+          .querySelector(`[onclick="showDataset('${datasetId}', ${systemId})"]`)
           .classList.add("active");
       }
     </script>
@@ -2905,6 +2913,8 @@
     <!-- <p>
     Calling back to our predictions from CKA in the previous section,
   </p> -->
+
+
 
     <p><b>Native Space Performance</b></p>
 
