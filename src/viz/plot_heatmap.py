@@ -3,7 +3,6 @@ import plotly.graph_objects as go
 from loguru import logger
 
 from src.utils.general_setup import setup
-from src.viz.save_figure import save_figure
 
 
 setup("plot_heatmap")
@@ -40,9 +39,7 @@ def _plot_heatmap(
     logger.info("Creating heatmap visualization...")
 
     # Convert input to numpy array if it's a list
-    matrix = np.array(
-        matrix, dtype=object
-    )
+    matrix = np.array(matrix, dtype=object)
 
     # Create mask for None values
     none_mask = matrix is None
@@ -84,21 +81,17 @@ def _plot_heatmap(
         yaxis_nticks=len(row_labels) if row_labels else None,
         xaxis_title=xaxis_title,
         yaxis_title=yaxis_title,
-        # Disable interactive elements
-        showlegend=False,
-        modebar_remove=[
-            "zoom",
-            "pan",
-            "lasso2d",
-            "zoomIn2d",
-            "zoomOut2d",
-            "autoScale2d",
-            "resetScale2d",
-            "hoverClosestCartesian",
-            "hoverCompareCartesian",
-            "toggleSpikelines",
-        ],
-        modebar_display=False,  # Removes the entire mode bar (including Plotly logo)
+        modebar=dict(
+            remove=[
+                "zoomIn2d",
+                "zoomOut2d",
+                "autoScale2d",
+                "resetScale2d",
+                "hoverClosestCartesian",
+                "hoverCompareCartesian",
+                "toggleSpikelines",
+            ]
+        ),
         dragmode=False,  # Disables dragging/panning
     )
 
@@ -171,7 +164,7 @@ def main() -> None:
     }
 
     fig = visualize_heatmap(matrix, config=config)
-    fig.show()
+    fig.show(config={"displayModeBar": False})
     logger.success("Example heatmap displayed successfully")
 
 
