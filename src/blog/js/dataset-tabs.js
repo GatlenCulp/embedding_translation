@@ -24,11 +24,13 @@ function createTableSystem(config) {
 
   // Create the basic structure
   container.innerHTML = `
+    <hr />
     <div class="l-screen-inset" style="margin-left: 5em" id="tab-system-${config.id}">
       <b style="margin-bottom: 1em">${config.title}</b>
       <div class="dataset-tabs" style="margin-bottom: 1em" id="tabs-${config.id}"></div>
       <div class="dataset-content" id="content-${config.id}"></div>
     </div>
+    <hr />
   `;
 
   generateTabs(config);
