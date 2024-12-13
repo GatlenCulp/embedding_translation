@@ -299,7 +299,7 @@ def main(datasets: List[str], device: str, save_path: str):
                 ])
             assert len(models_src2dst) == len(models_dst2src) == len(unordered_pairs)
 
-            print("training for 1 epoch")
+            print(f"training for {num_epochs} epochs")
             assert isinstance(models_src2dst, list)
             assert isinstance(models_dst2src, list)
             assert all(isinstance(models_src2dst[i], list) for i in range(len(models_src2dst)))
