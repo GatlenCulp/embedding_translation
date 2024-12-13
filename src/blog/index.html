@@ -1,10 +1,22 @@
-<!doctype html>
+<!DOCTYPE html>
 <meta charset="utf-8" />
 <head>
   <title>
     LEAD: Linear Embedding Alignment across Deep Neural Network Language Models'
     Representations
   </title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.8.0/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      fontFamily: 'sans-serif',
+      securityLevel: 'loose',
+      flowchart: {
+        useMaxWidth: true,
+        htmlLabels: true
+      }
+    });
+  </script>
   <script src="https://distill.pub/template.v1.js"></script>
   <link
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
@@ -34,10 +46,7 @@
     integrity="sha384-hCXGrW6PitJEwbkoStFjeJxv+fSOOQKOPbJxSfM6G5sWZjAyWhXiTIIAmQqnlLlh"
     crossorigin="anonymous"
     onload="renderMathInElement(document.body);"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/9.4.3/mermaid.min.js"></script>
-  <script>
-    mermaid.initialize({ startOnLoad: true });
-  </script>
+
   <!-- prettier-ignore -->
   <script type="text/bibliography">
     @inproceedings{andrew_deep_2013,
@@ -591,51 +600,51 @@
       <div class="l-page">
         <figure class="diagram-container">
           <!-- prettier-ignore -->
-          <div class="mermaid">
-          graph TD
-            %% Define the main text input with proper quotes
-            Text[/"Input Text t"/]
-
-            %% Define embedding spaces as subgraphs with proper syntax
-            subgraph SpaceA["Embedding Space A"]
-                NativeA["Native Embedding A(t)"]
-            end
-
-            subgraph SpaceB["Embedding Space B"]
-                NativeB["Native Embedding B(t)"]
-                StitchedAB["Stitched Embedding S(A(t))"]
-            end
-
-            %% Define the models and transformations
-            ModelA["Model A"]
-            ModelB["Model B"]
-            Stitch{{"Stitch S"}}
-
-            %% Define the relationships with proper flow
-            Text --> ModelA
-            Text --> ModelB
-            ModelA --> NativeA
-            ModelB --> NativeB
-            NativeA --> Stitch
-            Stitch --> StitchedAB
-
-            %% Add evaluation with proper syntax
-            MSE[["MSE(S(A(t)), B(t) < ε"]]
-            StitchedAB -.-> MSE
-            NativeB -.-> MSE
-
-            %% Style definitions
-            classDef space fill:#f0f4f8,stroke:#a3bffa,rx:10
-            classDef model fill:#ebf4ff,stroke:#63b3ed,rx:5
-            classDef stitch fill:#faf5ff,stroke:#b794f4,rx:5
-            classDef evaluation fill:#f0fff4,stroke:#68d391,rx:5
-
-            %% Apply styles
-            class SpaceA,SpaceB space
-            class ModelA,ModelB model
-            class Stitch stitch
-            class MSE evaluation
-        </div>
+          <pre class="mermaid">
+            graph TD
+              %% Define the main text input
+              Text(["Input Text t"])
+          
+              %% Define embedding spaces as subgraphs
+              subgraph SpaceA["Embedding Space A"]
+                  NativeA["Native Embedding A(t)"]
+              end
+          
+              subgraph SpaceB["Embedding Space B"]
+                  NativeB["Native Embedding B(t)"]
+                  StitchedAB["Stitched Embedding S(A(t))"]
+              end
+          
+              %% Define the models and transformations
+              ModelA["Model A"]
+              ModelB["Model B"]
+              Stitch{{"Stitch S"}}
+          
+              %% Define the relationships
+              Text --> ModelA
+              Text --> ModelB
+              ModelA --> NativeA
+              ModelB --> NativeB
+              NativeA --> Stitch
+              Stitch --> StitchedAB
+          
+              %% Add evaluation
+              MSE[["MSE(S(A(t)), B(t)) < ε"]]
+              StitchedAB -.-> MSE
+              NativeB -.-> MSE
+          
+              %% Style definitions
+              classDef space fill:#f0f4f8,stroke:#a3bffa,rx:10
+              classDef model fill:#ebf4ff,stroke:#63b3ed,rx:5
+              classDef stitch fill:#faf5ff,stroke:#b794f4,rx:5
+              classDef evaluation fill:#f0fff4,stroke:#68d391,rx:5
+          
+              %% Apply styles
+              class SpaceA,SpaceB space
+              class ModelA,ModelB model
+              class Stitch stitch
+              class MSE evaluation
+          </pre>
           <figcaption>
             Relationship between native embeddings, stitched embeddings, and
             embedding spaces.
