@@ -7,6 +7,7 @@ import torch
 import einops
 import numpy as np
 import time
+import wandb
 import torch.nn as nn
 from typing import List, Optional, Dict, Literal, Tuple
 from pathlib import Path
@@ -102,13 +103,32 @@ class MLP(nn.Module):
         save_file(self.state_dict(), model_file)
         info_file.write_text(
             StitchPair(
-                source=self.source_model_name, 
-                target=self.target_model_name, 
-                dataset=self.dataset, 
-                mode="mlp", 
-                num_layers=self.num_layers, 
+                source=self.source_model_name,
+                target=self.target_model_name,
+                dataset=self.dataset,
+                mode="mlp",
+                num_layers=self.num_layers,
                 layer_dims=self.layer_dims
             ).model_dump_json()
+        )
+    
+    @staticmethod
+    def load_from_folder_path(load_path: Path):
+        assert load_path.is_dir(), f"Load path {load_path} is not a directory"
+        model_file = load_path / f"mlp.safetensors"
+        info_file = load_path / f"stitch_info.json"
+        assert model_file.exists(), f"Model file does not exist at {model_file}"
+        assert info_file.exists(), f"Info file does not exist at {info_file}"
+        pd_model = StitchPair.model_validate_json(info_file.read_text())
+        hidden_dims = pd_model.layer_dims[1:-1]
+        return MLP(
+            input_dim=pd_model.layer_dims[0],
+            output_dim=pd_model.layer_dims[-1],
+            source_model_name=pd_model.source,
+            target_model_name=pd_model.target,
+            dataset=pd_model.dataset,
+            hidden_dims=hidden_dims,
+            num_layers=pd_model.num_layers,
         )
     
     def __repr__(self):
@@ -146,101 +166,156 @@ def get_all_embeddings(embeddings_path: Path, dataset: str, device: str) -> Dict
     model2embeddings: Dict[str, torch.Tensor] = {}
     for model_name in MODEL_NAMES:
         embeddings_path_src_parent  = embeddings_path / model_name.replace("/", "_") / dataset
-        embeddings_path_src_train, embeddings_path_src_validation = get_embeddings_paths(embeddings_path_src_parent)
+        embeddings_path_src_train, _ = get_embeddings_paths(embeddings_path_src_parent)
         embeddings_src_train = load_file(embeddings_path_src_train)["embeddings"].to(device)
         model2embeddings[model_name] = embeddings_src_train
     return model2embeddings
 
-def train_models(
-        src_emb: torch.Tensor, 
-        dst_emb: torch.Tensor, 
-        models_src2dst: List[MLP], 
-        models_dst2src: List[MLP], 
-        optimizer: torch.optim.Optimizer, 
-        loss_fn: nn.Module
-    ) -> Tuple[np.ndarray, np.ndarray]:
-    batch_size = src_emb.shape[0]
-    num_models = len(models_src2dst)
-    
-    # Expand embeddings to match number of models
-    src_emb_expanded = einops.repeat(src_emb, 'b d -> n b d', n=num_models, b=batch_size) # [num_models, batch_size, dim]
-    dst_emb_expanded = einops.repeat(dst_emb, 'b d -> n b d', n=num_models, b=batch_size) # [num_models, batch_size, dim]
-    
-    optimizer.zero_grad()
-    
-    # Forward pass (all models at once)
-    outputs_src2dst = torch.stack([model(src_emb) for model in models_src2dst]) # [num_models, batch_size, dim]
-    outputs_dst2src = torch.stack([model(dst_emb) for model in models_dst2src]) # [num_models, batch_size, dim]
-    assert len(outputs_src2dst.shape) == len(outputs_dst2src.shape) == 3
-    assert outputs_src2dst.shape[0] == outputs_dst2src.shape[0] == num_models
-    assert outputs_src2dst.shape[1] == outputs_dst2src.shape[1] == batch_size
-    # Compute loss for all models simultaneously
-    loss_src2dst = loss_fn(outputs_src2dst, dst_emb_expanded)
-    assert len(loss_src2dst.shape) == 3
-    assert loss_src2dst.shape[0] == num_models
-    assert loss_src2dst.shape[1] == batch_size
-    assert loss_src2dst.shape[2] == dst_emb.shape[1]
-    loss_src2dst = loss_src2dst.mean(dim=(1, 2))
-    loss_src2dst_cpy = loss_src2dst.clone().detach().cpu().numpy()
-    loss_src2dst = loss_src2dst.sum()
-    loss_dst2src = loss_fn(outputs_dst2src, src_emb_expanded)
-    assert len(loss_dst2src.shape) == 3
-    assert loss_dst2src.shape[0] == num_models
-    assert loss_dst2src.shape[1] == batch_size
-    assert loss_dst2src.shape[2] == src_emb.shape[1]
-    loss_dst2src = loss_dst2src.mean(dim=(1, 2))
-    loss_dst2src_cpy = loss_dst2src.clone().detach().cpu().numpy()
-    loss_dst2src = loss_dst2src.sum()
-    loss = loss_src2dst + loss_dst2src
-    
-    # Backward pass and optimization
-    loss.mean().backward()
-    optimizer.step()
-    
-    return loss_src2dst_cpy, loss_dst2src_cpy
+class Trainer:
+    def __init__(self, wandb_project: str, save_every_n_epochs: int, save_path: Path):
+        self.wandb_project = wandb_project
+        self.save_path = save_path
+        self.save_every_n_epochs = save_every_n_epochs
+        self.save_path.mkdir(parents=True, exist_ok=True)
 
-def training_run(
-        datasets: List[EmbeddingDataset], 
-        models_src2dst: List[List[MLP]], 
-        models_dst2src: List[List[MLP]], 
-        loss_fn: nn.Module, 
-        num_epochs: int, 
-        batch_size: int,
-    ) -> float:
-    time_start = time.time()
-    train_loaders = [DataLoader(d, batch_size=batch_size, shuffle=True) for d in datasets]
-    num_iters = len(train_loaders[0]) # NOTE: same for all of the datasets
-    all_parameters = []
-    # 1. Get all parameters
-    for models_list in models_src2dst + models_dst2src:
-        for models in models_list:
-            # NOTE: tick together, but I think this is OK
-            all_parameters.extend(list(models.parameters()))
-    optimizer = torch.optim.Adam(all_parameters, lr=1e-3) # TODO(Adriano): should be ok to use defaults? lmao
-    # 2. Set all models to train
-    for models_list in models_src2dst + models_dst2src:
-        for models in models_list:
-            models.train()
-    # 3. Train
-    loss_fn = nn.MSELoss(reduction="none")
-    for epoch in tqdm.trange(num_epochs):
-        loader_iters = [iter(loader) for loader in train_loaders]
-        for i in range(num_iters):
-            xys = [next(loader_iter) for loader_iter in loader_iters]
-            assert not any(x is None for x in xys), "Some loader iterators returned None"
-            for (X, Y), models_src2dst_list, models_dst2src_list in zip(xys, models_src2dst, models_dst2src):
-                losses_src2dst, losses_dst2src = train_models(X, Y, models_src2dst_list, models_dst2src_list, optimizer, loss_fn)
-                # wandb.log({
-                #     "loss_src2dst": losses_src2dst,
-                #     "loss_dst2src": losses_dst2src,
-                # }) XXX get this wandb logged plz
-    return time.time() - time_start
+    def train_models(
+            self,
+            src_emb: torch.Tensor, 
+            dst_emb: torch.Tensor, 
+            models_src2dst: List[MLP], 
+            models_dst2src: List[MLP], 
+            optimizer: torch.optim.Optimizer, 
+            loss_fn: nn.Module
+        ) -> Tuple[torch.Tensor, torch.Tensor]:
+        batch_size = src_emb.shape[0]
+        num_models = len(models_src2dst)
+        
+        # Expand embeddings to match number of models
+        src_emb_expanded = einops.repeat(src_emb, 'b d -> n b d', n=num_models, b=batch_size) # [num_models, batch_size, dim]
+        dst_emb_expanded = einops.repeat(dst_emb, 'b d -> n b d', n=num_models, b=batch_size) # [num_models, batch_size, dim]
+        
+        optimizer.zero_grad()
+        
+        # Forward pass (all models at once)
+        outputs_src2dst = torch.stack([model(src_emb) for model in models_src2dst]) # [num_models, batch_size, dim]
+        outputs_dst2src = torch.stack([model(dst_emb) for model in models_dst2src]) # [num_models, batch_size, dim]
+        assert len(outputs_src2dst.shape) == len(outputs_dst2src.shape) == 3
+        assert outputs_src2dst.shape[0] == outputs_dst2src.shape[0] == num_models
+        assert outputs_src2dst.shape[1] == outputs_dst2src.shape[1] == batch_size
+        # Compute loss for all models simultaneously
+        loss_src2dst = loss_fn(outputs_src2dst, dst_emb_expanded)
+        assert len(loss_src2dst.shape) == 3
+        assert loss_src2dst.shape[0] == num_models
+        assert loss_src2dst.shape[1] == batch_size
+        assert loss_src2dst.shape[2] == dst_emb.shape[1]
+        loss_src2dst = loss_src2dst.mean(dim=(1, 2))
+        loss_src2dst_cpy = loss_src2dst.clone().detach().cpu()
+        loss_src2dst = loss_src2dst.sum()
+        loss_dst2src = loss_fn(outputs_dst2src, src_emb_expanded)
+        assert len(loss_dst2src.shape) == 3
+        assert loss_dst2src.shape[0] == num_models
+        assert loss_dst2src.shape[1] == batch_size
+        assert loss_dst2src.shape[2] == src_emb.shape[1]
+        loss_dst2src = loss_dst2src.mean(dim=(1, 2))
+        loss_dst2src_cpy = loss_dst2src.clone().detach().cpu()
+        loss_dst2src = loss_dst2src.sum()
+        loss = loss_src2dst + loss_dst2src
+        
+        # Backward pass and optimization
+        loss.mean().backward()
+        optimizer.step()
+        
+        return loss_src2dst_cpy, loss_dst2src_cpy
+
+    def training_run(
+            self,
+            datasets: List[EmbeddingDataset], 
+            models_src2dst: List[List[MLP]], 
+            models_dst2src: List[List[MLP]], 
+            loss_fn: nn.Module, 
+            num_epochs: int, 
+            batch_size: int,
+        ) -> Tuple[float, Dict[Tuple[str, str, int, int], List[Dict[str, float]]]]:
+        dataset_name_src_dst_n_layers2wandb_logs: Dict[Tuple[str, str, int, int], List[Dict[str, float]]] = {}
+        time_start = time.time()
+        train_loaders = [DataLoader(d, batch_size=batch_size, shuffle=True) for d in datasets]
+        num_iters = len(train_loaders[0]) # NOTE: same for all of the datasets
+        all_parameters = []
+        # 1. Get all parameters
+        for models_list in models_src2dst + models_dst2src:
+            for models in models_list:
+                # NOTE: tick together, but I think this is OK
+                all_parameters.extend(list(models.parameters()))
+        optimizer = torch.optim.Adam(all_parameters, lr=1e-3) # TODO(Adriano): should be ok to use defaults? lmao
+        # 2. Set all models to train
+        for models_list in models_src2dst + models_dst2src:
+            for models in models_list:
+                models.train()
+        # 3. Train
+        loss_fn = nn.MSELoss(reduction="none")
+        for epoch in tqdm.trange(num_epochs):
+            loader_iters = [iter(loader) for loader in train_loaders]
+            dataset_name_src_dst_n_layers2loss_buff: Dict[Tuple[str, str, int, int], torch.Tensor] = {}
+            for i in range(num_iters):
+                xys = [next(loader_iter) for loader_iter in loader_iters]
+                assert not any(x is None for x in xys), "Some loader iterators returned None"
+                for (X, Y), models_src2dst_list, models_dst2src_list in zip(xys, models_src2dst, models_dst2src):
+                    losses_src2dst, losses_dst2src = self.train_models(
+                        X,
+                        Y,
+                        models_src2dst_list,
+                        models_dst2src_list,
+                        optimizer,
+                        loss_fn
+                    )
+                    assert len(losses_src2dst.shape) == 1 and len(losses_dst2src.shape) == 1
+                    assert losses_src2dst.shape[0] == len(models_src2dst_list)
+                    assert losses_dst2src.shape[0] == len(models_dst2src_list)
+                    losses = torch.cat([losses_src2dst, losses_dst2src])
+                    for model, loss in zip((models_src2dst_list + models_dst2src_list), losses):
+                        key = (
+                            model.dataset, 
+                            model.source_model_name, 
+                            model.target_model_name, 
+                            model.num_layers
+                        )
+                        if key not in dataset_name_src_dst_n_layers2loss_buff:
+                            dataset_name_src_dst_n_layers2loss_buff[key] = 0
+                        dataset_name_src_dst_n_layers2loss_buff[key] += loss.detach().item()
+            dataset_name_src_dst_n_layers2loss_buff = {k : v / num_iters for k, v in dataset_name_src_dst_n_layers2loss_buff.items()}
+            for key, loss in dataset_name_src_dst_n_layers2loss_buff.items():
+                if key not in dataset_name_src_dst_n_layers2wandb_logs:
+                    dataset_name_src_dst_n_layers2wandb_logs[key] = []
+                assert not any(log["epoch"] == epoch for log in dataset_name_src_dst_n_layers2wandb_logs[key]) # SANS
+                dataset_name_src_dst_n_layers2wandb_logs[key].append({"train_mse_loss": loss, "epoch": epoch})
+            # Log each key (dataset, source model, target model, num layers) separately
+        if epoch % self.save_every_n_epochs == 0 and epoch > 0:
+            for models_src2dst_list, models_dst2src_list in zip(models_src2dst, models_dst2src):
+                for model_src2dst, model_dst2src in zip(models_src2dst_list, models_dst2src_list):
+                    src_model_name, dst_model_name = model_src2dst.source_model_name, model_src2dst.target_model_name
+                    src_model_name_path, dst_model_name_path = src_model_name.replace("/", "_"), dst_model_name.replace("/", "_")
+                    model_src2dst.save_to_folder_path(
+                        self.save_path /
+                        f"{src_model_name_path}_{dst_model_name_path}" /
+                        f"{model_src2dst.dataset}" /
+                        str(model_src2dst.num_layers) /
+                        f"checkpoint_{epoch}.safetensors"
+                    )
+                    model_dst2src.save_to_folder_path(
+                        self.save_path /
+                        f"{dst_model_name_path}_{src_model_name_path}" /
+                        f"{model_dst2src.dataset}" /
+                        str(model_dst2src.num_layers) /
+                        f"checkpoint_{epoch}.safetensors"
+                    )
+        return (time.time() - time_start), dataset_name_src_dst_n_layers2wandb_logs
 
 @click.command()
 @click.option("--datasets", "-da", type=str, multiple=True)
 @click.option("--device", "-d", type=str)
 @click.option("--save-path", "-s", type=str)
-def main(datasets: List[str], device: str, save_path: str):
+@click.option("--wandb-project", "-w", type=str)
+def main(datasets: List[str], device: str, save_path: str, wandb_project: str):
     """
     Run with:
     python3 owlergpt/commands/pokemon.py -da arguana -d cuda:3 -s /mnt/align3_drive/adrianoh/dl_final_project_layers_2plus
@@ -250,12 +325,15 @@ def main(datasets: List[str], device: str, save_path: str):
     # TODO(Adriano): don't hardcode plz
     embeddings_path = Path("/mnt/align3_drive/adrianoh/dl_final_project_embeddings")
     for dataset in datasets:
+        print("="*40 + " GETTING ALL EMBEDDINGS " + "="*40)
         model2embeddings = get_all_embeddings(embeddings_path, dataset, device)
         unordered_pairs_all = [(MODEL_NAMES[i], MODEL_NAMES[j]) for j in range(len(MODEL_NAMES)) for i in range(j)]
         random.seed(55)
         random.shuffle(unordered_pairs_all)
         unordered_pairs_block_size: int = math.ceil(len(unordered_pairs_all) / 3)
         unordered_pairs_blocks = [unordered_pairs_all[i:i+unordered_pairs_block_size] for i in range(0, len(unordered_pairs_all), unordered_pairs_block_size)]
+        dataset_name_src_dst_n_layers2wandb_logs: Dict[Tuple[str, str, int, int], List[Dict[str, float]]] = {}
+        print("="*40 + " TRAINING BLOCKED CARTESIAN PRODUCTS " + "="*40)
         for idx, unordered_pairs in enumerate(unordered_pairs_blocks):
             print(f"Processing block {idx+1}/{len(unordered_pairs_blocks)}")
             embeddings_tensors_src: List[torch.Tensor] = []
@@ -298,8 +376,6 @@ def main(datasets: List[str], device: str, save_path: str):
                     ).to(device) for n in n_layers_list
                 ])
             assert len(models_src2dst) == len(models_dst2src) == len(unordered_pairs)
-
-            print(f"training for {num_epochs} epochs")
             assert isinstance(models_src2dst, list)
             assert isinstance(models_dst2src, list)
             assert all(isinstance(models_src2dst[i], list) for i in range(len(models_src2dst)))
@@ -308,10 +384,13 @@ def main(datasets: List[str], device: str, save_path: str):
             assert all(all(isinstance(models_dst2src[i][j], MLP) for j in range(len(models_dst2src[i]))) for i in range(len(models_dst2src)))
             train_datasets = [EmbeddingDataset(embeddings_src, embeddings_dst) for embeddings_src, embeddings_dst in zip(embeddings_tensors_src, embeddings_tensors_dst)]
             assert len(train_datasets) == len(models_src2dst) == len(models_dst2src)
-            num_epochs = 80 # XXX debug
+            num_epochs = 80
+            save_every_n_epochs = 25
             batch_size = 512 # TODO(Adriano) is this a good hyperparameter?
+            print(f"training for {num_epochs} epochs")
             loss_fn = nn.MSELoss()
-            time_taken = training_run(
+            trainer = Trainer(wandb_project, save_every_n_epochs, save_path)
+            time_taken, dataset_name_src_dst_n_layers2wandb_logs_update = trainer.training_run(
                 train_datasets,
                 models_src2dst,
                 models_dst2src,
@@ -319,6 +398,8 @@ def main(datasets: List[str], device: str, save_path: str):
                 num_epochs,
                 batch_size,
             )
+            assert len(set(dataset_name_src_dst_n_layers2wandb_logs_update.keys()) & set(dataset_name_src_dst_n_layers2wandb_logs.keys())) == 0
+            dataset_name_src_dst_n_layers2wandb_logs.update(dataset_name_src_dst_n_layers2wandb_logs_update)
             print(f"Batch size {batch_size}: {time_taken:.2f} seconds")
             time_per_layer_per_epoch = time_taken / num_epochs / len(models_src2dst + models_dst2src)
             print(f"Time per layer per epoch: {time_per_layer_per_epoch:.2f} seconds")
@@ -340,11 +421,19 @@ def main(datasets: List[str], device: str, save_path: str):
             torch.cuda.reset_peak_memory_stats()
             with torch.cuda.device(device):
                 torch.cuda.empty_cache()
+        print("="*40 + " LOGGING TO WANDB " + "="*40)
+        for key, logs in dataset_name_src_dst_n_layers2wandb_logs.items():
+            name = f"{key[0]}_{key[1]}_to_{key[2]}_layers_{key[3]}".replace("/", "_")
+            wandb.init(project=wandb_project + "_" + dataset, name=name)
+            for log in logs:
+                wandb.log(log)
+            wandb.finish()
         gc.collect()
         torch.cuda.empty_cache()
         torch.cuda.reset_peak_memory_stats()
         with torch.cuda.device(device):
             torch.cuda.empty_cache()
+        
 
 if __name__ == "__main__":
     main()
