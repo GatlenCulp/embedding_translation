@@ -9,7 +9,6 @@
   <link
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     rel="stylesheet" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/9.4.3/mermaid.min.js"></script>
   <link
     href="https://cdn.jsdelivr.net/npm/katex@0.16.15/dist/katex.min.css"
     rel="stylesheet"
@@ -31,6 +30,7 @@
     integrity="sha384-hCXGrW6PitJEwbkoStFjeJxv+fSOOQKOPbJxSfM6G5sWZjAyWhXiTIIAmQqnlLlh"
     crossorigin="anonymous"
     onload="renderMathInElement(document.body);"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/9.4.3/mermaid.min.js"></script>
   <script>
     mermaid.initialize({ startOnLoad: true });
   </script>
@@ -589,27 +589,25 @@
           <!-- prettier-ignore -->
           <div class="mermaid">
           graph TD
-            %% Define the main text input
+            %% Define the main text input with proper quotes
             Text[/"Input Text t"/]
 
-            %% Define embedding spaces as subgraphs
-            subgraph "Embedding Space A"
-              %% EA[("Model A's Space")]
-              NativeA["Native Embedding A(t)"]
+            %% Define embedding spaces as subgraphs with proper syntax
+            subgraph SpaceA["Embedding Space A"]
+                NativeA["Native Embedding A(t)"]
             end
 
-            subgraph "Embedding Space B"
-              %% EB[("Model B's Space")]
-              NativeB["Native Embedding B(t)"]
-              StitchedAB["Stitched Embeddings S(A(t))"]
+            subgraph SpaceB["Embedding Space B"]
+                NativeB["Native Embedding B(t)"]
+                StitchedAB["Stitched Embedding S(A(t))"]
             end
 
             %% Define the models and transformations
             ModelA["Model A"]
             ModelB["Model B"]
-            Stitch{"Stitch S\n(from A to B)"}
+            Stitch{{"Stitch S"}}
 
-            %% Define the relationships
+            %% Define the relationships with proper flow
             Text --> ModelA
             Text --> ModelB
             ModelA --> NativeA
@@ -617,18 +615,19 @@
             NativeA --> Stitch
             Stitch --> StitchedAB
 
-            %% Add labels for evaluation
-            MSE{{"MSE( S(A(t)), B(t) ) < ε"}}
+            %% Add evaluation with proper syntax
+            MSE[["MSE(S(A(t)), B(t) < ε"]]
             StitchedAB -.-> MSE
             NativeB -.-> MSE
 
-            %% Add styling
-            classDef space fill:#f0f4f8,stroke:#a3bffa
-            classDef model fill:#ebf4ff,stroke:#63b3ed
-            classDef stitch fill:#faf5ff,stroke:#b794f4
-            classDef evaluation fill:#f0fff4,stroke:#68d391
+            %% Style definitions
+            classDef space fill:#f0f4f8,stroke:#a3bffa,rx:10
+            classDef model fill:#ebf4ff,stroke:#63b3ed,rx:5
+            classDef stitch fill:#faf5ff,stroke:#b794f4,rx:5
+            classDef evaluation fill:#f0fff4,stroke:#68d391,rx:5
 
-            class EA,EB space
+            %% Apply styles
+            class SpaceA,SpaceB space
             class ModelA,ModelB model
             class Stitch stitch
             class MSE evaluation
@@ -655,8 +654,8 @@
         distinct semantic space.
         <!-- why isn't this rendering -->
         <dt-fn>
-          This is not a formal or rigorous definition, rather a useful
-          concept to name.
+          This is not a formal or rigorous definition, rather a useful concept
+          to name.
         </dt-fn>
         <!-- subseteq not working -->
       </li>
