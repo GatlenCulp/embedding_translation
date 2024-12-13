@@ -638,7 +638,7 @@ We can
     </li>
 
     <b>Detailed Model Comparison Table</b>
-    <div class="l-screen-inset" style="margin-left: 5em; margin-top: 1em;">
+    <div class="l-body l-body" style="margin-top: 1em;">
       <!-- Tab Navigation -->
       <div class="model-tabs" style="margin-bottom: 1em">
         <button class="tab-button active important" onclick="showModelView('category')">
@@ -911,345 +911,371 @@ We can
                 </tr>
               </thead>
               <tbody>
-                <!-- OpenAI (3072) -->
-                <tr style="border-bottom: 1px solid #eee">
+                <!-- 3072 dimension -->
+                <tr style="border-bottom: 1px solid #eee; background-color: #f8f0ff">
                   <td style="padding: 8px"><b>OpenAI</b></td>
                   <td style="padding: 8px">text-embedding-3-large</td>
                   <td style="padding: 8px">Proprietary</td>
-                  <td style="text-align: center; padding: 8px">3072</td>
+                  <td style="text-align: center; padding: 8px; font-weight: bold; color: #6200ee">3072</td>
                   <td style="text-align: center; padding: 8px">-</td>
                   <td style="padding: 8px">Not public</td>
                 </tr>
 
-                <!-- OpenAI (1536) -->
-                <tr style="border-bottom: 1px solid #eee">
+                <!-- 1536 dimension -->
+                <tr style="border-bottom: 1px solid #eee; background-color: #f5f5ff">
                   <td style="padding: 8px"><b>OpenAI</b></td>
                   <td style="padding: 8px">text-embedding-3-small</td>
                   <td style="padding: 8px">Proprietary</td>
-                  <td style="text-align: center; padding: 8px">1536</td>
+                  <td style="text-align: center; padding: 8px; font-weight: bold; color: #3700b3">1536</td>
                   <td style="text-align: center; padding: 8px">-</td>
                   <td style="padding: 8px">Not public</td>
                 </tr>
 
-                <!-- Large models (1024) -->
-                <tr style="border-bottom: 1px solid #eee">
+                <!-- 1024 dimension -->
+                <tr style="border-bottom: 1px solid #eee; background-color: #f0f0ff">
                   <td style="padding: 8px"><b>UAE</b></td>
                   <td style="padding: 8px">large-v1</td>
                   <td style="padding: 8px">RoBERTa</td>
-                  <td style="text-align: center; padding: 8px">1024</td>
+                  <td style="text-align: center; padding: 8px; font-weight: bold; color: #1a237e">1024</td>
                   <td style="text-align: center; padding: 8px">355M</td>
                   <td style="padding: 8px">Adversarial training</td>
                 </tr>
-                <tr style="border-bottom: 1px solid #eee">
+                <tr style="border-bottom: 1px solid #eee; background-color: #f0f0ff">
                   <td style="padding: 8px"><b>BAAI BGE</b></td>
                   <td style="padding: 8px">large-v1.5</td>
                   <td style="padding: 8px">DeBERTa-V3</td>
-                  <td style="text-align: center; padding: 8px">1024</td>
+                  <td style="text-align: center; padding: 8px; font-weight: bold; color: #1a237e">1024</td>
                   <td style="text-align: center; padding: 8px">335M</td>
                   <td style="padding: 8px">330M+ text pairs</td>
                 </tr>
-                <tr style="border-bottom: 1px solid #eee">
+                <tr style="border-bottom: 1px solid #eee; background-color: #f0f0ff">
                   <td style="padding: 8px"><b>E5</b></td>
                   <td style="padding: 8px">large-v2</td>
                   <td style="padding: 8px">DeBERTa-V3</td>
-                  <td style="text-align: center; padding: 8px">1024</td>
+                  <td style="text-align: center; padding: 8px; font-weight: bold; color: #1a237e">1024</td>
                   <td style="text-align: center; padding: 8px">335M</td>
                   <td style="padding: 8px">CCNet + web data</td>
                 </tr>
-                <tr style="border-bottom: 1px solid #eee">
+                <tr style="border-bottom: 1px solid #eee; background-color: #f0f0ff">
                   <td style="padding: 8px"><b>GTE</b></td>
                   <td style="padding: 8px">large</td>
                   <td style="padding: 8px">DeBERTa-V3</td>
-                  <td style="text-align: center; padding: 8px">1024</td>
+                  <td style="text-align: center; padding: 8px; font-weight: bold; color: #1a237e">1024</td>
                   <td style="text-align: center; padding: 8px">335M</td>
                   <td style="padding: 8px">MS MARCO + public datasets</td>
                 </tr>
-                <tr style="border-bottom: 1px solid #eee">
+                <tr style="border-bottom: 1px solid #eee; background-color: #f0f0ff">
                   <td style="padding: 8px"><b>MXBai</b></td>
                   <td style="padding: 8px">embed-large-v1</td>
                   <td style="padding: 8px">DeBERTa-V3</td>
-                  <td style="text-align: center; padding: 8px">1024</td>
+                  <td style="text-align: center; padding: 8px; font-weight: bold; color: #1a237e">1024</td>
                   <td style="text-align: center; padding: 8px">335M</td>
                   <td style="padding: 8px">Not public</td>
                 </tr>
 
-                <!-- Medium models (768) -->
-                <tr style="border-bottom: 1px solid #eee">
-                  <td style="padding: 8px"><b>T5-based</b></td>
-                  <td style="padding: 8px">gtr-t5-large</td>
-                  <td style="padding: 8px">T5 encoder</td>
-                  <td style="text-align: center; padding: 8px">768</td>
-                  <td style="text-align: center; padding: 8px">770M</td>
-                  <td style="padding: 8px">C4 + MS MARCO</td>
-                </tr>
-                <tr style="border-bottom: 1px solid #eee">
-                  <td style="padding: 8px"><b>T5-based</b></td>
-                  <td style="padding: 8px">gtr-t5-base</td>
-                  <td style="padding: 8px">T5 encoder</td>
-                  <td style="text-align: center; padding: 8px">768</td>
-                  <td style="text-align: center; padding: 8px">220M</td>
-                  <td style="padding: 8px">C4 + MS MARCO</td>
-                </tr>
-                <tr style="border-bottom: 1px solid #eee">
-                  <td style="padding: 8px"><b>T5-based</b></td>
-                  <td style="padding: 8px">sentence-t5-large</td>
-                  <td style="padding: 8px">T5 encoder</td>
-                  <td style="text-align: center; padding: 8px">768</td>
-                  <td style="text-align: center; padding: 8px">770M</td>
-                  <td style="padding: 8px">C4 + NLI datasets</td>
-                </tr>
-                <tr style="border-bottom: 1px solid #eee">
-                  <td style="padding: 8px"><b>T5-based</b></td>
-                  <td style="padding: 8px">sentence-t5-base</td>
-                  <td style="padding: 8px">T5 encoder</td>
-                  <td style="text-align: center; padding: 8px">768</td>
-                  <td style="text-align: center; padding: 8px">220M</td>
-                  <td style="padding: 8px">C4 + NLI datasets</td>
-                </tr>
-                <tr style="border-bottom: 1px solid #eee">
-                  <td style="padding: 8px"><b>BAAI BGE</b></td>
-                  <td style="padding: 8px">base-v1.5</td>
-                  <td style="padding: 8px">DeBERTa-V3</td>
-                  <td style="text-align: center; padding: 8px">768</td>
-                  <td style="text-align: center; padding: 8px">110M</td>
-                  <td style="padding: 8px">330M+ text pairs</td>
-                </tr>
-                <tr style="border-bottom: 1px solid #eee">
-                  <td style="padding: 8px"><b>E5</b></td>
-                  <td style="padding: 8px">base-v2</td>
-                  <td style="padding: 8px">DeBERTa-V3</td>
-                  <td style="text-align: center; padding: 8px">768</td>
-                  <td style="text-align: center; padding: 8px">110M</td>
-                  <td style="padding: 8px">CCNet + web data</td>
-                </tr>
-                <tr style="border-bottom: 1px solid #eee">
-                  <td style="padding: 8px"><b>GTE</b></td>
-                  <td style="padding: 8px">base</td>
-                  <td style="padding: 8px">DeBERTa-V3</td>
-                  <td style="text-align: center; padding: 8px">768</td>
-                  <td style="text-align: center; padding: 8px">110M</td>
-                  <td style="padding: 8px">MS MARCO + public datasets</td>
-                </tr>
-
-                <!-- Small models (384) -->
-                <tr style="border-bottom: 1px solid #eee">
-                  <td style="padding: 8px"><b>BAAI BGE</b></td>
-                  <td style="padding: 8px">small-v1.5</td>
-                  <td style="padding: 8px">DeBERTa-V3</td>
-                  <td style="text-align: center; padding: 8px">384</td>
-                  <td style="text-align: center; padding: 8px">33M</td>
-                  <td style="padding: 8px">330M+ text pairs</td>
-                </tr>
-                <tr style="border-bottom: 1px solid #eee">
-                  <td style="padding: 8px"><b>E5</b></td>
-                  <td style="padding: 8px">small-v2</td>
-                  <td style="padding: 8px">DeBERTa-V3</td>
-                  <td style="text-align: center; padding: 8px">384</td>
-                  <td style="text-align: center; padding: 8px">33M</td>
-                  <td style="padding: 8px">CCNet + web data</td>
-                </tr>
-                <tr style="border-bottom: 1px solid #eee">
-                  <td style="padding: 8px"><b>GTE</b></td>
-                  <td style="padding: 8px">small</td>
-                  <td style="padding: 8px">DeBERTa-V3</td>
-                  <td style="text-align: center; padding: 8px">384</td>
-                  <td style="text-align: center; padding: 8px">33M</td>
-                  <td style="padding: 8px">MS MARCO + public datasets</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Parameters View -->
-        <div id="parameters-content" class="tab-content">
-          <div style="overflow-x: auto">
-            <table style="width: 100%; border-collapse: collapse">
-              <thead>
-                <tr>
-                  <th
-                    style="
-                      text-align: left;
-                      padding: 8px;
-                      border-bottom: 2px solid #ddd;
-                    "
-                  >
-                    Model Family
-                  </th>
-                  <th
-                    style="
-                      text-align: left;
-                      padding: 8px;
-                      border-bottom: 2px solid #ddd;
-                    "
-                  >
-                    Variant
-                  </th>
-                  <th
-                    style="
-                      text-align: left;
-                      padding: 8px;
-                      border-bottom: 2px solid #ddd;
-                    "
-                  >
-                    Architecture
-                  </th>
-                  <th
-                    style="
-                      text-align: center;
-                      padding: 8px;
-                      border-bottom: 2px solid #ddd;
-                    "
-                  >
-                    Dimension
-                  </th>
-                  <th
-                    style="
-                      text-align: center;
-                      padding: 8px;
-                      border-bottom: 2px solid #ddd;
-                    "
-                  >
-                    Parameters
-                  </th>
-                  <th
-                    style="
-                      text-align: left;
-                      padding: 8px;
-                      border-bottom: 2px solid #ddd;
-                    "
-                  >
-                    Training Data
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <!-- UAE (355M) -->
-                <tr style="border-bottom: 1px solid #eee">
-                  <td style="padding: 8px"><b>UAE</b></td>
-                  <td style="padding: 8px">large-v1</td>
-                  <td style="padding: 8px">RoBERTa</td>
-                  <td style="text-align: center; padding: 8px">1024</td>
-                  <td style="text-align: center; padding: 8px">355M</td>
-                  <td style="padding: 8px">Adversarial training</td>
-                </tr>
-
-                <!-- BAAI BGE (335M) -->
-                <tr style="border-bottom: 1px solid #eee">
-                  <td style="padding: 8px" rowspan="3"><b>BAAI BGE</b></td>
-                  <td style="padding: 8px">large-v1.5</td>
-                  <td style="padding: 8px" rowspan="3">DeBERTa-V3</td>
-                  <td style="text-align: center; padding: 8px">1024</td>
-                  <td style="text-align: center; padding: 8px">335M</td>
-                  <td style="padding: 8px" rowspan="3">330M+ text pairs</td>
-                </tr>
-                <tr style="border-bottom: 1px solid #eee">
-                  <td style="padding: 8px">base-v1.5</td>
-                  <td style="text-align: center; padding: 8px">768</td>
-                  <td style="text-align: center; padding: 8px">110M</td>
-                </tr>
-                <tr style="border-bottom: 1px solid #eee">
-                  <td style="padding: 8px">small-v1.5</td>
-                  <td style="text-align: center; padding: 8px">384</td>
-                  <td style="text-align: center; padding: 8px">33M</td>
-                </tr>
-
-                <!-- E5 (335M) -->
-                <tr style="border-bottom: 1px solid #eee">
-                  <td style="padding: 8px" rowspan="3"><b>E5</b></td>
-                  <td style="padding: 8px">large-v2</td>
-                  <td style="padding: 8px" rowspan="3">DeBERTa-V3</td>
-                  <td style="text-align: center; padding: 8px">1024</td>
-                  <td style="text-align: center; padding: 8px">335M</td>
-                  <td style="padding: 8px" rowspan="3">CCNet + web data</td>
-                </tr>
-                <tr style="border-bottom: 1px solid #eee">
-                  <td style="padding: 8px">base-v2</td>
-                  <td style="text-align: center; padding: 8px">768</td>
-                  <td style="text-align: center; padding: 8px">110M</td>
-                </tr>
-                <tr style="border-bottom: 1px solid #eee">
-                  <td style="padding: 8px">small-v2</td>
-                  <td style="text-align: center; padding: 8px">384</td>
-                  <td style="text-align: center; padding: 8px">33M</td>
-                </tr>
-
-                <!-- GTE (335M) -->
-                <tr style="border-bottom: 1px solid #eee">
-                  <td style="padding: 8px" rowspan="3"><b>GTE</b></td>
-                  <td style="padding: 8px">large</td>
-                  <td style="padding: 8px" rowspan="3">DeBERTa-V3</td>
-                  <td style="text-align: center; padding: 8px">1024</td>
-                  <td style="text-align: center; padding: 8px">335M</td>
-                  <td style="padding: 8px" rowspan="3">MS MARCO + public datasets</td>
-                </tr>
-                <tr style="border-bottom: 1px solid #eee">
-                  <td style="padding: 8px">base</td>
-                  <td style="text-align: center; padding: 8px">768</td>
-                  <td style="text-align: center; padding: 8px">110M</td>
-                </tr>
-                <tr style="border-bottom: 1px solid #eee">
-                  <td style="padding: 8px">small</td>
-                  <td style="text-align: center; padding: 8px">384</td>
-                  <td style="text-align: center; padding: 8px">33M</td>
-                </tr>
-
-                <!-- T5-based (770M) -->
-                <tr style="border-bottom: 1px solid #eee">
+                <!-- 768 dimension -->
+                <tr style="border-bottom: 1px solid #eee; background-color: #e8eaf6">
                   <td style="padding: 8px" rowspan="4"><b>T5-based</b></td>
                   <td style="padding: 8px">gtr-t5-large</td>
                   <td style="padding: 8px" rowspan="4">T5 encoder</td>
-                  <td style="text-align: center; padding: 8px">768</td>
+                  <td style="text-align: center; padding: 8px; font-weight: bold; color: #1a237e">1024</td>
                   <td style="text-align: center; padding: 8px">770M</td>
                   <td style="padding: 8px">C4 + MS MARCO</td>
                 </tr>
-                <tr style="border-bottom: 1px solid #eee">
+                <tr style="border-bottom: 1px solid #eee; background-color: #e8eaf6">
                   <td style="padding: 8px">gtr-t5-base</td>
-                  <td style="text-align: center; padding: 8px">768</td>
+                  <td style="text-align: center; padding: 8px; font-weight: bold; color: #283593">768</td>
                   <td style="text-align: center; padding: 8px">220M</td>
                   <td style="padding: 8px">C4 + MS MARCO</td>
                 </tr>
-                <tr style="border-bottom: 1px solid #eee">
+                <tr style="border-bottom: 1px solid #eee; background-color: #e8eaf6">
                   <td style="padding: 8px">sentence-t5-large</td>
-                  <td style="text-align: center; padding: 8px">768</td>
+                  <td style="text-align: center; padding: 8px; font-weight: bold; color: #1a237e">1024</td>
                   <td style="text-align: center; padding: 8px">770M</td>
                   <td style="padding: 8px">C4 + NLI datasets</td>
                 </tr>
-                <tr style="border-bottom: 1px solid #eee">
+                <tr style="border-bottom: 1px solid #eee; background-color: #e8eaf6">
                   <td style="padding: 8px">sentence-t5-base</td>
-                  <td style="text-align: center; padding: 8px">768</td>
+                  <td style="text-align: center; padding: 8px; font-weight: bold; color: #283593">768</td>
                   <td style="text-align: center; padding: 8px">220M</td>
                   <td style="padding: 8px">C4 + NLI datasets</td>
                 </tr>
-
-                <!-- MXBai (335M) -->
-                <tr style="border-bottom: 1px solid #eee">
-                  <td style="padding: 8px"><b>MXBai</b></td>
-                  <td style="padding: 8px">embed-large-v1</td>
+                <tr style="border-bottom: 1px solid #eee; background-color: #e8eaf6">
+                  <td style="padding: 8px"><b>BAAI BGE</b></td>
+                  <td style="padding: 8px">base-v1.5</td>
                   <td style="padding: 8px">DeBERTa-V3</td>
-                  <td style="text-align: center; padding: 8px">1024</td>
-                  <td style="text-align: center; padding: 8px">335M</td>
-                  <td style="padding: 8px">Not public</td>
+                  <td style="text-align: center; padding: 8px; font-weight: bold; color: #283593">768</td>
+                  <td style="text-align: center; padding: 8px">110M</td>
+                  <td style="padding: 8px">330M+ text pairs</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #eee; background-color: #e8eaf6">
+                  <td style="padding: 8px"><b>E5</b></td>
+                  <td style="padding: 8px">base-v2</td>
+                  <td style="padding: 8px">DeBERTa-V3</td>
+                  <td style="text-align: center; padding: 8px; font-weight: bold; color: #283593">768</td>
+                  <td style="text-align: center; padding: 8px">110M</td>
+                  <td style="padding: 8px">CCNet + web data</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #eee; background-color: #e8eaf6">
+                  <td style="padding: 8px"><b>GTE</b></td>
+                  <td style="padding: 8px">base</td>
+                  <td style="padding: 8px">DeBERTa-V3</td>
+                  <td style="text-align: center; padding: 8px; font-weight: bold; color: #283593">768</td>
+                  <td style="text-align: center; padding: 8px">110M</td>
+                  <td style="padding: 8px">MS MARCO + public datasets</td>
                 </tr>
 
-                <!-- OpenAI (Proprietary) -->
-                <tr style="border-bottom: 1px solid #eee">
-                  <td style="padding: 8px" rowspan="2"><b>OpenAI</b></td>
-                  <td style="padding: 8px">text-embedding-3-large</td>
-                  <td style="padding: 8px" rowspan="2">Proprietary</td>
-                  <td style="text-align: center; padding: 8px">3072</td>
-                  <td style="text-align: center; padding: 8px">-</td>
-                  <td style="padding: 8px" rowspan="2">Not public</td>
+                <!-- 384 dimension -->
+                <tr style="border-bottom: 1px solid #eee; background-color: #e3f2fd">
+                  <td style="padding: 8px"><b>BAAI BGE</b></td>
+                  <td style="padding: 8px">small-v1.5</td>
+                  <td style="padding: 8px">DeBERTa-V3</td>
+                  <td style="text-align: center; padding: 8px; font-weight: bold; color: #0d47a1">384</td>
+                  <td style="text-align: center; padding: 8px">33M</td>
+                  <td style="padding: 8px">330M+ text pairs</td>
                 </tr>
-                <tr style="border-bottom: 1px solid #eee">
-                  <td style="padding: 8px">text-embedding-3-small</td>
-                  <td style="text-align: center; padding: 8px">1536</td>
-                  <td style="text-align: center; padding: 8px">-</td>
+                <tr style="border-bottom: 1px solid #eee; background-color: #e3f2fd">
+                  <td style="padding: 8px"><b>E5</b></td>
+                  <td style="padding: 8px">small-v2</td>
+                  <td style="padding: 8px">DeBERTa-V3</td>
+                  <td style="text-align: center; padding: 8px; font-weight: bold; color: #0d47a1">384</td>
+                  <td style="text-align: center; padding: 8px">33M</td>
+                  <td style="padding: 8px">CCNet + web data</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #eee; background-color: #e3f2fd">
+                  <td style="padding: 8px"><b>GTE</b></td>
+                  <td style="padding: 8px">small</td>
+                  <td style="padding: 8px">DeBERTa-V3</td>
+                  <td style="text-align: center; padding: 8px; font-weight: bold; color: #0d47a1">384</td>
+                  <td style="text-align: center; padding: 8px">33M</td>
+                  <td style="padding: 8px">MS MARCO + public datasets</td>
                 </tr>
               </tbody>
             </table>
           </div>
         </div>
+
+<!-- Parameters View -->
+<div id="parameters-content" class="tab-content">
+  <div style="overflow-x: auto">
+    <table style="width: 100%; border-collapse: collapse">
+      <thead>
+        <tr>
+          <th
+            style="
+              text-align: left;
+              padding: 8px;
+              border-bottom: 2px solid #ddd;
+            "
+          >
+            Model Family
+          </th>
+          <th
+            style="
+              text-align: left;
+              padding: 8px;
+              border-bottom: 2px solid #ddd;
+            "
+          >
+            Variant
+          </th>
+          <th
+            style="
+              text-align: left;
+              padding: 8px;
+              border-bottom: 2px solid #ddd;
+            "
+          >
+            Architecture
+          </th>
+          <th
+            style="
+              text-align: center;
+              padding: 8px;
+              border-bottom: 2px solid #ddd;
+            "
+          >
+            Dimension
+          </th>
+          <th
+            style="
+              text-align: center;
+              padding: 8px;
+              border-bottom: 2px solid #ddd;
+            "
+          >
+            Parameters
+          </th>
+          <th
+            style="
+              text-align: left;
+              padding: 8px;
+              border-bottom: 2px solid #ddd;
+            "
+          >
+            Training Data
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- T5-based Variants with 770M Parameters -->
+        <tr style="border-bottom: 1px solid #eee">
+          <td style="padding: 8px">T5-based</td>
+          <td style="padding: 8px">gtr-t5-large</td>
+          <td style="padding: 8px">T5 encoder</td>
+          <td style="text-align: center; padding: 8px">768</td>
+          <td style="text-align: center; padding: 8px">770M</td>
+          <td style="padding: 8px">C4 + MS MARCO</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #eee">
+          <td style="padding: 8px">T5-based</td>
+          <td style="padding: 8px">sentence-t5-large</td>
+          <td style="padding: 8px">T5 encoder</td>
+          <td style="text-align: center; padding: 8px">768</td>
+          <td style="text-align: center; padding: 8px">770M</td>
+          <td style="padding: 8px">C4 + NLI datasets</td>
+        </tr>
+
+        <!-- UAE Variant -->
+        <tr style="border-bottom: 1px solid #eee">
+          <td style="padding: 8px">UAE</td>
+          <td style="padding: 8px">large-v1</td>
+          <td style="padding: 8px">RoBERTa</td>
+          <td style="text-align: center; padding: 8px">1024</td>
+          <td style="text-align: center; padding: 8px">355M</td>
+          <td style="padding: 8px">Adversarial training</td>
+        </tr>
+
+        <!-- BAAI BGE Variants with 335M, 110M, and 33M Parameters -->
+        <tr style="border-bottom: 1px solid #eee">
+          <td style="padding: 8px">BAAI BGE</td>
+          <td style="padding: 8px">large-v1.5</td>
+          <td style="padding: 8px">DeBERTa-V3</td>
+          <td style="text-align: center; padding: 8px">1024</td>
+          <td style="text-align: center; padding: 8px">335M</td>
+          <td style="padding: 8px">330M+ text pairs</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #eee">
+          <td style="padding: 8px">BAAI BGE</td>
+          <td style="padding: 8px">base-v1.5</td>
+          <td style="padding: 8px">DeBERTa-V3</td>
+          <td style="text-align: center; padding: 8px">768</td>
+          <td style="text-align: center; padding: 8px">110M</td>
+          <td style="padding: 8px">330M+ text pairs</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #eee">
+          <td style="padding: 8px">BAAI BGE</td>
+          <td style="padding: 8px">small-v1.5</td>
+          <td style="padding: 8px">DeBERTa-V3</td>
+          <td style="text-align: center; padding: 8px">384</td>
+          <td style="text-align: center; padding: 8px">33M</td>
+          <td style="padding: 8px">330M+ text pairs</td>
+        </tr>
+
+        <!-- E5 Variants with 335M, 110M, and 33M Parameters -->
+        <tr style="border-bottom: 1px solid #eee">
+          <td style="padding: 8px">E5</td>
+          <td style="padding: 8px">large-v2</td>
+          <td style="padding: 8px">DeBERTa-V3</td>
+          <td style="text-align: center; padding: 8px">1024</td>
+          <td style="text-align: center; padding: 8px">335M</td>
+          <td style="padding: 8px">CCNet + web data</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #eee">
+          <td style="padding: 8px">E5</td>
+          <td style="padding: 8px">base-v2</td>
+          <td style="padding: 8px">DeBERTa-V3</td>
+          <td style="text-align: center; padding: 8px">768</td>
+          <td style="text-align: center; padding: 8px">110M</td>
+          <td style="padding: 8px">CCNet + web data</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #eee">
+          <td style="padding: 8px">E5</td>
+          <td style="padding: 8px">small-v2</td>
+          <td style="padding: 8px">DeBERTa-V3</td>
+          <td style="text-align: center; padding: 8px">384</td>
+          <td style="text-align: center; padding: 8px">33M</td>
+          <td style="padding: 8px">CCNet + web data</td>
+        </tr>
+
+        <!-- GTE Variants with 335M, 110M, and 33M Parameters -->
+        <tr style="border-bottom: 1px solid #eee">
+          <td style="padding: 8px">GTE</td>
+          <td style="padding: 8px">large</td>
+          <td style="padding: 8px">DeBERTa-V3</td>
+          <td style="text-align: center; padding: 8px">1024</td>
+          <td style="text-align: center; padding: 8px">335M</td>
+          <td style="padding: 8px">MS MARCO + public datasets</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #eee">
+          <td style="padding: 8px">GTE</td>
+          <td style="padding: 8px">base</td>
+          <td style="padding: 8px">DeBERTa-V3</td>
+          <td style="text-align: center; padding: 8px">768</td>
+          <td style="text-align: center; padding: 8px">110M</td>
+          <td style="padding: 8px">MS MARCO + public datasets</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #eee">
+          <td style="padding: 8px">GTE</td>
+          <td style="padding: 8px">small</td>
+          <td style="padding: 8px">DeBERTa-V3</td>
+          <td style="text-align: center; padding: 8px">384</td>
+          <td style="text-align: center; padding: 8px">33M</td>
+          <td style="padding: 8px">MS MARCO + public datasets</td>
+        </tr>
+
+        <!-- MXBai Variant with 335M Parameters -->
+        <tr style="border-bottom: 1px solid #eee">
+          <td style="padding: 8px">MXBai</td>
+          <td style="padding: 8px">embed-large-v1</td>
+          <td style="padding: 8px">DeBERTa-V3</td>
+          <td style="text-align: center; padding: 8px">1024</td>
+          <td style="text-align: center; padding: 8px">335M</td>
+          <td style="padding: 8px">Not public</td>
+        </tr>
+
+        <!-- T5-based Variants with 220M Parameters -->
+        <tr style="border-bottom: 1px solid #eee">
+          <td style="padding: 8px">T5-based</td>
+          <td style="padding: 8px">gtr-t5-base</td>
+          <td style="padding: 8px">T5 encoder</td>
+          <td style="text-align: center; padding: 8px">768</td>
+          <td style="text-align: center; padding: 8px">220M</td>
+          <td style="padding: 8px">C4 + MS MARCO</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #eee">
+          <td style="padding: 8px">T5-based</td>
+          <td style="padding: 8px">sentence-t5-base</td>
+          <td style="padding: 8px">T5 encoder</td>
+          <td style="text-align: center; padding: 8px">768</td>
+          <td style="text-align: center; padding: 8px">220M</td>
+          <td style="padding: 8px">C4 + NLI datasets</td>
+        </tr>
+
+        <!-- BAAI BGE Variants with 110M and 33M Parameters already listed above -->
+
+        <!-- OpenAI Variants with "-" Parameters -->
+        <tr style="border-bottom: 1px solid #eee">
+          <td style="padding: 8px">OpenAI</td>
+          <td style="padding: 8px">text-embedding-3-large</td>
+          <td style="padding: 8px">Proprietary</td>
+          <td style="text-align: center; padding: 8px">3072</td>
+          <td style="text-align: center; padding: 8px">-</td>
+          <td style="padding: 8px">Not public</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #eee">
+          <td style="padding: 8px">OpenAI</td>
+          <td style="padding: 8px">text-embedding-3-small</td>
+          <td style="padding: 8px">Proprietary</td>
+          <td style="text-align: center; padding: 8px">1536</td>
+          <td style="text-align: center; padding: 8px">-</td>
+          <td style="padding: 8px">Not public</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
       </div>
     </div>
 
