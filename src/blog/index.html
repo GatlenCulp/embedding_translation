@@ -1,15 +1,24 @@
-<!doctype html>
+<!-- prettier-ignore -->
+<!DOCTYPE html>
 <meta charset="utf-8" />
-<script src="./libs/distillpub.template.v1.js"></script>
+<script src="https://distill.pub/template.v1.js"></script>
+<script>
+// Wait for Distill template to load before processing citations
+document.addEventListener('DOMContentLoaded', function() {
+    if (window.distill) {
+        // Your citation processing code here
+    } else {
+        console.warn('Distill template not loaded');
+    }
+});
+</script>
 <link
   rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-/>
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 <script
   id="MathJax-script"
   async
-  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
-></script>
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/9.4.3/mermaid.min.js"></script>
 <script>
@@ -61,6 +70,7 @@ We can
   - Adriano Hernandez: https://linktr.ee/4gate
   affiliations:
   - MIT: http://web.mit.edu/
+  - MIT: http://web.mit.edu/
 </script>
 
 <dt-article class="centered">
@@ -69,8 +79,7 @@ We can
       <img
         src="./header.png"
         alt="Header visualization of semantic alignment across language models"
-        style="width: 100%; max-height: 400px; object-fit: cover"
-      />
+        style="width: 100%; max-height: 400px; object-fit: cover" />
     </figure>
   </div>
   <h1 id="title">
@@ -78,23 +87,24 @@ We can
     Representations
   </h1>
 
+  <!-- <dt-byline></dt-byline> -->
+
   <div
     class="authors-section l-middle"
-    style="text-align: center; margin-top: 2em"
-  >
+    style="text-align: center; margin-top: 2em">
     <div class="authors" style="margin-bottom: 1em">
       <span style="font-size: 1.2em">
         <a
           href="https://gatlen.notion.site"
           style="text-decoration: none; color: #333"
           >Gatlen Culp</a
-        >
+        ><sup>*</sup>
         <span style="color: #666; margin: 0 0.5em">·</span>
         <a
           href="https://superurop.mit.edu/scholars/adriano-hernandez/"
           style="text-decoration: none; color: #333"
           >Adriano Hernandez</a
-        >
+        ><sup>*</sup>
       </span>
     </div>
 
@@ -104,6 +114,8 @@ We can
 
     <div class="date-info" style="color: #888; font-size: 0.9em">
       Published December 10th, 2024
+      <br />
+      <span style="font-size: 0.9em">* Equal contribution</span>
     </div>
   </div>
   <!-- TODO: we MUST add some sort of control i.e. via random projections -->
@@ -211,9 +223,7 @@ We can
         </div>
         <figcaption>
           Relationship between native embeddings, stitched embeddings, and
-          embedding spaces. The diagram shows how input text is embedded by
-          different models and how embeddings can be transformed between spaces
-          using stitches.
+          embedding spaces.
         </figcaption>
       </figure>
     </div>
@@ -242,8 +252,7 @@ We can
     <li style="margin-bottom: 1em">
       <b>Stitch:</b> Following previous literature
       <dt-cite
-        key="lenc2015understandingimagerepresentationsmeasuring"
-      ></dt-cite>
+        key="lenc2015understandingimagerepresentationsmeasuring"></dt-cite>
       , we call a linear transformation between two embedding spaces a "stitch".
       For models \(A\) and \(B\), a stitch \(S_{A\rightarrow B}: \mathcal{E}_A
       \rightarrow \mathcal{E}_B\) is a linear map that attempts to preserve
@@ -329,12 +338,10 @@ We can
         display: flex;
         gap: 1em;
         align-items: baseline;
-      "
-    >
+      ">
       <i
         class="fas fa-flask"
-        style="color: #666; width: 1.5em; text-align: center"
-      ></i>
+        style="color: #666; width: 1.5em; text-align: center"></i>
       <div>
         <b>Theoretical Foundations:</b> Our work investigates two fundamental
         hypotheses about how neural networks understand language. The
@@ -354,12 +361,10 @@ We can
         display: flex;
         gap: 1em;
         align-items: baseline;
-      "
-    >
+      ">
       <i
         class="fas fa-rocket"
-        style="color: #666; width: 1.5em; text-align: center"
-      ></i>
+        style="color: #666; width: 1.5em; text-align: center"></i>
       <div>
         <b>Practical Impact:</b> The implications are significant: organizations
         could reduce computational costs by up to 95% using lightweight
@@ -376,8 +381,7 @@ We can
         helpful in identifying dissimilar representations in models for better
         knowledge distillation
         <dt-cite
-          key="sahlgren2021sentenceembeddingsensembledistillation"
-        ></dt-cite>
+          key="sahlgren2021sentenceembeddingsensembledistillation"></dt-cite>
         or potentially for interpretabiltiy or data attribution
       </div>
     </li>
@@ -388,12 +392,10 @@ We can
         display: flex;
         gap: 1em;
         align-items: baseline;
-      "
-    >
+      ">
       <i
         class="fas fa-microscope"
-        style="color: #666; width: 1.5em; text-align: center"
-      ></i>
+        style="color: #666; width: 1.5em; text-align: center"></i>
       <div>
         <b>Research Questions:</b> We explore three interconnected questions:
         First, are embedding models linearly connectivity-aligned? Second, what
@@ -426,8 +428,7 @@ We can
     <figure>
       <img
         src="./figs/platonic_rep.jpg"
-        alt="Exploring a dataset with MantisAI"
-      />
+        alt="Exploring a dataset with MantisAI" />
       <figcaption>
         Diagram illustrating the platonic representaton hypothesis
       </figcaption>
@@ -440,12 +441,10 @@ We can
         display: flex;
         gap: 1em;
         align-items: baseline;
-      "
-    >
+      ">
       <i
         class="fas fa-chart-line"
-        style="color: #666; width: 1.5em; text-align: center"
-      ></i>
+        style="color: #666; width: 1.5em; text-align: center"></i>
       <div>
         <b>Scaling Laws and Platonic Representations:</b> recent work has
         provided strong evidence that many different neural network models, even
@@ -466,12 +465,10 @@ We can
         display: flex;
         gap: 1em;
         align-items: baseline;
-      "
-    >
+      ">
       <i
         class="fas fa-network-wired"
-        style="color: #666; width: 1.5em; text-align: center"
-      ></i>
+        style="color: #666; width: 1.5em; text-align: center"></i>
       <div>
         <b>Functionally similar components across neural networks:</b> For
         instance, induction heads have been observed in different language
@@ -490,12 +487,10 @@ We can
         display: flex;
         gap: 1em;
         align-items: baseline;
-      "
-    >
+      ">
       <i
         class="fas fa-brain"
-        style="color: #666; width: 1.5em; text-align: center"
-      ></i>
+        style="color: #666; width: 1.5em; text-align: center"></i>
       <div>
         <b>Consistent representations and behaviors:</b> Previous work has shown
         that different transformers exhibit consistent attention patterns for
@@ -516,12 +511,10 @@ We can
         display: flex;
         gap: 1em;
         align-items: baseline;
-      "
-    >
+      ">
       <i
         class="fas fa-shield-halved"
-        style="color: #666; width: 1.5em; text-align: center"
-      ></i>
+        style="color: #666; width: 1.5em; text-align: center"></i>
       <div>
         <b>Attack transferability:</b> Red-teaming and jailbreak prompts often
         transfer across different models, including black-box ones
@@ -539,15 +532,13 @@ We can
         display: flex;
         gap: 1em;
         align-items: baseline;
-      "
-    >
+      ">
       <i
         class="fas fa-layer-group"
-        style="color: #666; width: 1.5em; text-align: center"
-      ></i>
+        style="color: #666; width: 1.5em; text-align: center"></i>
       <div>
-        <b>Mechanistic interpretability (MI) and feature superposition:</b> The
-        feature superposition theory
+        <b>Mechanistic interpretability (MI) and feature superposition:</b>
+        The feature superposition theory
         <dt-cite key="anthropic"></dt-cite> suggests that multiple semantic
         features may be entangled within individual neurons, hinting at
         underlying "platonic" semantic features. Sparse Autoencoders (SAEs)
@@ -566,8 +557,7 @@ We can
     and are percolating across both the machine learning and neuroscience
     communities
     <dt-cite
-      key="sucholutsky2024gettingalignedrepresentationalalignment"
-    ></dt-cite
+      key="sucholutsky2024gettingalignedrepresentationalalignment"></dt-cite
     >. For example, in
     <a href="https://representational-alignment.github.io/"
       >ICLR there was a workshop in the year of writing this (2024)</a
@@ -618,8 +608,7 @@ We can
             border-radius: 4px;
             margin-bottom: 8px;
             margin-top: 20px;
-          "
-        >
+          ">
           <i class="fas fa-code" style="margin-right: 8px"></i>View Model Names
         </summary>
         <pre><code class="language-python">
@@ -653,26 +642,22 @@ We can
       <div class="model-tabs" style="margin-bottom: 1em">
         <button
           class="tab-button active important"
-          onclick="showModelView('category')"
-        >
+          onclick="showModelView('category')">
           <i
             class="fas fa-layer-group"
-            style="color: #666; width: 1.5em; text-align: center"
-          ></i>
+            style="color: #666; width: 1.5em; text-align: center"></i>
           By Architecture
         </button>
         <button class="tab-button" onclick="showModelView('dimension')">
           <i
             class="fas fa-arrows-alt-v"
-            style="color: #666; width: 1.5em; text-align: center"
-          ></i>
+            style="color: #666; width: 1.5em; text-align: center"></i>
           By Dimension
         </button>
         <button class="tab-button" onclick="showModelView('parameters')">
           <i
             class="fas fa-microchip"
-            style="color: #666; width: 1.5em; text-align: center"
-          ></i>
+            style="color: #666; width: 1.5em; text-align: center"></i>
           By Parameters
         </button>
       </div>
@@ -691,8 +676,7 @@ We can
                       text-align: left;
                       padding: 8px;
                       border-bottom: 2px solid #ddd;
-                    "
-                  >
+                    ">
                     Model Family
                   </th>
                   <th
@@ -700,8 +684,7 @@ We can
                       text-align: left;
                       padding: 8px;
                       border-bottom: 2px solid #ddd;
-                    "
-                  >
+                    ">
                     Variant
                   </th>
                   <th
@@ -709,8 +692,7 @@ We can
                       text-align: left;
                       padding: 8px;
                       border-bottom: 2px solid #ddd;
-                    "
-                  >
+                    ">
                     Architecture
                   </th>
                   <th
@@ -718,8 +700,7 @@ We can
                       text-align: center;
                       padding: 8px;
                       border-bottom: 2px solid #ddd;
-                    "
-                  >
+                    ">
                     Dimension
                   </th>
                   <th
@@ -727,8 +708,7 @@ We can
                       text-align: center;
                       padding: 8px;
                       border-bottom: 2px solid #ddd;
-                    "
-                  >
+                    ">
                     Parameters
                   </th>
                   <th
@@ -736,8 +716,7 @@ We can
                       text-align: left;
                       padding: 8px;
                       border-bottom: 2px solid #ddd;
-                    "
-                  >
+                    ">
                     Training Data
                   </th>
                 </tr>
@@ -885,8 +864,7 @@ We can
                       text-align: left;
                       padding: 8px;
                       border-bottom: 2px solid #ddd;
-                    "
-                  >
+                    ">
                     Model Family
                   </th>
                   <th
@@ -894,8 +872,7 @@ We can
                       text-align: left;
                       padding: 8px;
                       border-bottom: 2px solid #ddd;
-                    "
-                  >
+                    ">
                     Variant
                   </th>
                   <th
@@ -903,8 +880,7 @@ We can
                       text-align: left;
                       padding: 8px;
                       border-bottom: 2px solid #ddd;
-                    "
-                  >
+                    ">
                     Architecture
                   </th>
                   <th
@@ -912,8 +888,7 @@ We can
                       text-align: center;
                       padding: 8px;
                       border-bottom: 2px solid #ddd;
-                    "
-                  >
+                    ">
                     Dimension
                   </th>
                   <th
@@ -921,8 +896,7 @@ We can
                       text-align: center;
                       padding: 8px;
                       border-bottom: 2px solid #ddd;
-                    "
-                  >
+                    ">
                     Parameters
                   </th>
                   <th
@@ -930,8 +904,7 @@ We can
                       text-align: left;
                       padding: 8px;
                       border-bottom: 2px solid #ddd;
-                    "
-                  >
+                    ">
                     Training Data
                   </th>
                 </tr>
@@ -942,8 +915,7 @@ We can
                   style="
                     border-bottom: 1px solid #eee;
                     background-color: #f8f0ff;
-                  "
-                >
+                  ">
                   <td style="padding: 8px"><b>OpenAI</b></td>
                   <td style="padding: 8px">text-embedding-3-large</td>
                   <td style="padding: 8px">Proprietary</td>
@@ -953,8 +925,7 @@ We can
                       padding: 8px;
                       font-weight: bold;
                       color: #6200ee;
-                    "
-                  >
+                    ">
                     3072
                   </td>
                   <td style="text-align: center; padding: 8px">-</td>
@@ -966,8 +937,7 @@ We can
                   style="
                     border-bottom: 1px solid #eee;
                     background-color: #f5f5ff;
-                  "
-                >
+                  ">
                   <td style="padding: 8px"><b>OpenAI</b></td>
                   <td style="padding: 8px">text-embedding-3-small</td>
                   <td style="padding: 8px">Proprietary</td>
@@ -977,8 +947,7 @@ We can
                       padding: 8px;
                       font-weight: bold;
                       color: #3700b3;
-                    "
-                  >
+                    ">
                     1536
                   </td>
                   <td style="text-align: center; padding: 8px">-</td>
@@ -990,8 +959,7 @@ We can
                   style="
                     border-bottom: 1px solid #eee;
                     background-color: #f0f0ff;
-                  "
-                >
+                  ">
                   <td style="padding: 8px"><b>UAE</b></td>
                   <td style="padding: 8px">large-v1</td>
                   <td style="padding: 8px">RoBERTa</td>
@@ -1001,8 +969,7 @@ We can
                       padding: 8px;
                       font-weight: bold;
                       color: #1a237e;
-                    "
-                  >
+                    ">
                     1024
                   </td>
                   <td style="text-align: center; padding: 8px">355M</td>
@@ -1012,8 +979,7 @@ We can
                   style="
                     border-bottom: 1px solid #eee;
                     background-color: #f0f0ff;
-                  "
-                >
+                  ">
                   <td style="padding: 8px"><b>BAAI BGE</b></td>
                   <td style="padding: 8px">large-v1.5</td>
                   <td style="padding: 8px">DeBERTa-V3</td>
@@ -1023,8 +989,7 @@ We can
                       padding: 8px;
                       font-weight: bold;
                       color: #1a237e;
-                    "
-                  >
+                    ">
                     1024
                   </td>
                   <td style="text-align: center; padding: 8px">335M</td>
@@ -1034,8 +999,7 @@ We can
                   style="
                     border-bottom: 1px solid #eee;
                     background-color: #f0f0ff;
-                  "
-                >
+                  ">
                   <td style="padding: 8px"><b>E5</b></td>
                   <td style="padding: 8px">large-v2</td>
                   <td style="padding: 8px">DeBERTa-V3</td>
@@ -1045,8 +1009,7 @@ We can
                       padding: 8px;
                       font-weight: bold;
                       color: #1a237e;
-                    "
-                  >
+                    ">
                     1024
                   </td>
                   <td style="text-align: center; padding: 8px">335M</td>
@@ -1056,8 +1019,7 @@ We can
                   style="
                     border-bottom: 1px solid #eee;
                     background-color: #f0f0ff;
-                  "
-                >
+                  ">
                   <td style="padding: 8px"><b>GTE</b></td>
                   <td style="padding: 8px">large</td>
                   <td style="padding: 8px">DeBERTa-V3</td>
@@ -1067,8 +1029,7 @@ We can
                       padding: 8px;
                       font-weight: bold;
                       color: #1a237e;
-                    "
-                  >
+                    ">
                     1024
                   </td>
                   <td style="text-align: center; padding: 8px">335M</td>
@@ -1078,8 +1039,7 @@ We can
                   style="
                     border-bottom: 1px solid #eee;
                     background-color: #f0f0ff;
-                  "
-                >
+                  ">
                   <td style="padding: 8px"><b>MXBai</b></td>
                   <td style="padding: 8px">embed-large-v1</td>
                   <td style="padding: 8px">DeBERTa-V3</td>
@@ -1089,8 +1049,7 @@ We can
                       padding: 8px;
                       font-weight: bold;
                       color: #1a237e;
-                    "
-                  >
+                    ">
                     1024
                   </td>
                   <td style="text-align: center; padding: 8px">335M</td>
@@ -1104,8 +1063,7 @@ We can
                   style="
                     border-bottom: 1px solid #eee;
                     background-color: #e8eaf6;
-                  "
-                >
+                  ">
                   <td style="padding: 8px" rowspan="4"><b>T5-based</b></td>
                   <td style="padding: 8px">gtr-t5-large</td>
                   <td style="padding: 8px" rowspan="4">T5 encoder</td>
@@ -1115,8 +1073,7 @@ We can
                       padding: 8px;
                       font-weight: bold;
                       color: #1a237e;
-                    "
-                  >
+                    ">
                     1024
                   </td>
                   <td style="text-align: center; padding: 8px">770M</td>
@@ -1126,8 +1083,7 @@ We can
                   style="
                     border-bottom: 1px solid #eee;
                     background-color: #e8eaf6;
-                  "
-                >
+                  ">
                   <td style="padding: 8px">gtr-t5-base</td>
                   <td
                     style="
@@ -1135,8 +1091,7 @@ We can
                       padding: 8px;
                       font-weight: bold;
                       color: #283593;
-                    "
-                  >
+                    ">
                     768
                   </td>
                   <td style="text-align: center; padding: 8px">110M</td>
@@ -1146,8 +1101,7 @@ We can
                   style="
                     border-bottom: 1px solid #eee;
                     background-color: #e8eaf6;
-                  "
-                >
+                  ">
                   <td style="padding: 8px">sentence-t5-large</td>
                   <td
                     style="
@@ -1155,8 +1109,7 @@ We can
                       padding: 8px;
                       font-weight: bold;
                       color: #1a237e;
-                    "
-                  >
+                    ">
                     1024
                   </td>
                   <td style="text-align: center; padding: 8px">770M</td>
@@ -1166,8 +1119,7 @@ We can
                   style="
                     border-bottom: 1px solid #eee;
                     background-color: #e8eaf6;
-                  "
-                >
+                  ">
                   <td style="padding: 8px">sentence-t5-base</td>
                   <td
                     style="
@@ -1175,8 +1127,7 @@ We can
                       padding: 8px;
                       font-weight: bold;
                       color: #283593;
-                    "
-                  >
+                    ">
                     768
                   </td>
                   <td style="text-align: center; padding: 8px">220M</td>
@@ -1186,8 +1137,7 @@ We can
                   style="
                     border-bottom: 1px solid #eee;
                     background-color: #e8eaf6;
-                  "
-                >
+                  ">
                   <td style="padding: 8px"><b>BAAI BGE</b></td>
                   <td style="padding: 8px">base-v1.5</td>
                   <td style="padding: 8px">DeBERTa-V3</td>
@@ -1197,8 +1147,7 @@ We can
                       padding: 8px;
                       font-weight: bold;
                       color: #283593;
-                    "
-                  >
+                    ">
                     768
                   </td>
                   <td style="text-align: center; padding: 8px">110M</td>
@@ -1208,8 +1157,7 @@ We can
                   style="
                     border-bottom: 1px solid #eee;
                     background-color: #e8eaf6;
-                  "
-                >
+                  ">
                   <td style="padding: 8px"><b>E5</b></td>
                   <td style="padding: 8px">base-v2</td>
                   <td style="padding: 8px">DeBERTa-V3</td>
@@ -1219,8 +1167,7 @@ We can
                       padding: 8px;
                       font-weight: bold;
                       color: #283593;
-                    "
-                  >
+                    ">
                     768
                   </td>
                   <td style="text-align: center; padding: 8px">110M</td>
@@ -1230,8 +1177,7 @@ We can
                   style="
                     border-bottom: 1px solid #eee;
                     background-color: #e8eaf6;
-                  "
-                >
+                  ">
                   <td style="padding: 8px"><b>GTE</b></td>
                   <td style="padding: 8px">base</td>
                   <td style="padding: 8px">DeBERTa-V3</td>
@@ -1241,8 +1187,7 @@ We can
                       padding: 8px;
                       font-weight: bold;
                       color: #283593;
-                    "
-                  >
+                    ">
                     768
                   </td>
                   <td style="text-align: center; padding: 8px">110M</td>
@@ -1254,8 +1199,7 @@ We can
                   style="
                     border-bottom: 1px solid #eee;
                     background-color: #e3f2fd;
-                  "
-                >
+                  ">
                   <td style="padding: 8px"><b>BAAI BGE</b></td>
                   <td style="padding: 8px">small-v1.5</td>
                   <td style="padding: 8px">DeBERTa-V3</td>
@@ -1265,8 +1209,7 @@ We can
                       padding: 8px;
                       font-weight: bold;
                       color: #0d47a1;
-                    "
-                  >
+                    ">
                     384
                   </td>
                   <td style="text-align: center; padding: 8px">33M</td>
@@ -1276,8 +1219,7 @@ We can
                   style="
                     border-bottom: 1px solid #eee;
                     background-color: #e3f2fd;
-                  "
-                >
+                  ">
                   <td style="padding: 8px"><b>E5</b></td>
                   <td style="padding: 8px">small-v2</td>
                   <td style="padding: 8px">DeBERTa-V3</td>
@@ -1287,8 +1229,7 @@ We can
                       padding: 8px;
                       font-weight: bold;
                       color: #0d47a1;
-                    "
-                  >
+                    ">
                     384
                   </td>
                   <td style="text-align: center; padding: 8px">33M</td>
@@ -1298,8 +1239,7 @@ We can
                   style="
                     border-bottom: 1px solid #eee;
                     background-color: #e3f2fd;
-                  "
-                >
+                  ">
                   <td style="padding: 8px"><b>GTE</b></td>
                   <td style="padding: 8px">small</td>
                   <td style="padding: 8px">DeBERTa-V3</td>
@@ -1309,8 +1249,7 @@ We can
                       padding: 8px;
                       font-weight: bold;
                       color: #0d47a1;
-                    "
-                  >
+                    ">
                     384
                   </td>
                   <td style="text-align: center; padding: 8px">33M</td>
@@ -1332,8 +1271,7 @@ We can
                       text-align: left;
                       padding: 8px;
                       border-bottom: 2px solid #ddd;
-                    "
-                  >
+                    ">
                     Model Family
                   </th>
                   <th
@@ -1341,8 +1279,7 @@ We can
                       text-align: left;
                       padding: 8px;
                       border-bottom: 2px solid #ddd;
-                    "
-                  >
+                    ">
                     Variant
                   </th>
                   <th
@@ -1350,8 +1287,7 @@ We can
                       text-align: left;
                       padding: 8px;
                       border-bottom: 2px solid #ddd;
-                    "
-                  >
+                    ">
                     Architecture
                   </th>
                   <th
@@ -1359,8 +1295,7 @@ We can
                       text-align: center;
                       padding: 8px;
                       border-bottom: 2px solid #ddd;
-                    "
-                  >
+                    ">
                     Dimension
                   </th>
                   <th
@@ -1368,8 +1303,7 @@ We can
                       text-align: center;
                       padding: 8px;
                       border-bottom: 2px solid #ddd;
-                    "
-                  >
+                    ">
                     Parameters
                   </th>
                   <th
@@ -1377,8 +1311,7 @@ We can
                       text-align: left;
                       padding: 8px;
                       border-bottom: 2px solid #ddd;
-                    "
-                  >
+                    ">
                     Training Data
                   </th>
                 </tr>
@@ -1389,8 +1322,7 @@ We can
                   style="
                     border-bottom: 1px solid #eee;
                     background-color: #fff8e1;
-                  "
-                >
+                  ">
                   <td style="padding: 8px"><b>OpenAI</b></td>
                   <td style="padding: 8px">text-embedding-3-large</td>
                   <td style="padding: 8px">Proprietary</td>
@@ -1401,8 +1333,7 @@ We can
                       padding: 8px;
                       font-weight: bold;
                       color: #ff6f00;
-                    "
-                  >
+                    ">
                     ?
                   </td>
                   <td style="padding: 8px">Not public</td>
@@ -1411,8 +1342,7 @@ We can
                   style="
                     border-bottom: 1px solid #eee;
                     background-color: #fff8e1;
-                  "
-                >
+                  ">
                   <td style="padding: 8px"><b>OpenAI</b></td>
                   <td style="padding: 8px">text-embedding-3-small</td>
                   <td style="padding: 8px">Proprietary</td>
@@ -1423,8 +1353,7 @@ We can
                       padding: 8px;
                       font-weight: bold;
                       color: #ff6f00;
-                    "
-                  >
+                    ">
                     ?
                   </td>
                   <td style="padding: 8px">Not public</td>
@@ -1435,8 +1364,7 @@ We can
                   style="
                     border-bottom: 1px solid #eee;
                     background-color: #f8f0ff;
-                  "
-                >
+                  ">
                   <td style="padding: 8px"><b>T5-based</b></td>
                   <td style="padding: 8px">gtr-t5-large</td>
                   <td style="padding: 8px">T5 encoder</td>
@@ -1447,8 +1375,7 @@ We can
                       padding: 8px;
                       font-weight: bold;
                       color: #6200ee;
-                    "
-                  >
+                    ">
                     770M
                   </td>
                   <td style="padding: 8px">C4 + MS MARCO</td>
@@ -1457,8 +1384,7 @@ We can
                   style="
                     border-bottom: 1px solid #eee;
                     background-color: #f8f0ff;
-                  "
-                >
+                  ">
                   <td style="padding: 8px"><b>T5-based</b></td>
                   <td style="padding: 8px">sentence-t5-large</td>
                   <td style="padding: 8px">T5 encoder</td>
@@ -1469,8 +1395,7 @@ We can
                       padding: 8px;
                       font-weight: bold;
                       color: #6200ee;
-                    "
-                  >
+                    ">
                     770M
                   </td>
                   <td style="padding: 8px">C4 + NLI datasets</td>
@@ -1481,8 +1406,7 @@ We can
                   style="
                     border-bottom: 1px solid #eee;
                     background-color: #c8e6c9;
-                  "
-                >
+                  ">
                   <td style="padding: 8px"><b>UAE</b></td>
                   <td style="padding: 8px">large-v1</td>
                   <td style="padding: 8px">RoBERTa</td>
@@ -1493,8 +1417,7 @@ We can
                       padding: 8px;
                       font-weight: bold;
                       color: #2e7d32;
-                    "
-                  >
+                    ">
                     355M
                   </td>
                   <td style="padding: 8px">Adversarial training</td>
@@ -1503,8 +1426,7 @@ We can
                   style="
                     border-bottom: 1px solid #eee;
                     background-color: #c8e6c9;
-                  "
-                >
+                  ">
                   <td style="padding: 8px"><b>BAAI BGE</b></td>
                   <td style="padding: 8px">large-v1.5</td>
                   <td style="padding: 8px">DeBERTa-V3</td>
@@ -1515,8 +1437,7 @@ We can
                       padding: 8px;
                       font-weight: bold;
                       color: #2e7d32;
-                    "
-                  >
+                    ">
                     335M
                   </td>
                   <td style="padding: 8px">330M+ text pairs</td>
@@ -1525,8 +1446,7 @@ We can
                   style="
                     border-bottom: 1px solid #eee;
                     background-color: #c8e6c9;
-                  "
-                >
+                  ">
                   <td style="padding: 8px"><b>E5</b></td>
                   <td style="padding: 8px">large-v2</td>
                   <td style="padding: 8px">DeBERTa-V3</td>
@@ -1537,8 +1457,7 @@ We can
                       padding: 8px;
                       font-weight: bold;
                       color: #2e7d32;
-                    "
-                  >
+                    ">
                     335M
                   </td>
                   <td style="padding: 8px">CCNet + web data</td>
@@ -1547,8 +1466,7 @@ We can
                   style="
                     border-bottom: 1px solid #eee;
                     background-color: #c8e6c9;
-                  "
-                >
+                  ">
                   <td style="padding: 8px"><b>GTE</b></td>
                   <td style="padding: 8px">large</td>
                   <td style="padding: 8px">DeBERTa-V3</td>
@@ -1559,8 +1477,7 @@ We can
                       padding: 8px;
                       font-weight: bold;
                       color: #2e7d32;
-                    "
-                  >
+                    ">
                     335M
                   </td>
                   <td style="padding: 8px">MS MARCO + public datasets</td>
@@ -1569,8 +1486,7 @@ We can
                   style="
                     border-bottom: 1px solid #eee;
                     background-color: #c8e6c9;
-                  "
-                >
+                  ">
                   <td style="padding: 8px"><b>MXBai</b></td>
                   <td style="padding: 8px">embed-large-v1</td>
                   <td style="padding: 8px">DeBERTa-V3</td>
@@ -1581,8 +1497,7 @@ We can
                       padding: 8px;
                       font-weight: bold;
                       color: #2e7d32;
-                    "
-                  >
+                    ">
                     335M
                   </td>
                   <td style="padding: 8px">
@@ -1595,8 +1510,7 @@ We can
                   style="
                     border-bottom: 1px solid #eee;
                     background-color: #bbdefb;
-                  "
-                >
+                  ">
                   <td style="padding: 8px"><b>T5-based</b></td>
                   <td style="padding: 8px">gtr-t5-base</td>
                   <td style="padding: 8px">T5 encoder</td>
@@ -1607,8 +1521,7 @@ We can
                       padding: 8px;
                       font-weight: bold;
                       color: #1565c0;
-                    "
-                  >
+                    ">
                     110M
                   </td>
                   <td style="padding: 8px">C4 + MS MARCO</td>
@@ -1617,8 +1530,7 @@ We can
                   style="
                     border-bottom: 1px solid #eee;
                     background-color: #bbdefb;
-                  "
-                >
+                  ">
                   <td style="padding: 8px"><b>T5-based</b></td>
                   <td style="padding: 8px">sentence-t5-base</td>
                   <td style="padding: 8px">T5 encoder</td>
@@ -1629,8 +1541,7 @@ We can
                       padding: 8px;
                       font-weight: bold;
                       color: #1565c0;
-                    "
-                  >
+                    ">
                     220M
                   </td>
                   <td style="padding: 8px">C4 + NLI datasets</td>
@@ -1641,8 +1552,7 @@ We can
                   style="
                     border-bottom: 1px solid #eee;
                     background-color: #c5cae9;
-                  "
-                >
+                  ">
                   <td style="padding: 8px"><b>BAAI BGE</b></td>
                   <td style="padding: 8px">base-v1.5</td>
                   <td style="padding: 8px">DeBERTa-V3</td>
@@ -1653,8 +1563,7 @@ We can
                       padding: 8px;
                       font-weight: bold;
                       color: #0d47a1;
-                    "
-                  >
+                    ">
                     110M
                   </td>
                   <td style="padding: 8px">330M+ text pairs</td>
@@ -1663,8 +1572,7 @@ We can
                   style="
                     border-bottom: 1px solid #eee;
                     background-color: #c5cae9;
-                  "
-                >
+                  ">
                   <td style="padding: 8px"><b>E5</b></td>
                   <td style="padding: 8px">base-v2</td>
                   <td style="padding: 8px">DeBERTa-V3</td>
@@ -1675,8 +1583,7 @@ We can
                       padding: 8px;
                       font-weight: bold;
                       color: #0d47a1;
-                    "
-                  >
+                    ">
                     110M
                   </td>
                   <td style="padding: 8px">CCNet + web data</td>
@@ -1685,8 +1592,7 @@ We can
                   style="
                     border-bottom: 1px solid #eee;
                     background-color: #c5cae9;
-                  "
-                >
+                  ">
                   <td style="padding: 8px"><b>GTE</b></td>
                   <td style="padding: 8px">base</td>
                   <td style="padding: 8px">DeBERTa-V3</td>
@@ -1697,8 +1603,7 @@ We can
                       padding: 8px;
                       font-weight: bold;
                       color: #0d47a1;
-                    "
-                  >
+                    ">
                     110M
                   </td>
                   <td style="padding: 8px">MS MARCO + public datasets</td>
@@ -1709,8 +1614,7 @@ We can
                   style="
                     border-bottom: 1px solid #eee;
                     background-color: #bbdefb;
-                  "
-                >
+                  ">
                   <td style="padding: 8px"><b>BAAI BGE</b></td>
                   <td style="padding: 8px">small-v1.5</td>
                   <td style="padding: 8px">DeBERTa-V3</td>
@@ -1721,8 +1625,7 @@ We can
                       padding: 8px;
                       font-weight: bold;
                       color: #0d47a1;
-                    "
-                  >
+                    ">
                     33M
                   </td>
                   <td style="padding: 8px">330M+ text pairs</td>
@@ -1731,8 +1634,7 @@ We can
                   style="
                     border-bottom: 1px solid #eee;
                     background-color: #bbdefb;
-                  "
-                >
+                  ">
                   <td style="padding: 8px"><b>E5</b></td>
                   <td style="padding: 8px">small-v2</td>
                   <td style="padding: 8px">DeBERTa-V3</td>
@@ -1743,8 +1645,7 @@ We can
                       padding: 8px;
                       font-weight: bold;
                       color: #0d47a1;
-                    "
-                  >
+                    ">
                     33M
                   </td>
                   <td style="padding: 8px">CCNet + web data</td>
@@ -1753,8 +1654,7 @@ We can
                   style="
                     border-bottom: 1px solid #eee;
                     background-color: #bbdefb;
-                  "
-                >
+                  ">
                   <td style="padding: 8px"><b>GTE</b></td>
                   <td style="padding: 8px">small</td>
                   <td style="padding: 8px">DeBERTa-V3</td>
@@ -1765,8 +1665,7 @@ We can
                       padding: 8px;
                       font-weight: bold;
                       color: #0d47a1;
-                    "
-                  >
+                    ">
                     33M
                   </td>
                   <td style="padding: 8px">MS MARCO + public datasets</td>
@@ -1835,8 +1734,7 @@ We can
             border-radius: 4px;
             margin-bottom: 8px;
             margin-top: 20px;
-          "
-        >
+          ">
           <i class="fas fa-code" style="margin-right: 8px"></i>View Dataset
           Names
         </summary>
@@ -1872,17 +1770,14 @@ We can
                   gap: 1em;
                   align-items: baseline;
                   cursor: pointer;
-                "
-              >
+                ">
                 <i
                   class="fas fa-chevron-right"
-                  style="color: #666; width: 1em; text-align: center"
-                ></i>
+                  style="color: #666; width: 1em; text-align: center"></i>
                 <div><b>ArguAna</b></div>
                 <i
                   class="fas fa-comments"
-                  style="color: #666; width: 1.5em; text-align: center"
-                ></i>
+                  style="color: #666; width: 1.5em; text-align: center"></i>
                 <!-- [NEW] Discussion icon -->
               </summary>
               <div style="margin-left: 2em; margin-top: 0.5em">
@@ -1902,17 +1797,14 @@ We can
                   gap: 1em;
                   align-items: baseline;
                   cursor: pointer;
-                "
-              >
+                ">
                 <i
                   class="fas fa-chevron-right"
-                  style="color: #666; width: 1em; text-align: center"
-                ></i>
+                  style="color: #666; width: 1em; text-align: center"></i>
                 <div><b>FiQA</b></div>
                 <i
                   class="fas fa-chart-line"
-                  style="color: #666; width: 1.5em; text-align: center"
-                ></i>
+                  style="color: #666; width: 1.5em; text-align: center"></i>
                 <!-- [NEW] Finance icon -->
               </summary>
               <div style="margin-left: 2em; margin-top: 0.5em">
@@ -1932,17 +1824,14 @@ We can
                   gap: 1em;
                   align-items: baseline;
                   cursor: pointer;
-                "
-              >
+                ">
                 <i
                   class="fas fa-chevron-right"
-                  style="color: #666; width: 1em; text-align: center"
-                ></i>
+                  style="color: #666; width: 1em; text-align: center"></i>
                 <div><b>SciDocs</b></div>
                 <i
                   class="fas fa-flask"
-                  style="color: #666; width: 1.5em; text-align: center"
-                ></i>
+                  style="color: #666; width: 1.5em; text-align: center"></i>
                 <!-- [NEW] Science icon -->
               </summary>
               <div style="margin-left: 2em; margin-top: 0.5em">
@@ -1961,17 +1850,14 @@ We can
                   gap: 1em;
                   align-items: baseline;
                   cursor: pointer;
-                "
-              >
+                ">
                 <i
                   class="fas fa-chevron-right"
-                  style="color: #666; width: 1em; text-align: center"
-                ></i>
+                  style="color: #666; width: 1em; text-align: center"></i>
                 <div><b>NFCorpus</b></div>
                 <i
                   class="fas fa-heartbeat"
-                  style="color: #666; width: 1.5em; text-align: center"
-                ></i>
+                  style="color: #666; width: 1.5em; text-align: center"></i>
                 <!-- [NEW] Medical icon -->
               </summary>
               <div style="margin-left: 2em; margin-top: 0.5em">
@@ -1991,17 +1877,14 @@ We can
                   gap: 1em;
                   align-items: baseline;
                   cursor: pointer;
-                "
-              >
+                ">
                 <i
                   class="fas fa-chevron-right"
-                  style="color: #666; width: 1em; text-align: center"
-                ></i>
+                  style="color: #666; width: 1em; text-align: center"></i>
                 <div><b>HotpotQA</b></div>
                 <i
                   class="fas fa-question-circle"
-                  style="color: #666; width: 1.5em; text-align: center"
-                ></i>
+                  style="color: #666; width: 1.5em; text-align: center"></i>
                 <!-- [NEW] Q&A icon -->
               </summary>
               <div style="margin-left: 2em; margin-top: 0.5em">
@@ -2021,17 +1904,14 @@ We can
                   gap: 1em;
                   align-items: baseline;
                   cursor: pointer;
-                "
-              >
+                ">
                 <i
                   class="fas fa-chevron-right"
-                  style="color: #666; width: 1em; text-align: center"
-                ></i>
+                  style="color: #666; width: 1em; text-align: center"></i>
                 <div><b>TREC-COVID</b></div>
                 <i
                   class="fas fa-virus"
-                  style="color: #666; width: 1.5em; text-align: center"
-                ></i>
+                  style="color: #666; width: 1.5em; text-align: center"></i>
                 <!-- [NEW] COVID icon -->
               </summary>
               <div style="margin-left: 2em; margin-top: 0.5em">
@@ -2095,12 +1975,10 @@ We can
             display: flex;
             gap: 1em;
             align-items: baseline;
-          "
-        >
+          ">
           <i
             class="fas fa-chart-bar"
-            style="color: #666; width: 1.5em; text-align: center"
-          ></i>
+            style="color: #666; width: 1.5em; text-align: center"></i>
           <div>
             Our <b>embedding similarity metrics</b> aimed corroborate the work
             in our reference paper:
@@ -2109,8 +1987,7 @@ We can
               Retrieval Augmented Generation Systems</i
             >
             <dt-cite
-              key="caspari2024benchmarksevaluatingembeddingmodel"
-            ></dt-cite
+              key="caspari2024benchmarksevaluatingembeddingmodel"></dt-cite
             >. We look primarily into
             <a
               href="http://datumorphism.leima.is/cards/machine-learning/measurement/centered-kernel-alignment/"
@@ -2136,12 +2013,10 @@ We can
             display: flex;
             gap: 1em;
             align-items: baseline;
-          "
-        >
+          ">
           <i
             class="fas fa-ruler"
-            style="color: #666; width: 1.5em; text-align: center"
-          ></i>
+            style="color: #666; width: 1.5em; text-align: center"></i>
           <div>
             Our <b>linear connectivity-alignment metrics</b> are the train and
             validation accuracy of our stitching models, which we measure by
@@ -2167,12 +2042,10 @@ We can
             display: flex;
             gap: 1em;
             align-items: baseline;
-          "
-        >
+          ">
           <i
             class="fas fa-eye"
-            style="color: #666; width: 1.5em; text-align: center"
-          ></i>
+            style="color: #666; width: 1.5em; text-align: center"></i>
           <div>
             Our <b>interpretation visualizations</b> include a <b>UMAP</b>.
             <!--<b>PCA</b>, and
@@ -2238,8 +2111,7 @@ We can
       width="800"
       height="600"
       frameborder="0"
-      scrolling="no"
-    ></iframe>
+      scrolling="no"></iframe>
     <figcaption>
       CKA Matrix measuring representational similarity between embedding models
       with text sampled from ArguAna. Note that the larger OpenAI models were
@@ -2310,54 +2182,46 @@ We can
     <div class="dataset-tabs" style="margin-bottom: 1em">
       <button
         class="tab-button active important"
-        onclick="showDataset('average')"
-      >
+        onclick="showDataset('average')">
         <i
           class="fas fa-calculator"
-          style="color: #666; width: 1.5em; text-align: center"
-        ></i>
+          style="color: #666; width: 1.5em; text-align: center"></i>
         Weighted Average
       </button>
       <button class="tab-button" onclick="showDataset('arguana')">
         <i
           class="fas fa-comments"
-          style="color: #666; width: 1.5em; text-align: center"
-        ></i>
+          style="color: #666; width: 1.5em; text-align: center"></i>
         ArguAna
       </button>
       <button class="tab-button" onclick="showDataset('fiqa')">
         <i
           class="fas fa-chart-line"
-          style="color: #666; width: 1.5em; text-align: center"
-        ></i>
+          style="color: #666; width: 1.5em; text-align: center"></i>
         FiQA
       </button>
       <button class="tab-button" onclick="showDataset('scidocs')">
         <i
           class="fas fa-flask"
-          style="color: #666; width: 1.5em; text-align: center"
-        ></i>
+          style="color: #666; width: 1.5em; text-align: center"></i>
         SciDocs
       </button>
       <button class="tab-button" onclick="showDataset('nfcorpus')">
         <i
           class="fas fa-heartbeat"
-          style="color: #666; width: 1.5em; text-align: center"
-        ></i>
+          style="color: #666; width: 1.5em; text-align: center"></i>
         NFCorpus
       </button>
       <button class="tab-button" onclick="showDataset('hotpotqa')">
         <i
           class="fas fa-question-circle"
-          style="color: #666; width: 1.5em; text-align: center"
-        ></i>
+          style="color: #666; width: 1.5em; text-align: center"></i>
         HotpotQA
       </button>
       <button class="tab-button" onclick="showDataset('trec-covid')">
         <i
           class="fas fa-virus"
-          style="color: #666; width: 1.5em; text-align: center"
-        ></i>
+          style="color: #666; width: 1.5em; text-align: center"></i>
         TREC-COVID
       </button>
     </div>
@@ -2398,8 +2262,7 @@ We can
             <b>Mean Squared Error (MSE)</b>
             <iframe
               src="./figs/adriano/figs/html/weightedmean_olsaffine_mse_withlog_validation.html"
-              scrolling="no"
-            ></iframe>
+              scrolling="no"></iframe>
             <figcaption>
               Mean Squared Error (MSE) loss visualization across model pairs
               (Training Objective) - Weighted Average
@@ -2409,8 +2272,7 @@ We can
             <b>Mean Absolute Error (MAE)</b>
             <iframe
               src="./figs/adriano/figs/html/weightedmean_olsaffine_mae_withlog_validation.html"
-              scrolling="no"
-            ></iframe>
+              scrolling="no"></iframe>
             <figcaption>
               Mean Absolute Error (MAE) loss visualization across model pairs -
               Weighted Average
@@ -2426,8 +2288,7 @@ We can
             <b>Mean Squared Error (MSE)</b>
             <iframe
               src="./figs/adriano/figs/html/arguana_olsaffine_mse_withlog_validation.html"
-              scrolling="no"
-            ></iframe>
+              scrolling="no"></iframe>
             <figcaption>
               Mean Squared Error (MSE) loss visualization across model pairs
               (Training Objective) - ArguAna Dataset
@@ -2437,8 +2298,7 @@ We can
             <b>Mean Absolute Error (MAE)</b>
             <iframe
               src="./figs/adriano/figs/html/arguana_olsaffine_mae_withlog_validation.html"
-              scrolling="no"
-            ></iframe>
+              scrolling="no"></iframe>
             <figcaption>
               Mean Absolute Error (MAE) loss visualization across model pairs -
               ArguAna Dataset
@@ -2454,8 +2314,7 @@ We can
             <b>Mean Squared Error (MSE)</b>
             <iframe
               src="./figs/adriano/figs/html/fiqa_olsaffine_mse_withlog_validation.html"
-              scrolling="no"
-            ></iframe>
+              scrolling="no"></iframe>
             <figcaption>
               Mean Squared Error (MSE) loss visualization across model pairs
               (Training Objective) - FiQA Dataset
@@ -2465,8 +2324,7 @@ We can
             <b>Mean Absolute Error (MAE)</b>
             <iframe
               src="./figs/adriano/figs/html/fiqa_olsaffine_mae_withlog_validation.html"
-              scrolling="no"
-            ></iframe>
+              scrolling="no"></iframe>
             <figcaption>
               Mean Absolute Error (MAE) loss visualization across model pairs -
               FiQA Dataset
@@ -2482,8 +2340,7 @@ We can
             <b>Mean Squared Error (MSE)</b>
             <iframe
               src="./figs/adriano/figs/html/scidocs_olsaffine_mse_withlog_validation.html"
-              scrolling="no"
-            ></iframe>
+              scrolling="no"></iframe>
             <figcaption>
               Mean Squared Error (MSE) loss visualization across model pairs
               (Training Objective) - SciDocs Dataset
@@ -2493,8 +2350,7 @@ We can
             <b>Mean Absolute Error (MAE)</b>
             <iframe
               src="./figs/adriano/figs/html/scidocs_olsaffine_mae_withlog_validation.html"
-              scrolling="no"
-            ></iframe>
+              scrolling="no"></iframe>
             <figcaption>
               Mean Absolute Error (MAE) loss visualization across model pairs -
               SciDocs Dataset
@@ -2510,8 +2366,7 @@ We can
             <b>Mean Squared Error (MSE)</b>
             <iframe
               src="./figs/adriano/figs/html/nfcorpus_olsaffine_mse_withlog_validation.html"
-              scrolling="no"
-            ></iframe>
+              scrolling="no"></iframe>
             <figcaption>
               Mean Squared Error (MSE) loss visualization across model pairs
               (Training Objective) - NFCorpus Dataset
@@ -2521,8 +2376,7 @@ We can
             <b>Mean Absolute Error (MAE)</b>
             <iframe
               src="./figs/adriano/figs/html/nfcorpus_olsaffine_mae_withlog_validation.html"
-              scrolling="no"
-            ></iframe>
+              scrolling="no"></iframe>
             <figcaption>
               Mean Absolute Error (MAE) loss visualization across model pairs -
               NFCorpus Dataset
@@ -2538,8 +2392,7 @@ We can
             <b>Mean Squared Error (MSE)</b>
             <iframe
               src="./figs/adriano/figs/html/hotpotqa_olsaffine_mse_withlog_validation.html"
-              scrolling="no"
-            ></iframe>
+              scrolling="no"></iframe>
             <figcaption>
               Mean Squared Error (MSE) loss visualization across model pairs
               (Training Objective) - HotpotQA Dataset
@@ -2549,8 +2402,7 @@ We can
             <b>Mean Absolute Error (MAE)</b>
             <iframe
               src="./figs/adriano/figs/html/hotpotqa_olsaffine_mae_withlog_validation.html"
-              scrolling="no"
-            ></iframe>
+              scrolling="no"></iframe>
             <figcaption>
               Mean Absolute Error (MAE) loss visualization across model pairs -
               HotpotQA Dataset
@@ -2566,8 +2418,7 @@ We can
             <b>Mean Squared Error (MSE)</b>
             <iframe
               src="./figs/adriano/figs/html/trec-covid_olsaffine_mse_withlog_validation.html"
-              scrolling="no"
-            ></iframe>
+              scrolling="no"></iframe>
             <figcaption>
               Mean Squared Error (MSE) loss visualization across model pairs
               (Training Objective) - TREC-COVID Dataset
@@ -2577,8 +2428,7 @@ We can
             <b>Mean Absolute Error (MAE)</b>
             <iframe
               src="./figs/adriano/figs/html/trec-covid_olsaffine_mae_withlog_validation.html"
-              scrolling="no"
-            ></iframe>
+              scrolling="no"></iframe>
             <figcaption>
               Mean Absolute Error (MAE) loss visualization across model pairs -
               TREC-COVID Dataset
@@ -2680,8 +2530,7 @@ We can
     <figure>
       <img
         src="./figs/MSE_worst_performing.png"
-        alt="Least compatible native embedding space and worst performing stitches."
-      />
+        alt="Least compatible native embedding space and worst performing stitches." />
       <figcaption>
         Least compatible native embedding space and worst performing stitches.
       </figcaption>
@@ -2740,8 +2589,7 @@ We can
     <figure>
       <img
         src="./figs/MSE_varying_native_uae_large.png"
-        alt="Highest-variance native embedding space."
-      />
+        alt="Highest-variance native embedding space." />
       <figcaption>Highest-variance native embedding space.</figcaption>
     </figure>
   </div>
@@ -2750,8 +2598,7 @@ We can
     <figure>
       <img
         src="./figs/MSE_largest_to_smallest.png"
-        alt="Largest to smallest comparison."
-      />
+        alt="Largest to smallest comparison." />
       <figcaption>Largest to smallest comparison.</figcaption>
     </figure>
   </div>
@@ -2761,8 +2608,7 @@ We can
     <figure>
       <img
         src="./figs/MSE_most_compatible_native.png"
-        alt="Most compatible native embedding spaces."
-      />
+        alt="Most compatible native embedding spaces." />
       <figcaption>Most compatible native embedding spaces.</figcaption>
     </figure>
   </div>
@@ -2772,8 +2618,7 @@ We can
     <figure>
       <img
         src="./figs/MSE_expected_worst_target.png"
-        alt="Expected worst stitch performance to highest quality embedding space."
-      />
+        alt="Expected worst stitch performance to highest quality embedding space." />
       <figcaption>
         Expected worst stitch performance to highest quality embedding space.
       </figcaption>
@@ -2844,8 +2689,7 @@ We can
       padding: 1.5em;
       border-radius: 8px;
       margin-bottom: 1em;
-    "
-  >
+    ">
     <pre
       style="
         font-family:
@@ -2856,8 +2700,7 @@ We can
         margin: 0;
         white-space: pre-wrap;
         word-wrap: break-word;
-      "
-    >
+      ">
 @article{culp_hern_embed_stitch_2024,
     title     = {The Alignment of Semantic Representations Across Language Models},
     author    = {Culp, Gatlen* and Hernandez, Adriano*},
