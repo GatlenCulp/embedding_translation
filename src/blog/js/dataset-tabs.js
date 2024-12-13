@@ -147,3 +147,25 @@ function showDataset(datasetId, systemId) {
       .querySelector(`[onclick="showDataset('${datasetId}', ${systemId})"]`)
       .classList.add("active");
   }
+
+  function showModelView(viewId) {
+    // Hide all content
+    document
+      .querySelectorAll(".model-content .tab-content")
+      .forEach((content) => {
+        content.classList.remove("active");
+      });
+
+    // Show selected content
+    document.getElementById(viewId + "-content").classList.add("active");
+
+    // Update button states
+    document
+      .querySelectorAll(".model-tabs .tab-button")
+      .forEach((button) => {
+        button.classList.remove("active");
+      });
+    document
+      .querySelector(`.model-tabs [onclick="showModelView('${viewId}')"]`)
+      .classList.add("active");
+  }
