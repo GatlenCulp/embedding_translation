@@ -16,6 +16,8 @@
     crossorigin="anonymous" />
   <link href="styles.css" rel="stylesheet" />
 
+  <script src="js/dataset-tabs.js"></script>
+
   <!-- The loading of KaTeX is deferred to speed up page rendering -->
   <script
     src="https://cdn.jsdelivr.net/npm/katex@0.16.15/dist/katex.min.js"
@@ -2810,34 +2812,6 @@
         </div>
       </div>
     </div>
-
-    <script>
-      function showDataset(datasetId, systemId) {
-        console.log("Running " + `tab-system-${systemId}`);
-        // Get the specific tab system container
-        const container = document.getElementById(`tab-system-${systemId}`);
-        if (!container) {
-          console.log("Container not found");
-          return;
-        }
-        
-        // Hide all content within this system
-        container.querySelectorAll(".tab-content").forEach((content) => {
-          content.classList.remove("active");
-        });
-    
-        // Show selected content - FIXED: use querySelector instead of getElementById
-        container.querySelector(`#${datasetId}-content-${systemId}`).classList.add("active");  // <--- [CHANGED] getElementById -> querySelector
-    
-        // Update button states within this system
-        container.querySelectorAll(".tab-button").forEach((button) => {
-          button.classList.remove("active");
-        });
-        container
-          .querySelector(`[onclick="showDataset('${datasetId}', ${systemId})"]`)
-          .classList.add("active");
-      }
-    </script>
     <hr />
     <p>
       <i
@@ -3157,6 +3131,7 @@
         </div>
       </div>
     </div>
+    <hr />
 
     <div class="l-page side">
       <figure>
@@ -3197,30 +3172,6 @@
         </figcaption>
       </figure>
     </div>
-
-    <!-- 
-          MODEL_NAMES = [
-        # MODEL_NAME                    EMBEDDING DIMENSION
-        "WhereIsAI/UAE-Large-V1",                    # 1024
-        "BAAI/bge-base-en-v1.5",                     # 768
-        "BAAI/bge-large-en-v1.5",                    # 1024
-        "BAAI/bge-small-en-v1.5",                    # 384
-        "intfloat/e5-base-v2",                       # 768
-        "intfloat/e5-large-v2",                      # 1024
-        "intfloat/e5-small-v2",                      # 384
-        "thenlper/gte-base",                         # 768
-        "thenlper/gte-large",                        # 1024
-        "thenlper/gte-small",                        # 384
-        "sentence-transformers/gtr-t5-base",         # 768
-        "sentence-transformers/gtr-t5-large",        # 768
-        "mixedbread-ai/mxbai-embed-large-v1",        # 1024
-        "sentence-transformers/sentence-t5-base",     # 768
-        "sentence-transformers/sentence-t5-large",    # 768
-        "openai/text-embedding-3-large",             # 3072
-        "openai/text-embedding-3-small",             # 1536
-        ]
-  
-  -->
 
     <h2 id="discussion">05 Discussion</h2>
     <p>
