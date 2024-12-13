@@ -1,42 +1,90 @@
-// Define the dataset configurations
-const datasets = [
-  {
-    id: 'average',
-    name: 'Weighted Average',
-    icon: 'fa-calculator',
-    isDefault: true
-  },
-  {
-    id: 'arguana',
-    name: 'ArguAna',
-    icon: 'fa-comments'
-  },
-  {
-    id: 'fiqa',
-    name: 'FiQA', 
-    icon: 'fa-chart-line'
-  },
-  {
-    id: 'scidocs',
-    name: 'SciDocs',
-    icon: 'fa-flask'
-  },
-  {
-    id: 'nfcorpus',
-    name: 'NFCorpus',
-    icon: 'fa-heartbeat'
-  },
-  {
-    id: 'hotpotqa',
-    name: 'HotpotQA',
-    icon: 'fa-question-circle'
-  },
-  {
-    id: 'trec-covid',
-    name: 'TREC-COVID',
-    icon: 'fa-virus'
+// Configuration class for table systems
+class TableConfig {
+  constructor({
+    id,
+    title,
+    datasets,
+    metrics,
+    pathTemplate,
+    containerSelector
+  }) {
+    this.id = id;
+    this.title = title;
+    this.datasets = datasets;
+    this.metrics = metrics;
+    this.pathTemplate = pathTemplate;
+    this.containerSelector = containerSelector;
   }
-];
+}
+
+// Function to create a table system
+function createTableSystem(config) {
+  const container = document.querySelector(config.containerSelector);
+  if (!container) return;
+
+  // Create the basic structure
+  container.innerHTML = `
+    <div class="l-screen-inset" style="margin-left: 5em" id="tab-system-${config.id}">
+      <b style="margin-bottom: 1em">${config.title}</b>
+      <div class="dataset-tabs" style="margin-bottom: 1em" id="tabs-${config.id}"></div>
+      <div class="dataset-content" id="content-${config.id}"></div>
+    </div>
+  `;
+
+  generateTabs(config);
+  generateContent(config);
+}
+
+// Function to generate tabs
+function generateTabs(config) {
+  const tabsContainer = document.getElementById(`tabs-${config.id}`);
+  
+  config.datasets.forEach((dataset, index) => {
+    const button = document.createElement('button');
+    button.className = `tab-button${index === 0 ? ' active important' : ''}`;
+    button.onclick = () => showDataset(dataset.id, config.id);
+    
+    button.innerHTML = `
+      <i class="fas ${dataset.icon}" style="color: #666; width: 1.5em; text-align: center"></i>
+      ${dataset.name}
+    `;
+    
+    tabsContainer.appendChild(button);
+  });
+}
+
+// Function to generate content
+function generateContent(config) {
+  const contentContainer = document.getElementById(`content-${config.id}`);
+  
+  config.datasets.forEach((dataset, index) => {
+    const div = document.createElement('div');
+    div.className = `tab-content${index === 0 ? ' active' : ''}`;
+    div.id = `${dataset.id}-content-${config.id}`;
+    
+    div.innerHTML = `
+      <div class="dataset-grid">
+        ${config.metrics.map(metric => `
+          <figure>
+            <b>${metric.name}</b>
+            <iframe
+              src="${generatePath(config.pathTemplate, {
+                dataset: dataset.id,
+                metric: metric.id
+              })}"
+              scrolling="no"></iframe>
+            <figcaption>
+              ${metric.name} loss visualization across model pairs
+              ${metric.isTrainingObjective ? '(Training Objective)' : ''} - ${dataset.name} Dataset
+            </figcaption>
+          </figure>
+        `).join('')}
+      </div>
+    `;
+    
+    contentContainer.appendChild(div);
+  });
+}
 
 // Function to show selected dataset
 function showDataset(datasetId, systemId) {
@@ -55,117 +103,52 @@ function showDataset(datasetId, systemId) {
   document.querySelector(`#tab-system-${systemId} [onclick*="${datasetId}"]`).classList.add('active');
 }
 
-// Function to generate tabs
-function generateTabs(systemId) {
-  const tabsContainer = document.getElementById(`tabs-${systemId}`);
-  
-  datasets.forEach(dataset => {
-    const button = document.createElement('button');
-    button.className = `tab-button${dataset.isDefault ? ' active important' : ''}`;
-    button.onclick = () => showDataset(dataset.id, systemId);
-    
-    button.innerHTML = `
-      <i class="fas ${dataset.icon}" style="color: #666; width: 1.5em; text-align: center"></i>
-      ${dataset.name}
-    `;
-    
-    tabsContainer.appendChild(button);
+// Helper function to generate paths using template
+function generatePath(template, params) {
+  let path = template;
+  Object.entries(params).forEach(([key, value]) => {
+    path = path.replace(`{${key}}`, value);
   });
-}
-
-// Function to generate content
-function generateContent(systemId) {
-  const contentContainer = document.getElementById(`content-${systemId}`);
-  
-  datasets.forEach(dataset => {
-    const metrics = systemId === 1 ? 
-      [
-        {name: 'Mean Squared Error (MSE)', metric: 'mse'},
-        {name: 'Mean Absolute Error (MAE)', metric: 'mae'}
-      ] :
-      [
-        {name: 'R2 MSE', metric: 'r2_mse'},
-        {name: 'Percent of MAE Explained', metric: 'r2_mae'}
-      ];
-
-    const div = document.createElement('div');
-    div.className = `tab-content${dataset.isDefault ? ' active' : ''}`;
-    div.id = `${dataset.id}-content-${systemId}`;
-    
-    div.innerHTML = `
-      <div class="dataset-grid">
-        ${metrics.map(metric => `
-          <figure>
-            <b>${metric.name}</b>
-            <iframe
-              src="./figs/adriano/figs/html/${dataset.id}_olsaffine_${metric.metric}_with${systemId === 1 ? '' : 'out'}log_validation.html"
-              scrolling="no"></iframe>
-            <figcaption>
-              ${metric.name} loss visualization across model pairs
-              ${metric.metric === 'mse' ? '(Training Objective)' : ''} - ${dataset.name} Dataset
-            </figcaption>
-          </figure>
-        `).join('')}
-      </div>
-    `;
-    
-    contentContainer.appendChild(div);
-  });
+  return path;
 }
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-  // Initialize both tab systems
-  [1, 2].forEach(systemId => {
-    generateTabs(systemId);
-    generateContent(systemId);
+  // Example configuration for your first table system
+  const mseConfig = new TableConfig({
+    id: 1,
+    title: 'Validation MSE and MAE of Affine Stitch Across Datasets',
+    datasets: [
+      { id: 'average', name: 'Weighted Average', icon: 'fa-calculator' },
+      { id: 'arguana', name: 'ArguAna', icon: 'fa-comments' },
+      { id: 'fiqa', name: 'FiQA', icon: 'fa-chart-line' },
+      { id: 'scidocs', name: 'SciDocs', icon: 'fa-flask' },
+      { id: 'nfcorpus', name: 'NFCorpus', icon: 'fa-heartbeat' },
+      { id: 'hotpotqa', name: 'HotpotQA', icon: 'fa-question-circle' },
+      { id: 'trec-covid', name: 'TREC-COVID', icon: 'fa-virus' }
+    ],
+    metrics: [
+      { id: 'mse', name: 'Mean Squared Error (MSE)', isTrainingObjective: true },
+      { id: 'mae', name: 'Mean Absolute Error (MAE)', isTrainingObjective: false }
+    ],
+    pathTemplate: './figs/adriano/figs/html/{dataset}_olsaffine_{metric}_withlog_validation.html',
+    containerSelector: '#table-system-1'
   });
-}); 
 
-function showDataset(datasetId, systemId) {
-    console.log("Running " + `tab-system-${systemId}`);
-    // Get the specific tab system container
-    const container = document.getElementById(`tab-system-${systemId}`);
-    if (!container) {
-      console.log("Container not found");
-      return;
-    }
-    
-    // Hide all content within this system
-    container.querySelectorAll(".tab-content").forEach((content) => {
-      content.classList.remove("active");
-    });
+  // Example configuration for your second table system
+  const r2Config = new TableConfig({
+    id: 2,
+    title: 'R2 MSE and Percent of MAE Explained',
+    datasets: mseConfig.datasets, // Reuse the same datasets
+    metrics: [
+      { id: 'r2_mse', name: 'R2 MSE', isTrainingObjective: true },
+      { id: 'r2_mae', name: 'Percent of MAE Explained', isTrainingObjective: false }
+    ],
+    pathTemplate: './figs/adriano/figs/html/{dataset}_olsaffine_{metric}_withoutlog_validation.html',
+    containerSelector: '#table-system-2'
+  });
 
-    // Show selected content - FIXED: use querySelector instead of getElementById
-    container.querySelector(`#${datasetId}-content-${systemId}`).classList.add("active");  // <--- [CHANGED] getElementById -> querySelector
-
-    // Update button states within this system
-    container.querySelectorAll(".tab-button").forEach((button) => {
-      button.classList.remove("active");
-    });
-    container
-      .querySelector(`[onclick="showDataset('${datasetId}', ${systemId})"]`)
-      .classList.add("active");
-  }
-
-  function showModelView(viewId) {
-    // Hide all content
-    document
-      .querySelectorAll(".model-content .tab-content")
-      .forEach((content) => {
-        content.classList.remove("active");
-      });
-
-    // Show selected content
-    document.getElementById(viewId + "-content").classList.add("active");
-
-    // Update button states
-    document
-      .querySelectorAll(".model-tabs .tab-button")
-      .forEach((button) => {
-        button.classList.remove("active");
-      });
-    document
-      .querySelector(`.model-tabs [onclick="showModelView('${viewId}')"]`)
-      .classList.add("active");
-  }
+  // Create both table systems
+  createTableSystem(mseConfig);
+  createTableSystem(r2Config);
+});
