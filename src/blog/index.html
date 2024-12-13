@@ -2918,6 +2918,246 @@
 
     <p><b>Native Space Performance</b></p>
 
+    <hr />
+    <div class="l-screen-inset" style="margin-left: 5em" id="tab-system-2">
+      <!-- Tab Navigation -->
+      <b style="margin-bottom: 1em"
+        >Validation MSE and MAE of Affine Stitch Across Datasets</b
+      >
+      <div class="dataset-tabs" style="margin-bottom: 1em">
+        <button
+          class="tab-button active important"
+          onclick="showDataset('average', 2)">
+          <i
+            class="fas fa-calculator"
+            style="color: #666; width: 1.5em; text-align: center"></i>
+          Weighted Average
+        </button>
+        <button class="tab-button" onclick="showDataset('arguana', 2)">
+          <i
+            class="fas fa-comments"
+            style="color: #666; width: 1.5em; text-align: center"></i>
+          ArguAna
+        </button>
+        <button class="tab-button" onclick="showDataset('fiqa', 2)">
+          <i
+            class="fas fa-chart-line"
+            style="color: #666; width: 1.5em; text-align: center"></i>
+          FiQA
+        </button>
+        <button class="tab-button" onclick="showDataset('scidocs', 2)">
+          <i
+            class="fas fa-flask"
+            style="color: #666; width: 1.5em; text-align: center"></i>
+          SciDocs
+        </button>
+        <button class="tab-button" onclick="showDataset('nfcorpus', 2)">
+          <i
+            class="fas fa-heartbeat"
+            style="color: #666; width: 1.5em; text-align: center"></i>
+          NFCorpus
+        </button>
+        <button class="tab-button" onclick="showDataset('hotpotqa', 2)">
+          <i
+            class="fas fa-question-circle"
+            style="color: #666; width: 1.5em; text-align: center"></i>
+          HotpotQA
+        </button>
+        <button class="tab-button" onclick="showDataset('trec-covid', 2)">
+          <i
+            class="fas fa-virus"
+            style="color: #666; width: 1.5em; text-align: center"></i>
+          TREC-COVID
+        </button>
+      </div>
+
+      <!-- Tab Content -->
+      <div class="dataset-content">
+
+        <!-- Weighted Average -->
+        <div class="tab-content active" id="average-content-2">
+          <div class="dataset-grid">
+            <figure>
+              <b>Mean Squared Error (MSE)</b>
+              <iframe
+                src="./figs/adriano/figs/html/weightedmean_olsaffine_mse_withlog_validation.html"
+                scrolling="no"></iframe>
+              <figcaption>
+                Mean Squared Error (MSE) loss visualization across model pairs
+                (Training Objective) - Weighted Average
+              </figcaption>
+            </figure>
+            <figure>
+              <b>Mean Absolute Error (MAE)</b>
+              <iframe
+                src="./figs/adriano/figs/html/weightedmean_olsaffine_mae_withlog_validation.html"
+                scrolling="no"></iframe>
+              <figcaption>
+                Mean Absolute Error (MAE) loss visualization across model pairs
+                - Weighted Average
+              </figcaption>
+            </figure>
+          </div>
+        </div>
+
+        <!-- ArguAna -->
+        <div class="tab-content" id="arguana-content-2">
+          <div class="dataset-grid">
+            <figure>
+              <b>Mean Squared Error (MSE)</b>
+              <iframe
+                src="./figs/adriano/figs/html/arguana_olsaffine_mse_withlog_validation.html"
+                scrolling="no"></iframe>
+              <figcaption>
+                Mean Squared Error (MSE) loss visualization across model pairs
+                (Training Objective) - ArguAna Dataset
+              </figcaption>
+            </figure>
+            <figure>
+              <b>Mean Absolute Error (MAE)</b>
+              <iframe
+                src="./figs/adriano/figs/html/arguana_olsaffine_mae_withlog_validation.html"
+                scrolling="no"></iframe>
+              <figcaption>
+                Mean Absolute Error (MAE) loss visualization across model pairs
+                - ArguAna Dataset
+              </figcaption>
+            </figure>
+          </div>
+        </div>
+
+        <!-- FiQa -->
+        <div class="tab-content" id="fiqa-content-2">
+          <div class="dataset-grid">
+            <figure>
+              <b>Mean Squared Error (MSE)</b>
+              <iframe
+                src="./figs/adriano/figs/html/fiqa_olsaffine_mse_withlog_validation.html"
+                scrolling="no"></iframe>
+              <figcaption>
+                Mean Squared Error (MSE) loss visualization across model pairs
+                (Training Objective) - FiQA Dataset
+              </figcaption>
+            </figure>
+            <figure>
+              <b>Mean Absolute Error (MAE)</b>
+              <iframe
+                src="./figs/adriano/figs/html/fiqa_olsaffine_mae_withlog_validation.html"
+                scrolling="no"></iframe>
+              <figcaption>
+                Mean Absolute Error (MAE) loss visualization across model pairs
+                - FiQA Dataset
+              </figcaption>
+            </figure>
+          </div>
+        </div>
+
+        <!-- SciDocs -->
+        <div class="tab-content" id="scidocs-content-2">
+          <div class="dataset-grid">
+            <figure>
+              <b>Mean Squared Error (MSE)</b>
+              <iframe
+                src="./figs/adriano/figs/html/scidocs_olsaffine_mse_withlog_validation.html"
+                scrolling="no"></iframe>
+              <figcaption>
+                Mean Squared Error (MSE) loss visualization across model pairs
+                (Training Objective) - SciDocs Dataset
+              </figcaption>
+            </figure>
+            <figure>
+              <b>Mean Absolute Error (MAE)</b>
+              <iframe
+                src="./figs/adriano/figs/html/scidocs_olsaffine_mae_withlog_validation.html"
+                scrolling="no"></iframe>
+              <figcaption>
+                Mean Absolute Error (MAE) loss visualization across model pairs
+                - SciDocs Dataset
+              </figcaption>
+            </figure>
+          </div>
+        </div>
+
+        <!-- NfCorpus -->
+        <div class="tab-content" id="nfcorpus-content-2">
+          <div class="dataset-grid">
+            <figure>
+              <b>Mean Squared Error (MSE)</b>
+              <iframe
+                src="./figs/adriano/figs/html/nfcorpus_olsaffine_mse_withlog_validation.html"
+                scrolling="no"></iframe>
+              <figcaption>
+                Mean Squared Error (MSE) loss visualization across model pairs
+                (Training Objective) - NFCorpus Dataset
+              </figcaption>
+            </figure>
+            <figure>
+              <b>Mean Absolute Error (MAE)</b>
+              <iframe
+                src="./figs/adriano/figs/html/nfcorpus_olsaffine_mae_withlog_validation.html"
+                scrolling="no"></iframe>
+              <figcaption>
+                Mean Absolute Error (MAE) loss visualization across model pairs
+                - NFCorpus Dataset
+              </figcaption>
+            </figure>
+          </div>
+        </div>
+
+        <!-- HotPot QA -->
+        <div class="tab-content" id="hotpotqa-content-2">
+          <div class="dataset-grid">
+            <figure>
+              <b>Mean Squared Error (MSE)</b>
+              <iframe
+                src="./figs/adriano/figs/html/hotpotqa_olsaffine_mse_withlog_validation.html"
+                scrolling="no"></iframe>
+              <figcaption>
+                Mean Squared Error (MSE) loss visualization across model pairs
+                (Training Objective) - HotpotQA Dataset
+              </figcaption>
+            </figure>
+            <figure>
+              <b>Mean Absolute Error (MAE)</b>
+              <iframe
+                src="./figs/adriano/figs/html/hotpotqa_olsaffine_mae_withlog_validation.html"
+                scrolling="no"></iframe>
+              <figcaption>
+                Mean Absolute Error (MAE) loss visualization across model pairs
+                - HotpotQA Dataset
+              </figcaption>
+            </figure>
+          </div>
+        </div>
+
+        <!-- TrecCovid -->
+        <div class="tab-content" id="trec-covid-content-2">
+          <div class="dataset-grid">
+            <figure>
+              <b>Mean Squared Error (MSE)</b>
+              <iframe
+                src="./figs/adriano/figs/html/trec-covid_olsaffine_mse_withlog_validation.html"
+                scrolling="no"></iframe>
+              <figcaption>
+                Mean Squared Error (MSE) loss visualization across model pairs
+                (Training Objective) - TREC-COVID Dataset
+              </figcaption>
+            </figure>
+            <figure>
+              <b>Mean Absolute Error (MAE)</b>
+              <iframe
+                src="./figs/adriano/figs/html/trec-covid_olsaffine_mae_withlog_validation.html"
+                scrolling="no"></iframe>
+              <figcaption>
+                Mean Absolute Error (MAE) loss visualization across model pairs
+                - TREC-COVID Dataset
+              </figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="l-page side">
       <figure>
         <img
