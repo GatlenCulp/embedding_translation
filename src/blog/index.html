@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <meta charset="utf-8" />
 <head>
   <title>
@@ -9,12 +9,12 @@
   <script>
     mermaid.initialize({
       startOnLoad: true,
-      fontFamily: 'sans-serif',
-      securityLevel: 'loose',
+      fontFamily: "sans-serif",
+      securityLevel: "loose",
       flowchart: {
         useMaxWidth: true,
-        htmlLabels: true
-      }
+        htmlLabels: true,
+      },
     });
   </script>
   <script src="https://distill.pub/template.v1.js"></script>
@@ -498,6 +498,16 @@
 </head>
 
 <body>
+  <p id="js-warning">
+    <i
+      >If you are seeing this, then Javascript is disabled. Please enable it to
+      properly view this post.</i
+    >
+  </p>
+  <script>
+    // Remove the warning message if JavaScript is enabled
+    document.getElementById("js-warning").style.display = "none";
+  </script>
   <dt-article class="centered">
     <div class="l-middle">
       <figure>
@@ -599,7 +609,6 @@
     <div class="l-page side">
       <div class="l-page">
         <figure class="diagram-container">
-          <!-- prettier-ignore -->
           <pre class="mermaid">
             graph TD
               %% Define the main text input
