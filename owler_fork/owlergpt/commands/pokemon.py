@@ -271,6 +271,8 @@ class Trainer:
                     assert len(losses_src2dst.shape) == 1 and len(losses_dst2src.shape) == 1
                     assert losses_src2dst.shape[0] == len(models_src2dst_list)
                     assert losses_dst2src.shape[0] == len(models_dst2src_list)
+                    assert isinstance(losses_src2dst, torch.Tensor)
+                    assert isinstance(losses_dst2src, torch.Tensor)
                     losses = torch.cat([losses_src2dst, losses_dst2src])
                     for model, loss in zip((models_src2dst_list + models_dst2src_list), losses):
                         key = (
