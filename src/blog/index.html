@@ -162,22 +162,52 @@ We can
       <figure class="diagram-container">
         <!-- First, create a container for the diagram -->
         <!-- Don't format :( -->
+        <!-- prettier-ignore -->
         <div class="mermaid">
-          graph TD %% Define the main text input Text[/"Input Text t"/] %%
-          Define embedding spaces as subgraphs subgraph "Embedding Space A" %%
-          EA[("Model A's Space")] NativeA["Native Embedding A(t)"] end subgraph
-          "Embedding Space B" %% EB[("Model B's Space")] NativeB["Native
-          Embedding B(t)"] StitchedAB["Stitched Embeddings S(A(t))"] end %%
-          Define the models and transformations ModelA["Model A"] ModelB["Model
-          B"] Stitch{"Stitch S\n(from A to B)"} %% Define the relationships Text
-          --> ModelA Text --> ModelB ModelA --> NativeA ModelB --> NativeB
-          NativeA --> Stitch Stitch --> StitchedAB %% Add labels for evaluation
-          MSE{{"MSE( S(A(t)), B(t) ) < ε"}} StitchedAB -.-> MSE NativeB -.-> MSE
-          %% Add styling classDef space fill:#f0f4f8,stroke:#a3bffa classDef
-          model fill:#ebf4ff,stroke:#63b3ed classDef stitch
-          fill:#faf5ff,stroke:#b794f4 classDef evaluation
-          fill:#f0fff4,stroke:#68d391 class EA,EB space class ModelA,ModelB
-          model class Stitch stitch class MSE evaluation
+          graph TD
+            %% Define the main text input
+            Text[/"Input Text t"/]
+
+            %% Define embedding spaces as subgraphs
+            subgraph "Embedding Space A"
+              %% EA[("Model A's Space")]
+              NativeA["Native Embedding A(t)"]
+            end
+
+            subgraph "Embedding Space B"
+              %% EB[("Model B's Space")]
+              NativeB["Native Embedding B(t)"]
+              StitchedAB["Stitched Embeddings S(A(t))"]
+            end
+
+            %% Define the models and transformations
+            ModelA["Model A"]
+            ModelB["Model B"]
+            Stitch{"Stitch S\n(from A to B)"}
+
+            %% Define the relationships
+            Text --> ModelA
+            Text --> ModelB
+            ModelA --> NativeA
+            ModelB --> NativeB
+            NativeA --> Stitch
+            Stitch --> StitchedAB
+
+            %% Add labels for evaluation
+            MSE{{"MSE( S(A(t)), B(t) ) < ε"}}
+            StitchedAB -.-> MSE
+            NativeB -.-> MSE
+
+            %% Add styling
+            classDef space fill:#f0f4f8,stroke:#a3bffa
+            classDef model fill:#ebf4ff,stroke:#63b3ed
+            classDef stitch fill:#faf5ff,stroke:#b794f4
+            classDef evaluation fill:#f0fff4,stroke:#68d391
+
+            class EA,EB space
+            class ModelA,ModelB model
+            class Stitch stitch
+            class MSE evaluation
         </div>
         <figcaption>
           Relationship between native embeddings, stitched embeddings, and
@@ -578,29 +608,709 @@ We can
       excluded the Cohere models since we did not have API access (which is not
       free except at prohibitively low request rates) and the Mistral model,
       since it was too big for our GPU.
-      <pre><code class="language-python">
-        MODEL_NAMES = [
-        # MODEL_NAME                    EMBEDDING DIMENSION
-        "WhereIsAI/UAE-Large-V1",                    # 1024
-        "BAAI/bge-base-en-v1.5",                     # 768
-        "BAAI/bge-large-en-v1.5",                    # 1024
-        "BAAI/bge-small-en-v1.5",                    # 384
-        "intfloat/e5-base-v2",                       # 768
-        "intfloat/e5-large-v2",                      # 1024
-        "intfloat/e5-small-v2",                      # 384
-        "thenlper/gte-base",                         # 768
-        "thenlper/gte-large",                        # 1024
-        "thenlper/gte-small",                        # 384
-        "sentence-transformers/gtr-t5-base",         # 768
-        "sentence-transformers/gtr-t5-large",        # 768
-        "mixedbread-ai/mxbai-embed-large-v1",        # 1024
-        "sentence-transformers/sentence-t5-base",     # 768
-        "sentence-transformers/sentence-t5-large",    # 768
-        "openai/text-embedding-3-large",             # 3072
-        "openai/text-embedding-3-small",             # 1536
-        ]
-      </code></pre>
+      <details>
+        <summary style="cursor: pointer; padding: 8px; background-color: #f5f5f5; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 8px; margin-top: 20px">
+          <i class="fas fa-code" style="margin-right: 8px;"></i>View Model Names
+        </summary>
+        <pre><code class="language-python">
+          MODEL_NAMES = [
+          # MODEL_NAME                    EMBEDDING DIMENSION
+          "WhereIsAI/UAE-Large-V1",                    # 1024
+          "BAAI/bge-base-en-v1.5",                     # 768
+          "BAAI/bge-large-en-v1.5",                    # 1024
+          "BAAI/bge-small-en-v1.5",                    # 384
+          "intfloat/e5-base-v2",                       # 768
+          "intfloat/e5-large-v2",                      # 1024
+          "intfloat/e5-small-v2",                      # 384
+          "thenlper/gte-base",                         # 768
+          "thenlper/gte-large",                        # 1024
+          "thenlper/gte-small",                        # 384
+          "sentence-transformers/gtr-t5-base",         # 768
+          "sentence-transformers/gtr-t5-large",        # 768
+          "mixedbread-ai/mxbai-embed-large-v1",        # 1024
+          "sentence-transformers/sentence-t5-base",     # 768
+          "sentence-transformers/sentence-t5-large",    # 768
+          "openai/text-embedding-3-large",             # 3072
+          "openai/text-embedding-3-small",             # 1536
+          ]
+        </code></pre>
+      </details>
     </li>
+
+    <b>Detailed Model Comparison Table</b>
+    <div class="l-body l-body" style="margin-top: 1em;">
+      <!-- Tab Navigation -->
+      <div class="model-tabs" style="margin-bottom: 1em">
+        <button class="tab-button active important" onclick="showModelView('category')">
+          <i class="fas fa-layer-group" style="color: #666; width: 1.5em; text-align: center"></i>
+          By Architecture
+        </button>
+        <button class="tab-button" onclick="showModelView('dimension')">
+          <i class="fas fa-arrows-alt-v" style="color: #666; width: 1.5em; text-align: center"></i>
+          By Dimension
+        </button>
+        <button class="tab-button" onclick="showModelView('parameters')">
+          <i class="fas fa-microchip" style="color: #666; width: 1.5em; text-align: center"></i>
+          By Parameters
+        </button>
+      </div>
+
+      <!-- Tab Content -->
+      <div class="model-content">
+        <!-- Category View (Original) -->
+        <div id="category-content" class="tab-content active">
+          <div style="overflow-x: auto">
+            <!-- Original table content -->
+            <table style="width: 100%; border-collapse: collapse">
+              <thead>
+                <tr>
+                  <th
+                    style="
+                      text-align: left;
+                      padding: 8px;
+                      border-bottom: 2px solid #ddd;
+                    "
+                  >
+                    Model Family
+                  </th>
+                  <th
+                    style="
+                      text-align: left;
+                      padding: 8px;
+                      border-bottom: 2px solid #ddd;
+                    "
+                  >
+                    Variant
+                  </th>
+                  <th
+                    style="
+                      text-align: left;
+                      padding: 8px;
+                      border-bottom: 2px solid #ddd;
+                    "
+                  >
+                    Architecture
+                  </th>
+                  <th
+                    style="
+                      text-align: center;
+                      padding: 8px;
+                      border-bottom: 2px solid #ddd;
+                    "
+                  >
+                    Dimension
+                  </th>
+                  <th
+                    style="
+                      text-align: center;
+                      padding: 8px;
+                      border-bottom: 2px solid #ddd;
+                    "
+                  >
+                    Parameters
+                  </th>
+                  <th
+                    style="
+                      text-align: left;
+                      padding: 8px;
+                      border-bottom: 2px solid #ddd;
+                    "
+                  >
+                    Training Data
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- BAAI BGE -->
+                <tr style="border-bottom: 1px solid #eee">
+                  <td style="padding: 8px" rowspan="3"><b>BAAI BGE</b></td>
+                  <td style="padding: 8px">large-v1.5</td>
+                  <td style="padding: 8px" rowspan="3">DeBERTa-V3</td>
+                  <td style="text-align: center; padding: 8px">1024</td>
+                  <td style="text-align: center; padding: 8px">335M</td>
+                  <td style="padding: 8px" rowspan="3">330M+ text pairs</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #eee">
+                  <td style="padding: 8px">base-v1.5</td>
+                  <td style="text-align: center; padding: 8px">768</td>
+                  <td style="text-align: center; padding: 8px">110M</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #eee">
+                  <td style="padding: 8px">small-v1.5</td>
+                  <td style="text-align: center; padding: 8px">384</td>
+                  <td style="text-align: center; padding: 8px">33M</td>
+                </tr>
+
+                <!-- E5 -->
+                <tr style="border-bottom: 1px solid #eee">
+                  <td style="padding: 8px" rowspan="3"><b>E5</b></td>
+                  <td style="padding: 8px">large-v2</td>
+                  <td style="padding: 8px" rowspan="3">DeBERTa-V3</td>
+                  <td style="text-align: center; padding: 8px">1024</td>
+                  <td style="text-align: center; padding: 8px">335M</td>
+                  <td style="padding: 8px" rowspan="3">CCNet + web data</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #eee">
+                  <td style="padding: 8px">base-v2</td>
+                  <td style="text-align: center; padding: 8px">768</td>
+                  <td style="text-align: center; padding: 8px">110M</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #eee">
+                  <td style="padding: 8px">small-v2</td>
+                  <td style="text-align: center; padding: 8px">384</td>
+                  <td style="text-align: center; padding: 8px">33M</td>
+                </tr>
+
+                <!-- GTE -->
+                <tr style="border-bottom: 1px solid #eee">
+                  <td style="padding: 8px" rowspan="3"><b>GTE</b></td>
+                  <td style="padding: 8px">large</td>
+                  <td style="padding: 8px" rowspan="3">DeBERTa-V3</td>
+                  <td style="text-align: center; padding: 8px">1024</td>
+                  <td style="text-align: center; padding: 8px">335M</td>
+                  <td style="padding: 8px" rowspan="3">MS MARCO + public datasets</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #eee">
+                  <td style="padding: 8px">base</td>
+                  <td style="text-align: center; padding: 8px">768</td>
+                  <td style="text-align: center; padding: 8px">110M</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #eee">
+                  <td style="padding: 8px">small</td>
+                  <td style="text-align: center; padding: 8px">384</td>
+                  <td style="text-align: center; padding: 8px">33M</td>
+                </tr>
+
+                <!-- T5-based -->
+                <tr style="border-bottom: 1px solid #eee">
+                  <td style="padding: 8px" rowspan="4"><b>T5-based</b></td>
+                  <td style="padding: 8px">gtr-t5-large</td>
+                  <td style="padding: 8px" rowspan="4">T5 encoder</td>
+                  <td style="text-align: center; padding: 8px">768</td>
+                  <td style="text-align: center; padding: 8px">770M</td>
+                  <td style="padding: 8px">C4 + MS MARCO</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #eee">
+                  <td style="padding: 8px">gtr-t5-base</td>
+                  <td style="text-align: center; padding: 8px">768</td>
+                  <td style="text-align: center; padding: 8px">220M</td>
+                  <td style="padding: 8px">C4 + MS MARCO</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #eee">
+                  <td style="padding: 8px">sentence-t5-large</td>
+                  <td style="text-align: center; padding: 8px">768</td>
+                  <td style="text-align: center; padding: 8px">770M</td>
+                  <td style="padding: 8px">C4 + NLI datasets</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #eee">
+                  <td style="padding: 8px">sentence-t5-base</td>
+                  <td style="text-align: center; padding: 8px">768</td>
+                  <td style="text-align: center; padding: 8px">220M</td>
+                  <td style="padding: 8px">C4 + NLI datasets</td>
+                </tr>
+
+                <!-- UAE -->
+                <tr style="border-bottom: 1px solid #eee">
+                  <td style="padding: 8px"><b>UAE</b></td>
+                  <td style="padding: 8px">large-v1</td>
+                  <td style="padding: 8px">RoBERTa</td>
+                  <td style="text-align: center; padding: 8px">1024</td>
+                  <td style="text-align: center; padding: 8px">355M</td>
+                  <td style="padding: 8px">Adversarial training</td>
+                </tr>
+
+                <!-- MXBai -->
+                <tr style="border-bottom: 1px solid #eee">
+                  <td style="padding: 8px"><b>MXBai</b></td>
+                  <td style="padding: 8px">embed-large-v1</td>
+                  <td style="padding: 8px">DeBERTa-V3</td>
+                  <td style="text-align: center; padding: 8px">1024</td>
+                  <td style="text-align: center; padding: 8px">335M</td>
+                  <td style="padding: 8px">Not public</td>
+                </tr>
+
+                <!-- OpenAI -->
+                <tr style="border-bottom: 1px solid #eee">
+                  <td style="padding: 8px" rowspan="2"><b>OpenAI</b></td>
+                  <td style="padding: 8px">text-embedding-3-large</td>
+                  <td style="padding: 8px" rowspan="2">Proprietary</td>
+                  <td style="text-align: center; padding: 8px">3072</td>
+                  <td style="text-align: center; padding: 8px">-</td>
+                  <td style="padding: 8px" rowspan="2">Not public</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #eee">
+                  <td style="padding: 8px">text-embedding-3-small</td>
+                  <td style="text-align: center; padding: 8px">1536</td>
+                  <td style="text-align: center; padding: 8px">-</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Dimension View -->
+        <div id="dimension-content" class="tab-content">
+          <div style="overflow-x: auto">
+            <table style="width: 100%; border-collapse: collapse">
+              <thead>
+                <tr>
+                  <th
+                    style="
+                      text-align: left;
+                      padding: 8px;
+                      border-bottom: 2px solid #ddd;
+                    "
+                  >
+                    Model Family
+                  </th>
+                  <th
+                    style="
+                      text-align: left;
+                      padding: 8px;
+                      border-bottom: 2px solid #ddd;
+                    "
+                  >
+                    Variant
+                  </th>
+                  <th
+                    style="
+                      text-align: left;
+                      padding: 8px;
+                      border-bottom: 2px solid #ddd;
+                    "
+                  >
+                    Architecture
+                  </th>
+                  <th
+                    style="
+                      text-align: center;
+                      padding: 8px;
+                      border-bottom: 2px solid #ddd;
+                    "
+                  >
+                    Dimension
+                  </th>
+                  <th
+                    style="
+                      text-align: center;
+                      padding: 8px;
+                      border-bottom: 2px solid #ddd;
+                    "
+                  >
+                    Parameters
+                  </th>
+                  <th
+                    style="
+                      text-align: left;
+                      padding: 8px;
+                      border-bottom: 2px solid #ddd;
+                    "
+                  >
+                    Training Data
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- 3072 dimension -->
+                <tr style="border-bottom: 1px solid #eee; background-color: #f8f0ff">
+                  <td style="padding: 8px"><b>OpenAI</b></td>
+                  <td style="padding: 8px">text-embedding-3-large</td>
+                  <td style="padding: 8px">Proprietary</td>
+                  <td style="text-align: center; padding: 8px; font-weight: bold; color: #6200ee">3072</td>
+                  <td style="text-align: center; padding: 8px">-</td>
+                  <td style="padding: 8px">Not public</td>
+                </tr>
+
+                <!-- 1536 dimension -->
+                <tr style="border-bottom: 1px solid #eee; background-color: #f5f5ff">
+                  <td style="padding: 8px"><b>OpenAI</b></td>
+                  <td style="padding: 8px">text-embedding-3-small</td>
+                  <td style="padding: 8px">Proprietary</td>
+                  <td style="text-align: center; padding: 8px; font-weight: bold; color: #3700b3">1536</td>
+                  <td style="text-align: center; padding: 8px">-</td>
+                  <td style="padding: 8px">Not public</td>
+                </tr>
+
+                <!-- 1024 dimension -->
+                <tr style="border-bottom: 1px solid #eee; background-color: #f0f0ff">
+                  <td style="padding: 8px"><b>UAE</b></td>
+                  <td style="padding: 8px">large-v1</td>
+                  <td style="padding: 8px">RoBERTa</td>
+                  <td style="text-align: center; padding: 8px; font-weight: bold; color: #1a237e">1024</td>
+                  <td style="text-align: center; padding: 8px">355M</td>
+                  <td style="padding: 8px">Adversarial training</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #eee; background-color: #f0f0ff">
+                  <td style="padding: 8px"><b>BAAI BGE</b></td>
+                  <td style="padding: 8px">large-v1.5</td>
+                  <td style="padding: 8px">DeBERTa-V3</td>
+                  <td style="text-align: center; padding: 8px; font-weight: bold; color: #1a237e">1024</td>
+                  <td style="text-align: center; padding: 8px">335M</td>
+                  <td style="padding: 8px">330M+ text pairs</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #eee; background-color: #f0f0ff">
+                  <td style="padding: 8px"><b>E5</b></td>
+                  <td style="padding: 8px">large-v2</td>
+                  <td style="padding: 8px">DeBERTa-V3</td>
+                  <td style="text-align: center; padding: 8px; font-weight: bold; color: #1a237e">1024</td>
+                  <td style="text-align: center; padding: 8px">335M</td>
+                  <td style="padding: 8px">CCNet + web data</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #eee; background-color: #f0f0ff">
+                  <td style="padding: 8px"><b>GTE</b></td>
+                  <td style="padding: 8px">large</td>
+                  <td style="padding: 8px">DeBERTa-V3</td>
+                  <td style="text-align: center; padding: 8px; font-weight: bold; color: #1a237e">1024</td>
+                  <td style="text-align: center; padding: 8px">335M</td>
+                  <td style="padding: 8px">MS MARCO + public datasets</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #eee; background-color: #f0f0ff">
+                  <td style="padding: 8px"><b>MXBai</b></td>
+                  <td style="padding: 8px">embed-large-v1</td>
+                  <td style="padding: 8px">DeBERTa-V3</td>
+                  <td style="text-align: center; padding: 8px; font-weight: bold; color: #1a237e">1024</td>
+                  <td style="text-align: center; padding: 8px">335M</td>
+                  <td style="padding: 8px">Not public</td>
+                </tr>
+
+                <!-- 768 dimension -->
+                <tr style="border-bottom: 1px solid #eee; background-color: #e8eaf6">
+                  <td style="padding: 8px" rowspan="4"><b>T5-based</b></td>
+                  <td style="padding: 8px">gtr-t5-large</td>
+                  <td style="padding: 8px" rowspan="4">T5 encoder</td>
+                  <td style="text-align: center; padding: 8px; font-weight: bold; color: #1a237e">1024</td>
+                  <td style="text-align: center; padding: 8px">770M</td>
+                  <td style="padding: 8px">C4 + MS MARCO</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #eee; background-color: #e8eaf6">
+                  <td style="padding: 8px">gtr-t5-base</td>
+                  <td style="text-align: center; padding: 8px; font-weight: bold; color: #283593">768</td>
+                  <td style="text-align: center; padding: 8px">220M</td>
+                  <td style="padding: 8px">C4 + MS MARCO</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #eee; background-color: #e8eaf6">
+                  <td style="padding: 8px">sentence-t5-large</td>
+                  <td style="text-align: center; padding: 8px; font-weight: bold; color: #1a237e">1024</td>
+                  <td style="text-align: center; padding: 8px">770M</td>
+                  <td style="padding: 8px">C4 + NLI datasets</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #eee; background-color: #e8eaf6">
+                  <td style="padding: 8px">sentence-t5-base</td>
+                  <td style="text-align: center; padding: 8px; font-weight: bold; color: #283593">768</td>
+                  <td style="text-align: center; padding: 8px">220M</td>
+                  <td style="padding: 8px">C4 + NLI datasets</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #eee; background-color: #e8eaf6">
+                  <td style="padding: 8px"><b>BAAI BGE</b></td>
+                  <td style="padding: 8px">base-v1.5</td>
+                  <td style="padding: 8px">DeBERTa-V3</td>
+                  <td style="text-align: center; padding: 8px; font-weight: bold; color: #283593">768</td>
+                  <td style="text-align: center; padding: 8px">110M</td>
+                  <td style="padding: 8px">330M+ text pairs</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #eee; background-color: #e8eaf6">
+                  <td style="padding: 8px"><b>E5</b></td>
+                  <td style="padding: 8px">base-v2</td>
+                  <td style="padding: 8px">DeBERTa-V3</td>
+                  <td style="text-align: center; padding: 8px; font-weight: bold; color: #283593">768</td>
+                  <td style="text-align: center; padding: 8px">110M</td>
+                  <td style="padding: 8px">CCNet + web data</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #eee; background-color: #e8eaf6">
+                  <td style="padding: 8px"><b>GTE</b></td>
+                  <td style="padding: 8px">base</td>
+                  <td style="padding: 8px">DeBERTa-V3</td>
+                  <td style="text-align: center; padding: 8px; font-weight: bold; color: #283593">768</td>
+                  <td style="text-align: center; padding: 8px">110M</td>
+                  <td style="padding: 8px">MS MARCO + public datasets</td>
+                </tr>
+
+                <!-- 384 dimension -->
+                <tr style="border-bottom: 1px solid #eee; background-color: #e3f2fd">
+                  <td style="padding: 8px"><b>BAAI BGE</b></td>
+                  <td style="padding: 8px">small-v1.5</td>
+                  <td style="padding: 8px">DeBERTa-V3</td>
+                  <td style="text-align: center; padding: 8px; font-weight: bold; color: #0d47a1">384</td>
+                  <td style="text-align: center; padding: 8px">33M</td>
+                  <td style="padding: 8px">330M+ text pairs</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #eee; background-color: #e3f2fd">
+                  <td style="padding: 8px"><b>E5</b></td>
+                  <td style="padding: 8px">small-v2</td>
+                  <td style="padding: 8px">DeBERTa-V3</td>
+                  <td style="text-align: center; padding: 8px; font-weight: bold; color: #0d47a1">384</td>
+                  <td style="text-align: center; padding: 8px">33M</td>
+                  <td style="padding: 8px">CCNet + web data</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #eee; background-color: #e3f2fd">
+                  <td style="padding: 8px"><b>GTE</b></td>
+                  <td style="padding: 8px">small</td>
+                  <td style="padding: 8px">DeBERTa-V3</td>
+                  <td style="text-align: center; padding: 8px; font-weight: bold; color: #0d47a1">384</td>
+                  <td style="text-align: center; padding: 8px">33M</td>
+                  <td style="padding: 8px">MS MARCO + public datasets</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+<!-- Parameters View -->
+<div id="parameters-content" class="tab-content">
+  <div style="overflow-x: auto">
+    <table style="width: 100%; border-collapse: collapse">
+      <thead>
+        <tr>
+          <th
+            style="
+              text-align: left;
+              padding: 8px;
+              border-bottom: 2px solid #ddd;
+            "
+          >
+            Model Family
+          </th>
+          <th
+            style="
+              text-align: left;
+              padding: 8px;
+              border-bottom: 2px solid #ddd;
+            "
+          >
+            Variant
+          </th>
+          <th
+            style="
+              text-align: left;
+              padding: 8px;
+              border-bottom: 2px solid #ddd;
+            "
+          >
+            Architecture
+          </th>
+          <th
+            style="
+              text-align: center;
+              padding: 8px;
+              border-bottom: 2px solid #ddd;
+            "
+          >
+            Dimension
+          </th>
+          <th
+            style="
+              text-align: center;
+              padding: 8px;
+              border-bottom: 2px solid #ddd;
+            "
+          >
+            Parameters
+          </th>
+          <th
+            style="
+              text-align: left;
+              padding: 8px;
+              border-bottom: 2px solid #ddd;
+            "
+          >
+            Training Data
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- T5-based Variants with 770M Parameters -->
+        <tr style="border-bottom: 1px solid #eee">
+          <td style="padding: 8px">T5-based</td>
+          <td style="padding: 8px">gtr-t5-large</td>
+          <td style="padding: 8px">T5 encoder</td>
+          <td style="text-align: center; padding: 8px">768</td>
+          <td style="text-align: center; padding: 8px">770M</td>
+          <td style="padding: 8px">C4 + MS MARCO</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #eee">
+          <td style="padding: 8px">T5-based</td>
+          <td style="padding: 8px">sentence-t5-large</td>
+          <td style="padding: 8px">T5 encoder</td>
+          <td style="text-align: center; padding: 8px">768</td>
+          <td style="text-align: center; padding: 8px">770M</td>
+          <td style="padding: 8px">C4 + NLI datasets</td>
+        </tr>
+
+        <!-- UAE Variant -->
+        <tr style="border-bottom: 1px solid #eee">
+          <td style="padding: 8px">UAE</td>
+          <td style="padding: 8px">large-v1</td>
+          <td style="padding: 8px">RoBERTa</td>
+          <td style="text-align: center; padding: 8px">1024</td>
+          <td style="text-align: center; padding: 8px">355M</td>
+          <td style="padding: 8px">Adversarial training</td>
+        </tr>
+
+        <!-- BAAI BGE Variants with 335M, 110M, and 33M Parameters -->
+        <tr style="border-bottom: 1px solid #eee">
+          <td style="padding: 8px">BAAI BGE</td>
+          <td style="padding: 8px">large-v1.5</td>
+          <td style="padding: 8px">DeBERTa-V3</td>
+          <td style="text-align: center; padding: 8px">1024</td>
+          <td style="text-align: center; padding: 8px">335M</td>
+          <td style="padding: 8px">330M+ text pairs</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #eee">
+          <td style="padding: 8px">BAAI BGE</td>
+          <td style="padding: 8px">base-v1.5</td>
+          <td style="padding: 8px">DeBERTa-V3</td>
+          <td style="text-align: center; padding: 8px">768</td>
+          <td style="text-align: center; padding: 8px">110M</td>
+          <td style="padding: 8px">330M+ text pairs</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #eee">
+          <td style="padding: 8px">BAAI BGE</td>
+          <td style="padding: 8px">small-v1.5</td>
+          <td style="padding: 8px">DeBERTa-V3</td>
+          <td style="text-align: center; padding: 8px">384</td>
+          <td style="text-align: center; padding: 8px">33M</td>
+          <td style="padding: 8px">330M+ text pairs</td>
+        </tr>
+
+        <!-- E5 Variants with 335M, 110M, and 33M Parameters -->
+        <tr style="border-bottom: 1px solid #eee">
+          <td style="padding: 8px">E5</td>
+          <td style="padding: 8px">large-v2</td>
+          <td style="padding: 8px">DeBERTa-V3</td>
+          <td style="text-align: center; padding: 8px">1024</td>
+          <td style="text-align: center; padding: 8px">335M</td>
+          <td style="padding: 8px">CCNet + web data</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #eee">
+          <td style="padding: 8px">E5</td>
+          <td style="padding: 8px">base-v2</td>
+          <td style="padding: 8px">DeBERTa-V3</td>
+          <td style="text-align: center; padding: 8px">768</td>
+          <td style="text-align: center; padding: 8px">110M</td>
+          <td style="padding: 8px">CCNet + web data</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #eee">
+          <td style="padding: 8px">E5</td>
+          <td style="padding: 8px">small-v2</td>
+          <td style="padding: 8px">DeBERTa-V3</td>
+          <td style="text-align: center; padding: 8px">384</td>
+          <td style="text-align: center; padding: 8px">33M</td>
+          <td style="padding: 8px">CCNet + web data</td>
+        </tr>
+
+        <!-- GTE Variants with 335M, 110M, and 33M Parameters -->
+        <tr style="border-bottom: 1px solid #eee">
+          <td style="padding: 8px">GTE</td>
+          <td style="padding: 8px">large</td>
+          <td style="padding: 8px">DeBERTa-V3</td>
+          <td style="text-align: center; padding: 8px">1024</td>
+          <td style="text-align: center; padding: 8px">335M</td>
+          <td style="padding: 8px">MS MARCO + public datasets</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #eee">
+          <td style="padding: 8px">GTE</td>
+          <td style="padding: 8px">base</td>
+          <td style="padding: 8px">DeBERTa-V3</td>
+          <td style="text-align: center; padding: 8px">768</td>
+          <td style="text-align: center; padding: 8px">110M</td>
+          <td style="padding: 8px">MS MARCO + public datasets</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #eee">
+          <td style="padding: 8px">GTE</td>
+          <td style="padding: 8px">small</td>
+          <td style="padding: 8px">DeBERTa-V3</td>
+          <td style="text-align: center; padding: 8px">384</td>
+          <td style="text-align: center; padding: 8px">33M</td>
+          <td style="padding: 8px">MS MARCO + public datasets</td>
+        </tr>
+
+        <!-- MXBai Variant with 335M Parameters -->
+        <tr style="border-bottom: 1px solid #eee">
+          <td style="padding: 8px">MXBai</td>
+          <td style="padding: 8px">embed-large-v1</td>
+          <td style="padding: 8px">DeBERTa-V3</td>
+          <td style="text-align: center; padding: 8px">1024</td>
+          <td style="text-align: center; padding: 8px">335M</td>
+          <td style="padding: 8px">Not public</td>
+        </tr>
+
+        <!-- T5-based Variants with 220M Parameters -->
+        <tr style="border-bottom: 1px solid #eee">
+          <td style="padding: 8px">T5-based</td>
+          <td style="padding: 8px">gtr-t5-base</td>
+          <td style="padding: 8px">T5 encoder</td>
+          <td style="text-align: center; padding: 8px">768</td>
+          <td style="text-align: center; padding: 8px">220M</td>
+          <td style="padding: 8px">C4 + MS MARCO</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #eee">
+          <td style="padding: 8px">T5-based</td>
+          <td style="padding: 8px">sentence-t5-base</td>
+          <td style="padding: 8px">T5 encoder</td>
+          <td style="text-align: center; padding: 8px">768</td>
+          <td style="text-align: center; padding: 8px">220M</td>
+          <td style="padding: 8px">C4 + NLI datasets</td>
+        </tr>
+
+        <!-- BAAI BGE Variants with 110M and 33M Parameters already listed above -->
+
+        <!-- OpenAI Variants with "-" Parameters -->
+        <tr style="border-bottom: 1px solid #eee">
+          <td style="padding: 8px">OpenAI</td>
+          <td style="padding: 8px">text-embedding-3-large</td>
+          <td style="padding: 8px">Proprietary</td>
+          <td style="text-align: center; padding: 8px">3072</td>
+          <td style="text-align: center; padding: 8px">-</td>
+          <td style="padding: 8px">Not public</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #eee">
+          <td style="padding: 8px">OpenAI</td>
+          <td style="padding: 8px">text-embedding-3-small</td>
+          <td style="padding: 8px">Proprietary</td>
+          <td style="text-align: center; padding: 8px">1536</td>
+          <td style="text-align: center; padding: 8px">-</td>
+          <td style="padding: 8px">Not public</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      function showModelView(viewId) {
+        // Hide all content
+        document.querySelectorAll(".model-content .tab-content").forEach((content) => {
+          content.classList.remove("active");
+        });
+
+        // Show selected content
+        document.getElementById(viewId + "-content").classList.add("active");
+
+        // Update button states
+        document.querySelectorAll(".model-tabs .tab-button").forEach((button) => {
+          button.classList.remove("active");
+        });
+        document
+          .querySelector(`.model-tabs [onclick="showModelView('${viewId}')"]`)
+          .classList.add("active");
+      }
+    </script>
+
+    <!-- Reuse existing tab styles -->
+    <style>
+      .model-tabs {
+        display: flex;
+        gap: 0.5em;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 0.5em;
+      }
+
+      /* Reuse other existing tab styles */
+    </style>
+
     <li>
       <h3 id="dataset-selection">Dataset Selection</h3>
       Each dataset we tested was one of the MTEB embedding language model
@@ -612,16 +1322,21 @@ We can
       documents validation, since we were computationally constrained for this
       project.
       <!-- TODO: @Adriano, explain what happened here. -->
-      <pre><code class="language-python">
-  DATASETS = [
-    "arguana",    # Around 10K Short documents
-    "fiqa",       # Around 50K, shortened to 20K
-    "scidocs",    # Around 25K, shortened to 20K
-    "nfcorpus",   # Around 5K
-    "hotpotqa",   # Over 100K, shortened to 20K
-    "trec-covid", # At least 20K, shortened to 20K
-  ]
-    </code></pre>
+      <details>
+        <summary style="cursor: pointer; padding: 8px; background-color: #f5f5f5; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 8px; margin-top: 20px">
+          <i class="fas fa-code" style="margin-right: 8px;"></i>View Dataset Names
+        </summary>
+        <pre><code class="language-python">
+          DATASETS = [
+          "arguana",    # Around 10K Short documents
+          "fiqa",       # Around 50K, shortened to 20K
+          "scidocs",    # Around 25K, shortened to 20K
+          "nfcorpus",   # Around 5K
+          "hotpotqa",   # Over 100K, shortened to 20K
+          "trec-covid", # At least 20K, shortened to 20K
+        ]
+        </code></pre>
+      </details>
 
       <p>You can read more about the datasets below:</p>
       <style>
@@ -638,7 +1353,7 @@ We can
           <li style="margin-bottom: 1.5em">
             <details>
               <summary
-                style="
+                    style="
                   display: flex;
                   gap: 1em;
                   align-items: baseline;
@@ -668,7 +1383,7 @@ We can
           <li style="margin-bottom: 1.5em">
             <details>
               <summary
-                style="
+                    style="
                   display: flex;
                   gap: 1em;
                   align-items: baseline;
@@ -698,7 +1413,7 @@ We can
           <li style="margin-bottom: 1.5em">
             <details>
               <summary
-                style="
+                    style="
                   display: flex;
                   gap: 1em;
                   align-items: baseline;
@@ -727,7 +1442,7 @@ We can
           <li style="margin-bottom: 1.5em">
             <details>
               <summary
-                style="
+                    style="
                   display: flex;
                   gap: 1em;
                   align-items: baseline;
@@ -757,7 +1472,7 @@ We can
           <li style="margin-bottom: 1.5em">
             <details>
               <summary
-                style="
+                    style="
                   display: flex;
                   gap: 1em;
                   align-items: baseline;
@@ -787,7 +1502,7 @@ We can
           <li style="margin-bottom: 1.5em">
             <details>
               <summary
-                style="
+                    style="
                   display: flex;
                   gap: 1em;
                   align-items: baseline;
@@ -810,11 +1525,11 @@ We can
                 the CORD-19 collection. Includes queries from biomedical
                 researchers about COVID-19 and relevant document judgments,
                 designed to evaluate biomedical literature search systems.
-              </div>
+          </div>
             </details>
           </li>
         </ul>
-      </div>
+        </div>
     </li>
 
     <li>
@@ -861,7 +1576,7 @@ We can
 
       <ul>
         <li
-          style="
+                    style="
             margin-bottom: 1.5em;
             display: flex;
             gap: 1em;
@@ -902,7 +1617,7 @@ We can
         </li>
         <!-- Note: Adriano maybe wants to swap intial with linear connectivity -->
         <li
-          style="
+                    style="
             margin-bottom: 1.5em;
             display: flex;
             gap: 1em;
@@ -933,7 +1648,7 @@ We can
           </div>
         </li>
         <li
-          style="
+                    style="
             margin-bottom: 1.5em;
             display: flex;
             gap: 1em;
@@ -992,7 +1707,7 @@ We can
         VECTOR_SEARCH_TEXT_SPLITTER_CHUNK_OVERLAP=25
         BATCH_SIZE=64
         CHUNK_SIZE=256
-      </code></pre>
+    </code></pre>
     </li>
   </ol>
 
@@ -1013,7 +1728,8 @@ We can
     ></iframe>
     <figcaption>
       CKA Matrix measuring representational similarity between embedding models
-      with text sampled from ArguAna.
+      with text sampled from ArguAna. Note that the larger OpenAI models were
+      excluded from this metric due to time constraints.
     </figcaption>
   </figure>
 
@@ -1036,6 +1752,8 @@ We can
     matrix not included in the reference paper.
     <!-- idk if this explanation is required but word count go brr I guess -->
     <!-- Also I think the control was dimensionality 768? -->
+    <!-- Also heck this matrix may be messed up? GAAHH -->
+    <!-- Do these support or line up with Beyond Benchmarks? -->
   </p>
 
   <p>
@@ -1043,56 +1761,129 @@ We can
     from other embeddings, getting a similarity score of only \(0.10\) to
     \(0.16\) while the strongest similarities are all the way up to \(1.00\)
     (Approximately-complete similarity) between mxbai-embed-large-v1 and
-    UAE-Large-V1. Just looking at these preliminary similarity scores, we would
-    predict that these two models have stitch-connectivity.
+    UAE-Large-V1, models from different companies, both with embedding dimension
+    \(1024\). Just looking at these preliminary similarity scores, we
+    hypothesize that these two models have stitch-connectivity.
   </p>
-  <!-- TODO: Compare with -->
 
-  <!-- <h3 id="domain-performance"> (FILLER) Domain-Specific Performance</h3>
-  <p>Translation quality varied significantly across domains:</p>
-  <ul>
-    <li><b>News Articles:</b> 0.89 mean cosine similarity</li>
-    <li><b>Academic Papers:</b> 0.82 mean cosine similarity</li>
-    <li><b>Code Snippets:</b> 0.67 mean cosine similarity</li>
-  </ul> -->
+  <p>
+    The lowest similarity we observe is \(0.72\) between bge-small-en-v1.5 and
+    e5-large-v2 of dimensions \(384\) and \(1024\) respectively. Still quite a
+    high similarity in representations. We hypothesized models differing in
+    scale such as these would have a lower representational similarity and
+    hypothesize that these two models will not have stitch-connectivity.
+  </p>
+
+  <!-- A measurement of cka per difference in their dimensionality helpful? -->
+
+  <p>
+    Unfortunately, we were unable to evaluate the OpenAI models due to time
+    constraints, but we would expect that the CKA values between these models of
+    even higher scale and dimensionality than e5-large-v2 will have even less
+    similarity with a smaller model like bge-small-en-v1.5. We hypothesize that,
+    when we analyze the stitch connectivity, that the MSE will be even higher
+    between bge-small-en-v1.5 and our largest model,
+    openai/text-embedding-3-large with dimension \(3072\).
+  </p>
 
   <h3 id="results-measuring-connectivity">Measuring Stitch-Connectivity</h3>
-  <div class="l-screen-inset">
+  <hr />
+  <div class="l-screen-inset" style="margin-left: 5em">
     <!-- Tab Navigation -->
+    <b style="margin-bottom: 1em"
+      >Validation MSE and MAE of Affine Stitch Across Datasets</b
+    >
     <div class="dataset-tabs" style="margin-bottom: 1em">
-      <button class="tab-button active" onclick="showDataset('average')">
+      <button
+        class="tab-button active important"
+        onclick="showDataset('average')"
+      >
+        <i
+          class="fas fa-calculator"
+          style="color: #666; width: 1.5em; text-align: center"
+        ></i>
         Weighted Average
       </button>
       <button class="tab-button" onclick="showDataset('arguana')">
+        <i
+          class="fas fa-comments"
+          style="color: #666; width: 1.5em; text-align: center"
+        ></i>
         ArguAna
       </button>
-      <button class="tab-button" onclick="showDataset('fiqa')">FiQA</button>
+      <button class="tab-button" onclick="showDataset('fiqa')">
+        <i
+          class="fas fa-chart-line"
+          style="color: #666; width: 1.5em; text-align: center"
+        ></i>
+        FiQA
+      </button>
       <button class="tab-button" onclick="showDataset('scidocs')">
+        <i
+          class="fas fa-flask"
+          style="color: #666; width: 1.5em; text-align: center"
+        ></i>
         SciDocs
       </button>
       <button class="tab-button" onclick="showDataset('nfcorpus')">
+        <i
+          class="fas fa-heartbeat"
+          style="color: #666; width: 1.5em; text-align: center"
+        ></i>
         NFCorpus
       </button>
       <button class="tab-button" onclick="showDataset('hotpotqa')">
+        <i
+          class="fas fa-question-circle"
+          style="color: #666; width: 1.5em; text-align: center"
+        ></i>
         HotpotQA
       </button>
       <button class="tab-button" onclick="showDataset('trec-covid')">
+        <i
+          class="fas fa-virus"
+          style="color: #666; width: 1.5em; text-align: center"
+        ></i>
         TREC-COVID
       </button>
     </div>
 
     <!-- Tab Content -->
     <div class="dataset-content">
+      <style>
+        .dataset-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 2em;
+          max-width: 100%;
+          margin: 0 auto;
+        }
+
+        .dataset-grid figure {
+          margin: 0;
+          width: 100%;
+        }
+
+        .dataset-grid iframe {
+          width: 100%;
+          height: 600px;
+          border: none;
+        }
+
+        .dataset-grid figcaption {
+          margin-top: 1em;
+          text-align: center;
+          color: #666;
+        }
+      </style>
+
       <!-- Weighted Average -->
       <div id="average-content" class="tab-content active">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2em">
+        <div class="dataset-grid">
           <figure>
             <b>Mean Squared Error (MSE)</b>
             <iframe
               src="./figs/adriano/figs/html/weightedmean_olsaffine_mse_withlog_validation.html"
-              width="800"
-              height="600"
-              frameborder="0"
               scrolling="no"
             ></iframe>
             <figcaption>
@@ -1104,9 +1895,6 @@ We can
             <b>Mean Absolute Error (MAE)</b>
             <iframe
               src="./figs/adriano/figs/html/weightedmean_olsaffine_mae_withlog_validation.html"
-              width="800"
-              height="600"
-              frameborder="0"
               scrolling="no"
             ></iframe>
             <figcaption>
@@ -1117,17 +1905,13 @@ We can
         </div>
       </div>
 
-      <!-- Individual Dataset Tabs -->
       <!-- ArguAna -->
       <div id="arguana-content" class="tab-content">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2em">
+        <div class="dataset-grid">
           <figure>
             <b>Mean Squared Error (MSE)</b>
             <iframe
               src="./figs/adriano/figs/html/arguana_olsaffine_mse_withlog_validation.html"
-              width="800"
-              height="600"
-              frameborder="0"
               scrolling="no"
             ></iframe>
             <figcaption>
@@ -1139,9 +1923,6 @@ We can
             <b>Mean Absolute Error (MAE)</b>
             <iframe
               src="./figs/adriano/figs/html/arguana_olsaffine_mae_withlog_validation.html"
-              width="800"
-              height="600"
-              frameborder="0"
               scrolling="no"
             ></iframe>
             <figcaption>
@@ -1154,14 +1935,11 @@ We can
 
       <!-- FiQa -->
       <div id="fiqa-content" class="tab-content">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2em">
+        <div class="dataset-grid">
           <figure>
             <b>Mean Squared Error (MSE)</b>
             <iframe
               src="./figs/adriano/figs/html/fiqa_olsaffine_mse_withlog_validation.html"
-              width="800"
-              height="600"
-              frameborder="0"
               scrolling="no"
             ></iframe>
             <figcaption>
@@ -1173,9 +1951,6 @@ We can
             <b>Mean Absolute Error (MAE)</b>
             <iframe
               src="./figs/adriano/figs/html/fiqa_olsaffine_mae_withlog_validation.html"
-              width="800"
-              height="600"
-              frameborder="0"
               scrolling="no"
             ></iframe>
             <figcaption>
@@ -1188,14 +1963,11 @@ We can
 
       <!-- SciDocs -->
       <div id="scidocs-content" class="tab-content">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2em">
+        <div class="dataset-grid">
           <figure>
             <b>Mean Squared Error (MSE)</b>
             <iframe
               src="./figs/adriano/figs/html/scidocs_olsaffine_mse_withlog_validation.html"
-              width="800"
-              height="600"
-              frameborder="0"
               scrolling="no"
             ></iframe>
             <figcaption>
@@ -1207,9 +1979,6 @@ We can
             <b>Mean Absolute Error (MAE)</b>
             <iframe
               src="./figs/adriano/figs/html/scidocs_olsaffine_mae_withlog_validation.html"
-              width="800"
-              height="600"
-              frameborder="0"
               scrolling="no"
             ></iframe>
             <figcaption>
@@ -1222,14 +1991,11 @@ We can
 
       <!-- NfCorpus -->
       <div id="nfcorpus-content" class="tab-content">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2em">
+        <div class="dataset-grid">
           <figure>
             <b>Mean Squared Error (MSE)</b>
             <iframe
               src="./figs/adriano/figs/html/nfcorpus_olsaffine_mse_withlog_validation.html"
-              width="800"
-              height="600"
-              frameborder="0"
               scrolling="no"
             ></iframe>
             <figcaption>
@@ -1241,9 +2007,6 @@ We can
             <b>Mean Absolute Error (MAE)</b>
             <iframe
               src="./figs/adriano/figs/html/nfcorpus_olsaffine_mae_withlog_validation.html"
-              width="800"
-              height="600"
-              frameborder="0"
               scrolling="no"
             ></iframe>
             <figcaption>
@@ -1256,29 +2019,22 @@ We can
 
       <!-- HotPot QA -->
       <div id="hotpotqa-content" class="tab-content">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2em">
+        <div class="dataset-grid">
           <figure>
             <b>Mean Squared Error (MSE)</b>
             <iframe
               src="./figs/adriano/figs/html/hotpotqa_olsaffine_mse_withlog_validation.html"
-              width="800"
-              height="600"
-              frameborder="0"
               scrolling="no"
             ></iframe>
             <figcaption>
               Mean Squared Error (MSE) loss visualization across model pairs
               (Training Objective) - HotpotQA Dataset
-              <!-- <--- [CHANGED] Caption -->
             </figcaption>
           </figure>
           <figure>
             <b>Mean Absolute Error (MAE)</b>
             <iframe
               src="./figs/adriano/figs/html/hotpotqa_olsaffine_mae_withlog_validation.html"
-              width="800"
-              height="600"
-              frameborder="0"
               scrolling="no"
             ></iframe>
             <figcaption>
@@ -1291,14 +2047,11 @@ We can
 
       <!-- TrecCovid -->
       <div id="trec-covid-content" class="tab-content">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2em">
+        <div class="dataset-grid">
           <figure>
             <b>Mean Squared Error (MSE)</b>
             <iframe
-              src="./figs/adriano/figs/html/treccovid_olsaffine_mse_withlog_validation.html"
-              width="800"
-              height="600"
-              frameborder="0"
+              src="./figs/adriano/figs/html/trec-covid_olsaffine_mse_withlog_validation.html"
               scrolling="no"
             ></iframe>
             <figcaption>
@@ -1309,10 +2062,7 @@ We can
           <figure>
             <b>Mean Absolute Error (MAE)</b>
             <iframe
-              src="./figs/adriano/figs/html/treccovid_olsaffine_mae_withlog_validation.html"
-              width="800"
-              height="600"
-              frameborder="0"
+              src="./figs/adriano/figs/html/trec-covid_olsaffine_mae_withlog_validation.html"
               scrolling="no"
             ></iframe>
             <figcaption>
@@ -1358,6 +2108,25 @@ We can
     .tab-content.active {
       display: block;
     }
+
+    /* Important tab styling */
+    .dataset-tabs .tab-button.important {
+      border: 2px solid #ffd700;
+      font-weight: bold;
+      background-color: rgba(255, 215, 0, 0.05);
+    }
+
+    /* Important tab hover state */
+    .dataset-tabs .tab-button.important:hover {
+      background-color: rgba(255, 215, 0, 0.1);
+    }
+
+    /* Important tab active state - this will override the default active state */
+    .dataset-tabs .tab-button.important.active {
+      background-color: rgba(255, 215, 0, 0.2);
+      border: 2px solid #ffd700;
+      font-weight: bold;
+    }
   </style>
 
   <script>
@@ -1379,16 +2148,147 @@ We can
         .classList.add("active");
     }
   </script>
+  <hr />
+  <p>
+    <i>Note: The axis labels are not in the same order as in the CKA matrix.</i>
+  </p>
+
+  <p><b>At a Distance</b></p>
+
+  <div class="l-page side">
+    <figure>
+      <img src="./figs/MSE_top_performing.png" alt="Top performing stitches." />
+      <figcaption>Top performing stitches</figcaption>
+    </figure>
+  </div>
+
+  <div class="l-page side">
+    <figure>
+      <img
+        src="./figs/MSE_worst_performing.png"
+        alt="Least compatible native embedding space and worst performing stitches."
+      />
+      <figcaption>
+        Least compatible native embedding space and worst performing stitches.
+      </figcaption>
+    </figure>
+  </div>
 
   <p>
-    The plots above show the mean errors in stitching from embeddings of the
-    source model (x-axis) to embeddings of the target model (y-axis). We decided
-    to sort this graph by dimension
-    <!-- Um why doesn't this match the actual dimension?? AAAA Base and large the same. HECK. Need to fix. -->
-    then org Lower values mean better results.
-    <!-- TODO: Include a random gaussian linear layer to see how well it performs. -->
-    As seen from the
+    The plots above show the log mean errors in stitching from embeddings of the
+    source model (x-axis) to embeddings of the target model (y-axis) using our
+    OLS-derived affine function.
   </p>
+
+  <p>
+    Overall, the affine stitches performed fairly well, ranging from a log MSE
+    of \(-5.63\) (0.35% MSE) to \(-3.16\) (4.24% MSE).
+  </p>
+
+  <p>The top four performing stitches were:</p>
+  <ol>
+    <li>(\(-5.63\)) mxbai-embed-large-v1 to UAE-Large-V1</li>
+    <li>(\(-5.62\)) UAE-Large-V1 to mxbai-embed-large-v1</li>
+    <li>(\(-5.12\)) UAE-Large-V1 to bge-large-en-v1.5</li>
+    <li>(\(-5.11\)) bge-large-en-v1.5 to UAE-Large-V1</li>
+  </ol>
+
+  <p>
+    All of these models are of dimension \(1024\) and and we had hypothesized
+    that they would do fairly well.
+  </p>
+
+  <p>
+    The bottom four performing stitches were all unsurprisingly stitched from
+    bge-small-en-v1.5, one of our two smallest models with dimension \(384\). We
+    had hypothesized that this would be the case. The only decently performing
+    stitch with this native space was bge-small-en-v1.5 to gte-small, another
+    model of dimension \(384\). This too is unsurprising.
+  </p>
+
+  <p>
+    However, what caught us off guard is that stitches from gte-small to other
+    embedding spaces performed on-par with models that were far larger,
+    including OpenAI's text-embedding-3-small, a model nearly 4 times its size.
+    If text-emedding-3-small was storing a more expressive representation of
+    semantic features than text-embedding-3-small, then how come affine stitches
+    had similar performance when operating from their embeddings? How come
+    bge-small-en-v1.5
+  </p>
+
+  <!-- <p>
+    Calling back to our predictions from CKA in the previous section,
+  </p> -->
+
+  <p><b>Native Space Performance</b></p>
+
+  <div class="l-page side">
+    <figure>
+      <img
+        src="./figs/MSE_varying_native_uae_large.png"
+        alt="Highest-variance native embedding space."
+      />
+      <figcaption>Highest-variance native embedding space.</figcaption>
+    </figure>
+  </div>
+
+  <div class="l-page side">
+    <figure>
+      <img
+        src="./figs/MSE_largest_to_smallest.png"
+        alt="Largest to smallest comparison."
+      />
+      <figcaption>Largest to smallest comparison.</figcaption>
+    </figure>
+  </div>
+
+  <p><b>Target Space Performance</b></p>
+  <div class="l-page side">
+    <figure>
+      <img
+        src="./figs/MSE_most_compatible_native.png"
+        alt="Most compatible native embedding spaces."
+      />
+      <figcaption>Most compatible native embedding spaces.</figcaption>
+    </figure>
+  </div>
+  <!-- Omg having a summary average column would be amazing + the random -->
+
+  <div class="l-page side">
+    <figure>
+      <img
+        src="./figs/MSE_expected_worst_target.png"
+        alt="Expected worst stitch performance to highest quality embedding space."
+      />
+      <figcaption>
+        Expected worst stitch performance to highest quality embedding space.
+      </figcaption>
+    </figure>
+  </div>
+
+  <!-- 
+          MODEL_NAMES = [
+        # MODEL_NAME                    EMBEDDING DIMENSION
+        "WhereIsAI/UAE-Large-V1",                    # 1024
+        "BAAI/bge-base-en-v1.5",                     # 768
+        "BAAI/bge-large-en-v1.5",                    # 1024
+        "BAAI/bge-small-en-v1.5",                    # 384
+        "intfloat/e5-base-v2",                       # 768
+        "intfloat/e5-large-v2",                      # 1024
+        "intfloat/e5-small-v2",                      # 384
+        "thenlper/gte-base",                         # 768
+        "thenlper/gte-large",                        # 1024
+        "thenlper/gte-small",                        # 384
+        "sentence-transformers/gtr-t5-base",         # 768
+        "sentence-transformers/gtr-t5-large",        # 768
+        "mixedbread-ai/mxbai-embed-large-v1",        # 1024
+        "sentence-transformers/sentence-t5-base",     # 768
+        "sentence-transformers/sentence-t5-large",    # 768
+        "openai/text-embedding-3-large",             # 3072
+        "openai/text-embedding-3-small",             # 1536
+        ]
+  
+  -->
 
   <h2 id="discussion">05 Discussion</h2>
   <p>
@@ -1434,8 +2334,7 @@ We can
   >
     <pre
       style="
-        font-family: &quot;Consolas&quot;, &quot;Monaco&quot;,
-          &quot;Courier New&quot;, monospace;
+        font-family: Consolas, Courier New, monospace;
         font-size: 0.9em;
         margin: 0;
         white-space: pre-wrap;
@@ -1752,7 +2651,9 @@ We can
     @inproceedings{andrew_deep_2013,
       title     = {Deep {Canonical} {Correlation} {Analysis}},
       url       = {https://proceedings.mlr.press/v28/andrew13.html},
-      abstract  = {We introduce Deep Canonical Correlation Analysis (DCCA), a method to learn complex nonlinear transformations of two views of data such that the resulting representations are highly linearly correlated...},
+      abstract  = {We introduce Deep Canonical Correlation Analysis (DCCA), a method to learn
+                complex nonlinear transformations of two views of data such that the resulting
+                representations are highly linearly correlated...},
       language  = {en},
       urldate   = {2024-11-15},
       booktitle = {Proceedings of the 30th {International} {Conference} on {Machine} {Learning}},
@@ -1767,7 +2668,8 @@ We can
       title     = {Jailbreaking {Leading} {Safety}-{Aligned} {LLMs} with {Simple} {Adaptive} {Attacks}},
       url       = {http://arxiv.org/abs/2404.02151},
       doi       = {10.48550/arXiv.2404.02151},
-      abstract  = {We show that even the most recent safety-aligned LLMs are not robust to simple adaptive jailbreaking attacks...},
+      abstract  = {We show that even the most recent safety-aligned LLMs are not robust to
+                simple adaptive jailbreaking attacks...},
       urldate   = {2024-11-15},
       publisher = {arXiv},
       author    = {Andriushchenko, Maksym and Croce, Francesco and Flammarion, Nicolas},
