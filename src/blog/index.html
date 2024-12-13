@@ -608,28 +608,33 @@ We can
       excluded the Cohere models since we did not have API access (which is not
       free except at prohibitively low request rates) and the Mistral model,
       since it was too big for our GPU.
-      <pre><code class="language-python">
-        MODEL_NAMES = [
-        # MODEL_NAME                    EMBEDDING DIMENSION
-        "WhereIsAI/UAE-Large-V1",                    # 1024
-        "BAAI/bge-base-en-v1.5",                     # 768
-        "BAAI/bge-large-en-v1.5",                    # 1024
-        "BAAI/bge-small-en-v1.5",                    # 384
-        "intfloat/e5-base-v2",                       # 768
-        "intfloat/e5-large-v2",                      # 1024
-        "intfloat/e5-small-v2",                      # 384
-        "thenlper/gte-base",                         # 768
-        "thenlper/gte-large",                        # 1024
-        "thenlper/gte-small",                        # 384
-        "sentence-transformers/gtr-t5-base",         # 768
-        "sentence-transformers/gtr-t5-large",        # 768
-        "mixedbread-ai/mxbai-embed-large-v1",        # 1024
-        "sentence-transformers/sentence-t5-base",     # 768
-        "sentence-transformers/sentence-t5-large",    # 768
-        "openai/text-embedding-3-large",             # 3072
-        "openai/text-embedding-3-small",             # 1536
-        ]
-      </code></pre>
+      <details>
+        <summary style="cursor: pointer; padding: 8px; background-color: #f5f5f5; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 8px; margin-top: 20px">
+          <i class="fas fa-code" style="margin-right: 8px;"></i>View Model Names
+        </summary>
+        <pre><code class="language-python">
+          MODEL_NAMES = [
+          # MODEL_NAME                    EMBEDDING DIMENSION
+          "WhereIsAI/UAE-Large-V1",                    # 1024
+          "BAAI/bge-base-en-v1.5",                     # 768
+          "BAAI/bge-large-en-v1.5",                    # 1024
+          "BAAI/bge-small-en-v1.5",                    # 384
+          "intfloat/e5-base-v2",                       # 768
+          "intfloat/e5-large-v2",                      # 1024
+          "intfloat/e5-small-v2",                      # 384
+          "thenlper/gte-base",                         # 768
+          "thenlper/gte-large",                        # 1024
+          "thenlper/gte-small",                        # 384
+          "sentence-transformers/gtr-t5-base",         # 768
+          "sentence-transformers/gtr-t5-large",        # 768
+          "mixedbread-ai/mxbai-embed-large-v1",        # 1024
+          "sentence-transformers/sentence-t5-base",     # 768
+          "sentence-transformers/sentence-t5-large",    # 768
+          "openai/text-embedding-3-large",             # 3072
+          "openai/text-embedding-3-small",             # 1536
+          ]
+        </code></pre>
+      </details>
     </li>
 
     <b>Detailed Model Comparison Table</b>
@@ -1288,16 +1293,21 @@ We can
       documents validation, since we were computationally constrained for this
       project.
       <!-- TODO: @Adriano, explain what happened here. -->
-      <pre><code class="language-python">
-  DATASETS = [
-    "arguana",    # Around 10K Short documents
-    "fiqa",       # Around 50K, shortened to 20K
-    "scidocs",    # Around 25K, shortened to 20K
-    "nfcorpus",   # Around 5K
-    "hotpotqa",   # Over 100K, shortened to 20K
-    "trec-covid", # At least 20K, shortened to 20K
-  ]
-    </code></pre>
+      <details>
+        <summary style="cursor: pointer; padding: 8px; background-color: #f5f5f5; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 8px; margin-top: 20px">
+          <i class="fas fa-code" style="margin-right: 8px;"></i>View Dataset Names
+        </summary>
+        <pre><code class="language-python">
+          DATASETS = [
+          "arguana",    # Around 10K Short documents
+          "fiqa",       # Around 50K, shortened to 20K
+          "scidocs",    # Around 25K, shortened to 20K
+          "nfcorpus",   # Around 5K
+          "hotpotqa",   # Over 100K, shortened to 20K
+          "trec-covid", # At least 20K, shortened to 20K
+        ]
+        </code></pre>
+      </details>
 
       <p>You can read more about the datasets below:</p>
       <style>
