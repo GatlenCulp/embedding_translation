@@ -12,3 +12,4 @@ loguru
 nbformat>=4.2.0
 kaleido
 umap-learn
+jaxtyping
