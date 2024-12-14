@@ -1,0 +1,28 @@
+{
+  "template": "https://github.com/GatlenCulp/project-boilerplate",
+  "commit": "3220315556e43b1c06da4fe5e9124dd0add1916f",
+  "checkout": null,
+  "context": {
+    "cookiecutter": {
+      "author_email": "GatlenCulp@gmail.com",
+      "author_full_name": "Gatlen Culp",
+      "author_github_username": "GatlenCulp",
+      "author_website": "https://gatlen.notion.site",
+      "project_name": "LEAN",
+      "project_slug": "lean",
+      "project_short_description": "A final project for MIT's Deep Learning class",
+      "project_long_description": "A final project for MIT's Deep Learning class",
+      "github_repo": "lean",
+      "package_name": "lean",
+      "license": "MIT",
+      "meta_template_version": "1",
+      "meta_created_time": "YYYY-MM-DD HH:MM:SS",
+      "python_major_version": "3",
+      "python_minor_version": "12",
+      "use_docker": "y",
+      "use_github_actions": "y",
+      "_template": "https://github.com/GatlenCulp/project-boilerplate"
+    }
+  },
+  "directory": null
+}
