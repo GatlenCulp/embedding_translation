@@ -176,7 +176,25 @@ document.addEventListener("DOMContentLoaded", () => {
     containerSelector: "#table-system-2",
   });
 
-  // Create both table systems
-  createTableSystem(mseConfig);
-  createTableSystem(r2Config);
+// Example configuration for your third table system
+const mseMultiLayer = new TableConfig({
+    id: 3,
+    title: "MSE Validation",
+    datasets: mseConfig.datasets,  // Reuse the same datasets
+    metrics: [
+        { 
+        id: "mse",
+        name: "Mean Squared Error (MSE)",
+        isTrainingObjective: true 
+        }
+    ],
+    pathTemplate: "./figs/adriano/figs/html/{dataset}_olsaffine_mse_validation.html",
+    containerSelector: "#table-system-3"
+    });
+
+    
+    // Create both table systems
+    createTableSystem(mseConfig);
+    createTableSystem(r2Config);
+    createTableSystem(mseMultiLayer);
 });
