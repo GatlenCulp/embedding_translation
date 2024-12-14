@@ -2672,18 +2672,43 @@
     </div> -->
 
     <figure>
-      <iframe
-        src="figs/gatlen/html/mean_mse_vs_layers.html"
-        width="800"
-        height="600"
-        frameborder="0"
-        scrolling="no"></iframe>
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+        <img
+          src="figs/singular_values_plots/ols_nolog.png"
+          alt="ols_nolog sampling spectra"
+          width="200"
+          height="300" />
+        <img 
+          src="figs/singular_values_plots/ols_log.png"
+          alt="ols_log sampling spectra"
+          width="200"
+          height="300" />
+        <img
+          src="figs/singular_values_plots/nonlinear_nolog.png" 
+          alt="nonlinear_nolog sampling spectra"
+          width="200"
+          height="300" />
+        <img
+          src="figs/singular_values_plots/nonlinear_log.png"
+          alt="nonlinear_log sampling spectra"
+          width="200"
+          height="300" />
+      </div>
       <figcaption>
-        MSE as layers are increased (per stitch)
+        Plots of the singular values of randomly sampled weight matrices from different subsets of
+        the trained stitches. On the left are plots of the singular values and on the right are the
+        same plots in logspace. On the top are the plots for the matrices we trained to solve the Linear
+        MSE-minimization objective. On the bottom are the plots for the matrices that make up the layers
+        of deeper MLPs (from 2 up to 7 layers deep) trained on the same objective. From the distribution,
+        it's clear that these matrices do not represent rotations in the OLS-matrix case; however, they
+        are not extremely low rank either. They seem to stretch the space significantly in a few directions.
+        The MLP matrices seem to act more like rotations, but further investigation is required to better
+        understand the behavior of these mappings. For aesthetic reasons, 200 samples at random were used for
+        each plot (out of around 1600 available per plot).
       </figcaption>
     </figure>
 
-    <figure>
+    <!-- <figure>
       <iframe
         src="figs/gatlen/html/mse_vs_layers_all_pairs.html"
         width="800"
@@ -2693,7 +2718,7 @@
       <figcaption>
         MSE as layers are increased (per stitch)
       </figcaption>
-    </figure>
+    </figure> -->
 
     <h2 id="discussion">05 Discussion</h2>
     <p>
@@ -2705,16 +2730,18 @@
     </p>
 
     <h2 id="conclusion">06 Conclusion</h2>
-    <!-- TODO -->
+    <p>
+      Semantic representations are not linearly mappable and generally hard to map between with a simple least squares objective.
+    </p>
   </dt-article>
 
   <dt-appendix>
     <h3>📚 Cite this work</h3>
     <p style="margin-bottom: 1em">
-      If you found this work useful, please cite:
+      To showcase that our models were trained sufficiently observe these loss plots:
     </p>
 
-    <div
+    <!-- <div
       style="
         background: #f5f6f7;
         padding: 1.5em;
@@ -2740,15 +2767,9 @@
     year      = {2024},
     month     = {dec},
     url       = {},
-    abstract  = {Recent advances in Large Language Models (LLMs) have demonstrated their
-                remarkable ability to capture and manipulate semantic information. This
-                work investigates the extent to which different LLMs learn similar 
-                semantic representations despite variations in architecture, training
-                data, and initialization, revealing significant alignment between
-                models' semantic spaces.}
 }</pre
       >
-    </div>
+    </div> -->
 
     <h3>💻 Use our code</h3>
     <p style="margin-top: 1.5em; font-size: 0.9em; color: #666">
