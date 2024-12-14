@@ -561,30 +561,45 @@
       different language embedding models learn similar semantic representations
       despite variations in architecture, training data, and initialization.
       While previous work explored model similarity through top-k results and
-      Centered Kernel Alignment (CKA), yielding mixed results, we introduce a
-      linear connectivity analysis approach: training linear mappings between
-      embedding spaces. We define two spaces as connectivity-aligned if these
-      mappings achieve low mean squared error, indicating approximate
+      Centered Kernel Alignment (CKA), yielding mixed results, in the field of large language
+      embedding models, which we focus on, there is a gap: more modern similarity
+      quantifiation methods from Computer Vision, such as model stitching, which operationalizes the notion
+      of "similarity" in a way that emphasizes downstream utility, are not explored.
+      
+      We apply stitching by training linear and nonlinear (MLP) mappings, called
+      "stitches" between embedding spaces, which aim to biject between embeddings of
+      the same datapoints.
+      We define two spaces as connectivity-aligned if
+      stitches achieve low mean squared error, indicating approximate
       bijectivity.
     </p>
     <p>
-      Our analysis spans 6 embedding datasets (5,000-20,000 documents) and 18
+      Our analysis spans 6 embedding datasets (5,000-20,000 documents), 18
       models (between 20-30 layers, including both open-source and OpenAI
-      models). Results demonstrate significant connectivity-alignment between
-      most models' semantic spaces, with notable exceptions. These findings
-      support both the Linear Representation Hypothesis and, more tentatively,
-      the Platonic Representation Hypothesis. Practically, our approach could
-      reduce the cost of merging embedding datasets by a factor of 20 or more.
-      Our datasets, code, and results are publicly available on GitHub and
-      Hugging Face.
+      models), and stitches ranging from linear stitches to MLPs 7 layers deep, with
+      a focus on linear stitches.
+      We hoped that stitching would recover the similarity between models, aligning
+      with a strong interpretation of the platonic representation hypothesis. However,
+      things appear to be more complicated. Our results suggest that embedding
+      models are not linearly connectivity-aligned. Specifically,
+      linear stitches do not perform significantly better than mean estimators.
+      A brief foray into MLPs suggests that training shallow MLPs does not necessarily
+      work out of the box either, but more work remains to be done on non-linear stitches,
+      since we haven't fully maximized their potential here.
+      
+      Stitches are important, because their success can be used to determine operational,
+      and therefore useful, notions of representational similarity. Our findings buttress
+      the hypothesis that alignment metrics such as CKA are not always informative of
+      behavior or feature overlap between models.
     </p>
 
     <h2 id="introduction">00 Introduction & Terminology</h2>
     <p>
-      Modern language models convert text into dense vectors called embeddings,
-      which capture semantic meaning in a high-dimensional space. We investigate
-      whether different models learn similar semantic representations despite
-      variations in architecture, training data, and initialization. If these
+      Modern "embedding" language models convert text into dense vectors called embeddings,
+      which capture semantic meaning in a high-dimensional space, enabling downstream
+      usage such as for semantic search and visualization. We investigate
+      whether different embedding models learn similar semantic representations
+      despite variations in architecture, training data, and initialization. If these
       representations are indeed (approximately) universal, we could leverage
       this to efficiently translate between different models' embeddings.
     </p>
@@ -598,12 +613,11 @@
       <dt-cite key="caspari2024benchmarksevaluatingembeddingmodel"></dt-cite>
       explored embedding model representational similarity through techniques
       like top-k search retrieval results and Centered Kernel Alignment (CKA).
-      We take their methodology expand upon it here by systematically studying
+      We take their methodology and expand upon it here by systematically studying
       whether there exists a method to cheaply determine and translate between
-      embeddings of models with similar characteristics. Our approach reveals
-      whether models learn similar semantic features that can be recovered
-      through linear transformations, even if those features are encoded
-      differently across models.
+      embeddings of models with similar characteristics. Despite our initial hopes,
+      our approach gives further evidence that representations vary in more-than-trivial
+      ways.
     </p>
 
     <div class="l-page side">
@@ -724,10 +738,11 @@
     </ul>
 
     <p>
-      Our key hypothesis is that embedding models of similar scale (parameters,
-      training data size, etc.) are connectivity-aligned. The results confirm
-      this is a common phenomenon across many widely-used models, though some
-      interesting exceptions exist.
+      Our key hypothesis was that embedding models of similar scale (parameters,
+      training data size, etc.) are not only connectivity-aligned, but linearly so. We were also
+      curious as to whether a rotation would be sufficient.
+      The results suggest that they are in fact not linearly connectivity-aligned, and
+      that shallow MLPs require some finesse to achieve connectivity-alignment.
       <!-- Are there exceptions we found? delete/change otherwise -->
       This finding has both theoretical implications for understanding how
       language models represent meaning and practical applications for efficient
@@ -765,6 +780,7 @@
       computational overhead and compatibility challenges between workspaces.
     </p>
 
+    <h3 id="motivation-questions-asdf">The Big Picture</h3>
     <ul style="list-style: none; padding-left: 0">
       <li
         style="
@@ -780,12 +796,17 @@
           <b>Theoretical Foundations:</b> Our work investigates two fundamental
           hypotheses about how neural networks understand language. The
           <a href="https://phillipi.github.io/prh/"
-            >Platonic Representation Hypothesis</a
+            >Platonic Representation Hypothesis (PRH)</a
           >
           suggests that models naturally converge toward similar ways of
           representing meaning, even when trained differently. The Linear
-          Representation Hypothesis proposes these representations are linearly
-          decomposable, allowing simple transformations between models.
+          Representation Hypothesis (LRH) additionally proposes that these representations are encoded
+          in directions in the embedding space, suggesting that if the same
+          semantic features exist in two embedding spaces (by the PRH), but linearly encoded (LRH),
+          a simple linear transformation of one embedding should be able to recover most of another
+          model's corresponding
+          embedding by mapping between the most important features. Finding this conclusion would lend some credence
+          to these tantalizing hypotheses.
         </div>
       </li>
 
@@ -802,18 +823,18 @@
         <div>
           <b>Practical Impact:</b> The implications are significant:
           organizations could reduce computational costs by up to 95% using
-          lightweight translation layers instead of recomputing embeddings with
-          only a small cost in quality. Since these linear layers are
-          approximately 1/20th the size of full embedding models, tasks like
+          lightweight stitches instead of recomputing embeddings with
+          only a small cost in quality. Since these shallow MLPs are
+          approximately 5-25% the size of full embedding models, tasks like
           merging visualization datasets become dramatically more efficient.
-          This efficiency extends beyond cost savings to environmental impact,
+          <!-- This efficiency extends beyond cost savings to environmental impact,
           making AI systems more sustainable. This interoperability could
           encourage dataset producers to publish their text embeddings alongside
           the data itself to bootstrap fast and inexpensive training and even
           mix-and-matching decoders or distillations that have been trained on
           the embeddings produced by another model. While not directly explored
           in our research, this methodology could be helpful in identifying
-          dissimilar representations in models for better knowledge distillation
+          dissimilar representations in models for better knowledge distillation -->
           <dt-cite
             key="sahlgren2021sentenceembeddingsensembledistillation"></dt-cite>
           or potentially for interpretabiltiy or data attribution
@@ -835,21 +856,31 @@
           First, are embedding models linearly connectivity-aligned? Second,
           what is the minimal complexity needed for effective translation
           between embedding spaces? Finally, which types of models share more
-          similar representations? Understanding these relationships could
-          revolutionize how we deploy and scale AI systems.
+          similar representations?
+          <!-- Understanding these relationships could
+          revolutionize how we deploy and scale AI systems. -->
         </div>
       </li>
     </ul>
-
-    <h3>Looking Forward</h3>
+    
     <p>
+      We spend the majority of this blogpost diving more into the theory-relevant
+      results, rather than the cost-savings possible for semantic search systems.
+      However, it merits remembering that there are multiple angles through which
+      this work is useful. In the future we also imagine that deeper theoretical
+      knowledge could drive improvements in ML algorithms, to be more interpretable,
+      robust, efficient, or performant.
+    </p>
+
+    <!-- <h3>Looking Forward</h3> -->
+    <!-- <p>
       Beyond immediate applications in cost reduction and efficiency, this
       research opens new possibilities for AI development. Understanding how
       different models encode similar information could lead to more efficient
       training procedures, better model architectures, and eventually,
       standardized intermediate embedding spaces that facilitate easier
       interoperability between AI systems.
-    </p>
+    </p> -->
 
     <h2 id="relevant-work">02 Relevant Work</h2>
 
@@ -911,8 +942,10 @@
           <dt-cite key="cammarata_curve_2020"></dt-cite>
           <dt-cite key="schubert2021high-low"></dt-cite>
           <dt-cite key="olah2020zoom"></dt-cite>. We believe that such
-          functionally similar components correspond to similar internal
-          representations, and the language setting is relatively less explored.
+          functionally similar components may correspond to similar internal
+          representations, and the language setting is relatively underexplored,
+          as visible from the distribution of papers in relevant alignment
+          workships such as at <a href="https://representational-alignment.github.io">ICLR 2024</a>.
         </div>
       </li>
       <li
@@ -1003,8 +1036,8 @@
       analysis in neuroscience
       <dt-cite key="haxby_decoding_2014"></dt-cite>
       <dt-cite key="kriegeskorte_representational_2008"></dt-cite>
-      <dt-cite key="yousefnezhad_deep_2021"></dt-cite>, have matured, making it
-      feasible to systematically investigate such questions.
+      <dt-cite key="yousefnezhad_deep_2021"></dt-cite>, have matured, enabling us
+      to systematically investigate such questions.
     </p>
 
     <h2 id="methodology">03 Methodology</h2>
@@ -2305,12 +2338,12 @@
         <p>
           We implemented stitch functions using Ordinary Least Squares (OLS) to
           find a best fitting affine function transforming the source embeddings
-          to the target embeddings. Originally, this was to be a baseline
-          accuracy, and we intended to try more complicated functions but it was
-          unnecessary for high accuracy as shown below.
+          to the target embeddings. We also trained MLPs ranging in depth from
+          zero nonlinearities (linear) to 6 non-linearities (7 layers). Each
+          MLP had the same width throughout: the larger of the input and output
+          width.
         </p>
-        <p>
-          <!-- Maybe move to a future work section? -->
+        <!-- <p>
           Future work may explore how non-linearities and more complex functions
           could improve accuracy, for which there is reason to believe. Consider
           that, as an embedding model is trained on more data, regions of an
@@ -2327,9 +2360,7 @@
           transformations, such as rigid rotations (linear isometries)
           permutations to better quantify the connectivity-alignment of
           different embedding spaces.
-          <!-- Why isometric? Embedding space B could just be embedding space A
-       scaled x2 but maybe regularization beats this out idk. Uncertain whether to simpler transform is cash money. -->
-        </p>
+        </p> -->
       </li>
       <!-- TODO: Add math everywhere ig -->
       <li>
@@ -2372,11 +2403,7 @@
               <!-- TODO: Rank and Jaccard Index, also maybe Adriano can explain this -->
               , a metric to measure the similarity between feature
               representations between neural networks. We compare these metrics
-              with the past results and against those of the stitched
-              embeddings. That is to say, if on a single datset we stitch the
-              embeddings of model \(A\) to the embeddings of model \(B\) then we
-              look at the CKA, Rank, and Jaccard Index of the image of the map
-              with the embeddings from model \(B\).
+              with the past results to make sure that our work is consistent.
               <!-- TODO: This last part of doing the stitched embeddings -->
             </div>
           </li>
@@ -2396,43 +2423,19 @@
               validation accuracy of our stitching models, which we measure by
               <b>Mean Squared Error (MSE)</b>. To make this more interpretable,
               we also provide: <b>mean absolute error (MAE)</b> on the
-              validation set, explained <b>variance ratio</b> between the
+              validation set, <b>R squared</b> between the
               stitched embeddings and the target embeddings,
               <!-- TODO? -->
               explained <b>absolute variation</b>
-              between the stitched embeddings and the target embeddings. We also
+              between the stitched embeddings and the target embeddings (which is analogous to R squared
+              but using MAE instead of MSE). We also
               plot
               <!-- TODO? -->
-              the <b>eigenvalues/singular values</b> of the stitched embeddings
+              the <b>singular values</b> distributions of the stitched embeddings
               and compare their affine shifts to the means of the embedding
-              datasets. This helps us qualitatively estimate whether the
-              embedding matrix may actually belong to a simpler class, such as a
-              rotation.
+              datasets. This helps us qualitatively understand what sort of matrix the
+              linear stitches were.
               <!-- TODO -->
-            </div>
-          </li>
-          <li
-            style="
-              margin-bottom: 1.5em;
-              display: flex;
-              gap: 1em;
-              align-items: baseline;
-            ">
-            <i
-              class="fas fa-eye"
-              style="color: #666; width: 1.5em; text-align: center"></i>
-            <div>
-              Our <b>interpretation visualizations</b> include a <b>UMAP</b>.
-              <!--<b>PCA</b>, and
-            <b>t-SNE</b> visualization of the embeddings both before and after applying
-            the stitching function. -->
-              <!-- TODO: Fairly sure we are changing to visualize cycles or smthn -->
-              <!-- We use a clustering algorithm and partially
-            automated labeling to help illustrate whether the stitching function
-            preserves relations. We compare the clusters both before stitching,
-            after stitching, and for the target embeddings. We also include a few
-            kernel tables randomly chosen and cherry-picked to illustrate, from
-            another angle, whether relations are preserved. -->
             </div>
           </li>
           <!-- <li>Generating embeddings on test datasets</li> -->
@@ -2443,11 +2446,11 @@
         <p>
           We used the parameters illustrated below for our embedding models. The
           datasets are comprised of documents and sample queries (for
-          reproduceable top-K search results analysis). We embed each seperately
+          reproduceable top-K search results analysis). We embed each seperately,
           appending a prefix as visible below, like in the prior work. Unlike
           the prior work we use an OpenAI text splitter with a fixed model. This
           allows us to ensure that we compare the exact same text's emebeddings
-          across models --- a subtle bug that we reported to the authors of
+          across models --- something we suspect is a subtle bug that we <a href="https://github.com/casparil/embedding-model-similarity/issues/1">reported to the authors</a> of
           <i>Beyond Benchmarks</i>
           <dt-cite
             key="caspari2024benchmarksevaluatingembeddingmodel"></dt-cite>
@@ -2481,6 +2484,32 @@
     </p>
 
     <h3 id="results-measuring-sim">Measuring Representational Similarity</h3>
+    <p>
+      Firstly, we reproduce some of the results from the original paper.  In line with the metrics
+      presented in <i>Beyond Benchmarks</i>, we
+        examined the pairwise similarity between our various embedding models.
+        Above you can see our
+        <a
+          href="http://datumorphism.leima.is/cards/machine-learning/measurement/centered-kernel-alignment/"
+          ><b>CKA (Centered Kernel Alignment)</b></a
+        >
+        matrix. This is a common metric to measure the similarity between
+        representations. To do this, you start with a text dataset which are fed
+        through the embedding models \(A\) and \(B\) to produce sample embeddings
+        \(Z_A\) and \(Z_B\). These embeddings are then compared in a specific way.
+        First they are mean-centered, then their kernel tables are respetively computed.
+        Next, these kernels are flattened and their correlation (normalized inner product)
+        is computed.
+        <!-- finish description -->
+        Scores closer to \(1\) are more similar and scores closer to \(0\) are
+        less similar. In our matrix we also introduced a control "embedding" model
+        which was a (ArguAna Length \(\times 768\) embedding dimension) standard
+        gaussian matrix not included in the reference paper.
+        <!-- idk if this explanation is required but word count go brr I guess -->
+        <!-- Also I think the control was dimensionality 768? -->
+        <!-- Also heck this matrix may be messed up? GAAHH -->
+        <!-- Do these support or line up with Beyond Benchmarks? -->
+      </p>
     <figure>
       <iframe
         src="figs/cka_matrix_on_arguana.html"
@@ -2494,29 +2523,20 @@
         models were excluded from this metric due to time constraints.
       </figcaption>
     </figure>
-
-    <p>
-      In line with the metrics presented in <i>Beyond Benchmarks</i>, we
-      examined the pairwise similarity between our various embedding models.
-      Above you can see our
-      <a
-        href="http://datumorphism.leima.is/cards/machine-learning/measurement/centered-kernel-alignment/"
-        ><b>CKA (Centered Kernel Alignment)</b></a
-      >
-      matrix. This is a simple common metric to measure the similarity between
-      representations. To do this, you start with a text dataset which are fed
-      through the embedding models \(A\) and \(B\) to produce sample embeddings
-      \(Z_A\) and \(Z_B\). These embeddings are then compared.
-      <!-- finish description -->
-      Scores closer to \(1\) are more similar and scores closer to \(0\) are
-      less similar. In our matrix we also introduced a control "embedding" model
-      which was a (ArguAna Length \(\times 768\) embedding dimension) standard
-      gaussian matrix not included in the reference paper.
-      <!-- idk if this explanation is required but word count go brr I guess -->
-      <!-- Also I think the control was dimensionality 768? -->
-      <!-- Also heck this matrix may be messed up? GAAHH -->
-      <!-- Do these support or line up with Beyond Benchmarks? -->
-    </p>
+    <figure>
+      <div style="margin-left: 100px;">
+        <img
+          src="figs/paper_cka.png"
+          alt="Original Paper CKA Plots"
+          width="1000"
+          height="475"
+          />
+      </div>
+      <figcaption>
+        Plot from the original paper of the CKA <dt-cite key="kornblith_similarity_2019"></dt-cite> similarity matrix. As is visible, our results are not too
+        dissimilar, showcasing the same cluster with the BGE and GTE models. 
+      </figcaption>
+    </figure>
 
     <p>
       As you can hope to see, the random embedding model is extremely dissimilar
@@ -2531,14 +2551,16 @@
     <p>
       The lowest similarity we observe is \(0.72\) between bge-small-en-v1.5 and
       e5-large-v2 of dimensions \(384\) and \(1024\) respectively. Still quite a
-      high similarity in representations. We hypothesized models differing in
-      scale such as these would have a lower representational similarity and
-      hypothesize that these two models will not have stitch-connectivity.
+      high similarity in representations. While we hypothesized that most models
+      would be linear connectivity-aligned, we also suspected that it would be easier
+      to linearly map from larger models to smaller models. As will be visible later,
+      this appears to be qualitatively true, which is unsurprising, but we do not provide a statistical 
+      analysis.
     </p>
 
     <!-- A measurement of cka per difference in their dimensionality helpful? -->
 
-    <p>
+    <!-- <p>
       Unfortunately, we were unable to evaluate the OpenAI models due to time
       constraints, but we would expect that the CKA values between these models
       of even higher scale and dimensionality than e5-large-v2 will have even
@@ -2546,9 +2568,15 @@
       hypothesize that, when we analyze the stitch connectivity, that the MSE
       will be even higher between bge-small-en-v1.5 and our largest model,
       openai/text-embedding-3-large with dimension \(3072\).
-    </p>
+    </p> -->
 
     <h3 id="results-measuring-connectivity">Measuring Stitch-Connectivity</h3>
+    <p>
+      We present the results of our stitching experiments in the table below.
+      These are the raw mean squared errors (MSE) for each stitch as well as the
+      MAE, R squared, and absolute variation. Each entry in the table corresponds To
+      a pair of mdoels. Answers are provided in logarithmic (base 10) scale, since MSE is low.
+    </p>
     <div id="table-system-1" class="l-screen-inset"></div>
     <p>
       <i
@@ -2599,8 +2627,8 @@
     </ol>
 
     <p>
-      All of these models are of dimension \(1024\) and and we had hypothesized
-      that they would do fairly well.
+      All of these models are of dimension \(1024\), corroborating the observation from the original
+      paper that dimension is sometimes correlated with "similarity".
     </p>
 
     <p>
@@ -2618,7 +2646,10 @@
       size. If text-emedding-3-small was storing a more expressive
       representation of semantic features than text-embedding-3-small, then how
       come affine stitches had similar performance when operating from their
-      embeddings? How come bge-small-en-v1.5
+      embeddings? As we observe later, these embedding spaces do not seem to be
+      genuinely linear connectivity-aligned, so its likely that they are learning some
+      simple, baseline strategy that does not depend, too heavily, on the additional nuance encodable by
+      big OpenAI models.
     </p>
 
     <!-- <p>
@@ -2626,6 +2657,15 @@
   </p> -->
 
     <p><b>Native Space Performance</b></p>
+    <p>
+      To investigate, we needed to get a better metric than MSE and MAE, since those are in effect
+      not interpretable. They tell us in absolute terms how geometrically distant two high-dimensional
+      vectors are, but it is hard to use this knowledge to infer anything practical. Below we plot R squared
+      and MAE explained which tells us what percentage of the variance present in the distribution of target embeddings
+      is explained by the distribution of source embeddings. We provide controls with a mean estimator and a
+      random gaussian. Clearly all the linear stitches perform better than the random gaussian, but they
+      barely improve upon the mean estimator.
+    </p>
 
     <div id="table-system-2" class="l-screen-inset"></div>
 
@@ -2648,7 +2688,30 @@
     </div> -->
 
     <p><b>Target Space Performance</b></p>
+    <p>
+      The fact that R squared is so abysmally low (and even sometimes negative) suggests that these affine transformations
+      are actually not good in absolute terms. Simply predicting the mean (from the train-set) would perform effectively
+      as well. We trained both with gradient descent (twice) and ordinary-least-squares based models. We tuned a ridge regression
+      parameter to reduce overfitting. In each case, the mean estimator was just as good as the affine stitches. This result
+      is strongly suggestive that the affine stitches are not reconstructing target embeddings. However, their training loss curves (visible in the
+      appendix) plateaued, suggesting that they may not have much more mileage to go. In the table below we present some results
+      for larger neural networks (MLPs) trained on the same objective via gradient descent. They do not perform significantly better.
+    </p>
     <div id="table-system-3" class="l-screen-inset"></div>
+    <p>
+      The pattern in which larger models' embeddings are more capable of mapping onto smaller ones, but not vice versa, persists.
+      However, these MLPs do not greatly improve upon the affine stitches. We did not get to hyperparameter sweep exhaustively,
+      so it is possible that MLPs may yet bare fruit, but it is unlikely to work on the first try.
+    </p>
+    <p>
+      A natural question to ask, at this point, is whether or not these models may be simply learning to use their
+      bias to become mean estimators. Below we plot the spectrum of the affine and MLP matrices to determine this.
+      While MLP matrices have a fairly flat spectrum, suggesting some sort of rotation, the affine matrices have a
+      relatively large boost on the largest singular values. Possibly they are catching on to a direction of high
+      variance in the dataset---a question to answer with future research. Regardless, it should also be noted that the mean
+      bias norm was very low: around 0.07. However, the norm of the mean of many of the embedding datasets was larger,
+      often surpassing 1, but not 20. This means that the affine stitch stitches are most likely not mean estimators.
+    </p>
     <!-- NOTE: this table is not actually weighted. Just average. -->
     <!-- <div class="l-page side">
       <figure>
@@ -2705,6 +2768,8 @@
         The MLP matrices seem to act more like rotations, but further investigation is required to better
         understand the behavior of these mappings. For aesthetic reasons, 200 samples at random were used for
         each plot (out of around 1600 available per plot).
+
+        Use the slider to select the number of MLP layers in the stitch.
       </figcaption>
     </figure>
 
@@ -2720,18 +2785,50 @@
       </figcaption>
     </figure> -->
 
-    <h2 id="discussion">05 Discussion</h2>
+    <h2 id="discussion">05 Discussion and Conclusion</h2>
     <p>
-      Our experimental results revealed several key insights about semantic
-      representation alignment in LLMs:
+      We set out to check (1) whether or not different embedding models' embeddings were linearly mappable, (2) what
+      degree of complexity was needed to have a good mapping between embeddings, and (3) which types of models
+      are easier to linearly connect. Along the way we explored whether linear mappings could be rotations and whether
+      they may be learning mean estimators. We see that the answer to (1) is likely no, and that understanding
+      (2) requires more depth to ascertain, but seems likely to be certainly more than 2 layers and at least
+      one non-linearity, but probably far more at reasonable widths. Our answer to (3) is that it is easier to
+      go from larger to smaller models, and of course we found that these mappings are usually not rotations in the
+      linear case. The spectrum of our mappings revealed that some unexpected behavior was going on and opens
+      up new questions for research, such as whether the dataset's diversity may impact the stitch performance.
       <!-- Explore which datasets have better/worse loss -->
       <!-- Note: Maybe have a future work, maybe have a note regarding the tokenization bug that was found. -->
       <!-- Maybe I should talk about my universal UMAP idea. Having many 2D projections -->
     </p>
-
-    <h2 id="conclusion">06 Conclusion</h2>
     <p>
-      Semantic representations are not linearly mappable and generally hard to map between with a simple least squares objective.
+      Overall, we believe that different embedding models' embeddings are not linear connectivity-aligned, and
+      posit that while moore research is needed to try with MLPs, it is unlikely to work out of the box and will
+      require some tuning.
+    </p>
+
+    <h2 id="conclusion">06 Implications and Limitations</h2>
+    <p>
+      The key implication of this work is that for transformer-based embedding language models (like the ones we use,
+      as one would find for semantic search), the embeddings are not linear connectivity-aligned and therefore,
+      if the PRH and LRH are true, then either these models we are using are too small (or trained on too few data),
+      or they are storing features non-linearly, or linearly, but in some way which is not linearly mappable (i.e.
+      they might be using some form of sparse code which packs more information into fewer dimensions or they
+      have the spatial relationships between related concepts be permuted relative to other such embedding models').
+      Unfortunately, if we want to get more evidence for the PRH and LRH we will need to try harder than this. Another
+      implication is that cheap embedding translation for data visualization or semantic search is unlikely to work.
+    </p>
+    <p>
+      There are some limiations to our work. One key one is that we train using an MSE objective and evaluate using
+      R squared and other such metrics. It's possible that these are simply not indicative of downstream tasks. With more
+      time, we would explore in detail how linear (and non-linear) stitching affects semantic search rankings, since
+      that is a real world usecase. We also would consider looking into alternative objects (not MSE) and we would
+      invest more time into tuning small non-linear stitches. Another important limitation, is that due to our
+      computation constraints, and in the interest of consistency with past work, we did not train on truly large
+      datasets, nor truly diverse datasets. It is possible that the affine linear mappings could have far-outperfomred
+      mean estimators if we had merged all the datasets in their entirety to creaet a large, much more diverse dataset,
+      to train the stitch. As it stands, it's possible that the amount or type of data just wasn't sufficient.
+      Lastly, it should be noted that our results are for embedding language models, and may not always hold for
+      langauge models or deep neural networks at large.
     </p>
   </dt-article>
 
@@ -2741,7 +2838,42 @@
       To showcase that our models were trained sufficiently observe these loss plots:
     </p>
 
-    <!-- <div
+    <figure>
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+        <img
+          src="./figs/training-cuves/train_linear_arguana.png"
+          alt="training loss for a various model on arguana; plateauing"
+          width="400"
+          height="250" />
+        <img 
+          src="./figs/training-cuves/train_nonlinear_trec-covid.png"
+          alt="training loss for a various model on trec-covid; plateauing somewhat"
+          width="400"
+          height="250" />
+        <img
+          src="./figs/training-cuves/train_single_linear_hotpotqa_train.png" 
+          alt="training loss for a single model on hotpotqa; plateauing"
+          width="400"
+          height="250" />
+        <img
+          src="./figs/training-cuves/train_single_linear_hotpotqa_validation.png"
+          alt="validation loss for a single model on hotpotqa; noisier than training loss, but plateauing"
+          width="400"
+          height="250" />
+      </div>
+      <figcaption>
+        Plots of the training and validation loss for various models on different datasets over the course
+        of training. These are mostly indicative of broader patterns. Generally, our models mostly plateaued, though
+        in some more specific cases some deeper MLPs may be possible to improve.
+        We tried varying the Adam learning rate and batch size in a few ways for specific cases, but did not
+        find a large improvement. This suggests that something more involved than a "train generic MLP with defaults"
+        appraoch would be necessary to effectively map between semantic representations. We have not yet fully identified
+        whether the objective, optimizer, dataset, architecture, or fundamental difficulties of the problem
+        are the primary factors.
+      </figcaption>
+    </figure>
+
+    <div
       style="
         background: #f5f6f7;
         padding: 1.5em;
@@ -2769,7 +2901,7 @@
     url       = {},
 }</pre
       >
-    </div> -->
+    </div>
 
     <h3>💻 Use our code</h3>
     <p style="margin-top: 1.5em; font-size: 0.9em; color: #666">
