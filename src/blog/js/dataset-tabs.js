@@ -65,6 +65,7 @@ function generateContent(config) {
     div.className = `tab-content${index === 0 ? " active" : ""}`;
     div.id = `${dataset.id}-content-${config.id}`;
 
+
     div.innerHTML = `
       <div class="dataset-grid" style="
         display: ${isSingleMetric ? 'block' : 'grid'};
@@ -84,6 +85,13 @@ function generateContent(config) {
                 width: 100%;
                 max-width: ${isSingleMetric ? '800px' : '100%'};
                 margin: 0 auto;
+                width: 900px;
+                height: 700px;
+                margin: 0 auto;
+                display: block;
+                transform: scale(1.0);  // Forces a specific scale
+                sandbox="allow-scripts allow-same-origin"  // Add specific permissions and sus but works
+                loading="lazy"
                 display: block;
               "
               src="${generatePath(config.pathTemplate, {
@@ -202,7 +210,7 @@ const mseMultiLayer = new TableConfig({
             isTrainingObjective: true 
         }
     ],
-    pathTemplate: "./figs/gatlen/html/{dataset}_all_layers_mse_withlog_validation.html",
+    pathTemplate: "./figs/adriano/figs/html/{dataset}_lord_farquad_was_heren copy.html",
     containerSelector: "#table-system-3"
     });
 
