@@ -58,6 +58,7 @@ function generateTabs(config) {
 // Function to generate content
 function generateContent(config) {
   const contentContainer = document.getElementById(`content-${config.id}`);
+  const isSingleMetric = config.metrics.length === 1;
 
   config.datasets.forEach((dataset, index) => {
     const div = document.createElement("div");
@@ -65,13 +66,26 @@ function generateContent(config) {
     div.id = `${dataset.id}-content-${config.id}`;
 
     div.innerHTML = `
-      <div class="dataset-grid">
+      <div class="dataset-grid" style="
+        display: ${isSingleMetric ? 'block' : 'grid'};
+        text-align: center;
+        margin: 0 auto;
+      ">
         ${config.metrics
           .map(
             (metric) => `
-          <figure>
+          <figure style="
+            width: 100%;
+            margin: 0 auto;
+          ">
             <b>${metric.name}</b>
             <iframe
+              style="
+                width: 100%;
+                max-width: ${isSingleMetric ? '800px' : '100%'};
+                margin: 0 auto;
+                display: block;
+              "
               src="${generatePath(config.pathTemplate, {
                 dataset: dataset.id,
                 metric: metric.id,
@@ -176,7 +190,25 @@ document.addEventListener("DOMContentLoaded", () => {
     containerSelector: "#table-system-2",
   });
 
-  // Create both table systems
-  createTableSystem(mseConfig);
-  createTableSystem(r2Config);
+// Example configuration for your third table system
+const mseMultiLayer = new TableConfig({
+    id: 3,
+    title: "MSE Validation on Mutli-Layered NNs",
+    datasets: mseConfig.datasets,  // Reuse the same datasets
+    metrics: [
+        { 
+            id: "mse",
+            name: "Mean Squared Error (MSE)",
+            isTrainingObjective: true 
+        }
+    ],
+    pathTemplate: "./figs/gatlen/html/{dataset}_all_layers_mse_withlog_validation.html",
+    containerSelector: "#table-system-3"
+    });
+
+    
+    // Create both table systems
+    createTableSystem(mseConfig);
+    createTableSystem(r2Config);
+    createTableSystem(mseMultiLayer);
 });
