@@ -87,6 +87,17 @@ web = [
 ]
 
 [project]
+authors = [
+    { email = "gculp@mit.edu", name = "Gatlen Culp" },
+]
+classifiers = [
+    "Development Status :: 1 - Planning",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+]
 dependencies = [
     "loguru-config>=0.1.0",
     "loguru>=0.7.3",
@@ -98,22 +109,18 @@ dependencies = [
     "scikit-learn",
     "tokenize-rt",
 ]
+description = "A final project for MIT's Deep Learning class"
+keywords = []
 name = "embedding-translation"
 requires-python = ">=3.11,<3.13"
 version = "0.1.0"
-authors = [{ name = "Gatlen Culp", email = "gculp@mit.edu" }]
-classifiers = [
-    "Development Status :: 1 - Planning",
-    "Natural Language :: English",
-    "Operating System :: OS Independent",
-    "Programming Language :: Python",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.12",
-]
-description = "A final project for MIT's Deep Learning class"
-keywords = []
-license = { file = "LICENSE.md" }
-readme = {file = "README.md", content-type = "text/markdown"}
+
+[project.license]
+file = "LICENSE.md"
+
+[project.readme]
+content-type = "text/markdown"
+file = "README.md"
 
 [project.urls]
 Repository = "https://github.com/GatlenCulp/embedding_translation"
