@@ -1,61 +1,4 @@
-[build-system]
-build-backend = "poetry.core.masonry.api"
-requires = [
-    "poetry-core>=1.0.0",
-]
-
 [dependency-groups]
-dev = [
-    "hypothesis>=6.122.3", # Property-based testing framework
-    "pip>=24.3.1", # Package installer (latest version)
-    "pyprojectsort>=0.3.0", # Sorts pyproject.toml files
-    "pytest-cases>=3.8.6", # Advanced test parameterization
-    "pytest-cov>=6.0.0", # Code coverage reporting
-    "pytest-icdiff>=0.9", # Improved diff output for test failures
-    "pytest-mock>=3.14.0", # Mocking support for testing
-    "pytest-playwright>=0.6.2", # Browser automation testing
-    "pytest-profiling>=1.8.1", # Test performance profiling
-    "pytest-random-order>=1.1.1", # Randomized test execution
-    "pytest-shutil>=1.8.1", # Filesystem utilities for testing
-    "pytest-split>=0.10.0", # Parallel test execution
-    "pytest-sugar>=1.0.0", # Enhanced test output formatting
-    "pytest-timeout>=2.3.1", # Test execution timeout control
-    "pytest>=8.3.4", # Core testing framework
-    "tox>=4.23.2", # Test automation and virtual env management
-    "uv>=0.5.7", # Fast Python package installer and resolver
-    "ruff>=0.8.3",
-    "bandit>=1.8.0",
-    "pydoclint>=0.5.11",
-    "pyinstrument>=5.0.0",
-    "pyright>=1.1.390",
-    "taplo>=0.9.3",
-]
-nb = [
-    "chime>=0.7.0",
-    "ipykernel>=6.29.5", # IPython kernel for Jupyter notebooks
-    "ipython>=7.34.0", # Enhanced interactive Python shell
-    "ipywidgets>=8.1.5", # Interactive widgets for notebooks
-    "jupyterlab>=4.3.3", # Modern notebook development environment
-]
-dev-nb = [
-    "jupyter-book>=1.0.3",
-    "nbformat>=5.10.4",
-    "nbqa>=1.9.1", # Code quality tools for notebooks
-    "testbook>=0.4.2",
-]
-web = [
-    "beautifulsoup4>=4.12.3",
-    "fastapi>=0.115.6",
-    "playwright>=1.49.1",
-    "requests>=2.32.3",
-    "uvicorn>=0.33.0",
-    "zrok>=0.4.42",
-]
-config = [
-    "cookiecutter>=2.6.0",
-    "gin-config>=0.5.0",
-    "jinja2>=3.1.4",
-]
 ai-apps = [
     "ell-ai>=0.0.15",
     "langchain>=0.3.12",
@@ -72,6 +15,14 @@ ai-train = [
     "transformers>=4.47.0",
     "umap-learn>=0.5.7",
 ]
+cli = [
+    "typer>=0.15.1",
+]
+config = [
+    "cookiecutter>=2.6.0",
+    "gin-config>=0.5.0",
+    "jinja2>=3.1.4",
+]
 data = [
     "dagster>=1.9.5",
     "networkx>=3.4.2",
@@ -80,19 +31,65 @@ data = [
     "polars>=1.17.0",
     "tomli>=2.0.1",
 ]
+dev = [
+    "bandit>=1.8.0",
+    "hypothesis>=6.122.3",
+    "pip>=24.3.1",
+    "pydoclint>=0.5.11",
+    "pyinstrument>=5.0.0",
+    "pyprojectsort>=0.3.0",
+    "pyright>=1.1.390",
+    "pytest-cases>=3.8.6",
+    "pytest-cov>=6.0.0",
+    "pytest-icdiff>=0.9",
+    "pytest-mock>=3.14.0",
+    "pytest-playwright>=0.6.2",
+    "pytest-profiling>=1.8.1",
+    "pytest-random-order>=1.1.1",
+    "pytest-shutil>=1.8.1",
+    "pytest-split>=0.10.0",
+    "pytest-sugar>=1.0.0",
+    "pytest-timeout>=2.3.1",
+    "pytest>=8.3.4",
+    "ruff>=0.8.3",
+    "taplo>=0.9.3",
+    "tox>=4.23.2",
+    "uv>=0.5.7",
+]
 dev-doc = [
     "mdformat>=0.7.19",
-    "mkdocs>=1.6.1",
     "mkdocs-material>=9.5.48",
+    "mkdocs>=1.6.1",
 ]
-cli = [
-    "typer>=0.15.1",
+dev-nb = [
+    "jupyter-book>=1.0.3",
+    "nbformat>=5.10.4",
+    "nbqa>=1.9.1",
+    "testbook>=0.4.2",
+]
+misc = [
+    "wrapt>=1.17.0",
+]
+nb = [
+    "chime>=0.7.0",
+    "ipykernel>=6.29.5",
+    "ipython>=7.34.0",
+    "ipywidgets>=8.1.5",
+    "jupyterlab>=4.3.3",
+]
+web = [
+    "beautifulsoup4>=4.12.3",
+    "fastapi>=0.115.6",
+    "playwright>=1.49.1",
+    "requests>=2.32.3",
+    "uvicorn>=0.33.0",
+    "zrok>=0.4.42",
 ]
 
 [project]
 dependencies = [
-    "loguru>=0.7.3",
     "loguru-config>=0.1.0",
+    "loguru>=0.7.3",
     "plotly>=5.24.1",
     "polyfactory",
     "pydantic>=2.10.3",
@@ -103,43 +100,8 @@ dependencies = [
 ]
 name = "embedding-translation"
 requires-python = ">=3.11,<3.13"
-
-[tool.poe.tasks.check]
-help = "All checks"
-ignore_fail = false
-sequence = [
-    "check-lock",
-    "docstring-lint",
-    "format",
-    "lint",
-    "test",
-    "typecheck",
-]
-
-[tool.poe.tasks.docstring-lint]
-cmd = "pydoclint ."
-help = "Lint docstrings"
-
-[tool.poe.tasks.format]
-cmd = "ruff format ."
-help = "Format code (with autofix)"
-
-[tool.poe.tasks.lint]
-cmd = "ruff check . --fix"
-help = "Lint (with autofix)"
-
-[tool.poe.tasks.test]
-cmd = "pytest"
-help = "Run tests"
-
-[tool.poe.tasks.typecheck]
-cmd = "pyright"
-help = "Typecheck"
-
-[tool.poetry]
-authors = [
-    "Gatlen Culp, Adriano Hernandez <GatlenCulp@gmail.com>",
-]
+version = "0.1.0"
+authors = [{ name = "Gatlen Culp", email = "gculp@mit.edu" }]
 classifiers = [
     "Development Status :: 1 - Planning",
     "Natural Language :: English",
@@ -150,69 +112,11 @@ classifiers = [
 ]
 description = "A final project for MIT's Deep Learning class"
 keywords = []
-license = "MIT"
-name = "embedding-translation"
-packages = [
-    { include = "owler_fork" },
-    { include = "src" },
-]
-readme = "README.md"
-repository = "https://github.com/GatlenCulp/embedding_translation"
-version = "0.0"
+license = { file = "LICENSE.md" }
+readme = {file = "README.md", content-type = "text/markdown"}
 
-[tool.poetry.dependencies]
-# chime = "^0.7.0"
-# datasets = "^3.1.0"
-# einops = "^0.8.0"
-# gin-config = "^0.5.0"
-# ipykernel = "^6.29.5"
-# ipython = "^7.12.0"
-# ipywidgets = "^8.1.5"
-# jaxtyping = "^0.2.36"
-# loguru = "^0.7.3"
-# loguru-config = "^0.1.0"
-# networkx = "^3.4.2"
-# numpy = "<2.0.0"
-# orjson = "^3.10.12"
-# plotly = "^5.24.1"
-# poethepoet = "*"
-# polars = "^1.16.0"
-# pydantic = ">=1.10.8"
-# python = ">=3.11,<3.13"
-# rich = "^13.9.4"
-# tomli = "*"
-# transformers = "^4.47.0"
-# typeguard = "^4.2.1"
-# typer = "^0.15.1"
-wrapt = "^1.17.0"
-
-[tool.poetry.dev-dependencies]
-# bandit = "^1.8.0"
-# hypothesis = "^6.122.1"
-# jupyter-book = "^1.0.3"
-# mdformat = "^0.7.19"
-# mkdocs = "^1.6.1"
-# mkdocs-material = "^9.5.47"
-# nbqa = "^1.9.1"
-# poethepoet = "*"
-# pydoclint = "*"
-# pyinstrument = "*"
-# pyright = "^1.1.390"
-# pytest = "^8.1"
-# pytest-cases = "^3.8.6"
-# pytest-cov = "^6.0.0"
-# pytest-icdiff = "^0.9"
-# pytest-mock = "^3.14.0"
-# pytest-playwright = "^0.6.2"
-# pytest-profiling = "^1.8.1"
-# pytest-random-order = "^1.1.1"
-# pytest-shutil = "^1.8.1"
-# pytest-split = "^0.10.0"
-# pytest-sugar = "^1.0.0"
-# pytest-timeout = "^2.3.1"
-# ruff = "*"
-# taplo = "^0.9.3"
-# testbook = "^0.4.2"
+[project.urls]
+Repository = "https://github.com/GatlenCulp/embedding_translation"
 
 [tool.poetry.scripts]
 embedding_tranlation = "src:main"

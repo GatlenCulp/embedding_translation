@@ -1,0 +1,36 @@
+version: '3'
+
+tasks:
+  check:
+    desc: Run all checks
+    cmds:
+      - task: docstring-lint
+      - task: format
+      - task: lint
+      - task: test
+      - task: typecheck
+
+  format:
+    desc: Format code with autofix
+    cmds:
+      - ruff format .
+
+  lint:
+    desc: Lint code with autofix
+    cmds:
+      - ruff check . --fix
+
+  docstring-lint:
+    desc: Lint docstrings
+    cmds:
+      - pydoclint .
+
+  test:
+    desc: Run test suite
+    cmds:
+      - pytest
+
+  typecheck:
+    desc: Run type checker
+    cmds:
+      - pyright

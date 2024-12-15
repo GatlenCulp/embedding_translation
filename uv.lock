@@ -764,7 +764,6 @@ name = "embedding-translation"
 version = "0.0"
 source = { editable = "." }
 dependencies = [
-    { name = "chime" },
     { name = "wrapt" },
 ]
 
@@ -837,6 +836,9 @@ dev-nb = [
     { name = "nbqa" },
     { name = "testbook" },
 ]
+misc = [
+    { name = "wrapt" },
+]
 nb = [
     { name = "chime" },
     { name = "ipykernel" },
@@ -854,10 +856,7 @@ web = [
 ]
 
 [package.metadata]
-requires-dist = [
-    { name = "chime", specifier = ">=0.7.0,<0.8.0" },
-    { name = "wrapt", specifier = ">=1.17.0,<2.0.0" },
-]
+requires-dist = [{ name = "wrapt", specifier = ">=1.17.0,<2.0.0" }]
 
 [package.metadata.requires-dev]
 ai-apps = [
@@ -926,6 +925,7 @@ dev-nb = [
     { name = "nbqa", specifier = ">=1.9.1" },
     { name = "testbook", specifier = ">=0.4.2" },
 ]
+misc = [{ name = "wrapt", specifier = ">=1.17.0" }]
 nb = [
     { name = "chime", specifier = ">=0.7.0" },
     { name = "ipykernel", specifier = ">=6.29.5" },
