@@ -761,10 +761,15 @@ wheels = [
 
 [[package]]
 name = "embedding-translation"
-version = "0.0"
-source = { editable = "." }
+version = "0.1.0"
+source = { virtual = "." }
 dependencies = [
-    { name = "wrapt" },
+    { name = "loguru" },
+    { name = "loguru-config" },
+    { name = "plotly" },
+    { name = "pydantic" },
+    { name = "rich" },
+    { name = "tokenize-rt" },
 ]
 
 [package.dev-dependencies]
@@ -802,8 +807,10 @@ data = [
 ]
 dev = [
     { name = "bandit" },
+    { name = "faker" },
     { name = "hypothesis" },
     { name = "pip" },
+    { name = "polyfactory" },
     { name = "pydoclint" },
     { name = "pyinstrument" },
     { name = "pyprojectsort" },
@@ -856,7 +863,14 @@ web = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "wrapt", specifier = ">=1.17.0,<2.0.0" }]
+requires-dist = [
+    { name = "loguru", specifier = ">=0.7.3" },
+    { name = "loguru-config", specifier = ">=0.1.0" },
+    { name = "plotly", specifier = ">=5.24.1" },
+    { name = "pydantic", specifier = ">=2.10.3" },
+    { name = "rich", specifier = ">=13.9.4" },
+    { name = "tokenize-rt" },
+]
 
 [package.metadata.requires-dev]
 ai-apps = [
@@ -891,8 +905,10 @@ data = [
 ]
 dev = [
     { name = "bandit", specifier = ">=1.8.0" },
+    { name = "faker", specifier = ">=33.1.0" },
     { name = "hypothesis", specifier = ">=6.122.3" },
     { name = "pip", specifier = ">=24.3.1" },
+    { name = "polyfactory", specifier = ">=2.18.1" },
     { name = "pydoclint", specifier = ">=0.5.11" },
     { name = "pyinstrument", specifier = ">=5.0.0" },
     { name = "pyprojectsort", specifier = ">=0.3.0" },
@@ -949,6 +965,19 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/bb/ff/b4c0dc78fbe20c3e59c0c7334de0c27eb4001a2b2017999af398bf730817/execnet-2.1.1.tar.gz", hash = "sha256:5189b52c6121c24feae288166ab41b32549c7e2348652736540b9e6e7d4e72e3", size = 166524 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/43/09/2aea36ff60d16dd8879bdb2f5b3ee0ba8d08cbbdcdfe870e695ce3784385/execnet-2.1.1-py3-none-any.whl", hash = "sha256:26dee51f1b80cebd6d0ca8e74dd8745419761d3bef34163928cbebbdc4749fdc", size = 40612 },
+]
+
+[[package]]
+name = "faker"
+version = "33.1.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "python-dateutil" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/1e/9f/012fd6049fc86029951cba5112d32c7ba076c4290d7e8873b0413655b808/faker-33.1.0.tar.gz", hash = "sha256:1c925fc0e86a51fc46648b504078c88d0cd48da1da2595c4e712841cab43a1e4", size = 1850515 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/08/9c/2bba87fbfa42503ddd9653e3546ffc4ed18b14ecab7a07ee86491b886486/Faker-33.1.0-py3-none-any.whl", hash = "sha256:d30c5f0e2796b8970de68978365247657486eb0311c5abe88d0b895b68dff05d", size = 1889127 },
 ]
 
 [[package]]
@@ -1818,6 +1847,28 @@ wheels = [
 ]
 
 [[package]]
+name = "loguru"
+version = "0.7.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "colorama", marker = "sys_platform == 'win32'" },
+    { name = "win32-setctime", marker = "sys_platform == 'win32'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/3a/05/a1dae3dffd1116099471c643b8924f5aa6524411dc6c63fdae648c4f1aca/loguru-0.7.3.tar.gz", hash = "sha256:19480589e77d47b8d85b2c827ad95d49bf31b0dcde16593892eb51dd18706eb6", size = 63559 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/0c/29/0348de65b8cc732daa3e33e67806420b2ae89bdce2b04af740289c5c6c8c/loguru-0.7.3-py3-none-any.whl", hash = "sha256:31a33c10c8e1e10422bfd431aeb5d351c7cf7fa671e3c4df004162264b28220c", size = 61595 },
+]
+
+[[package]]
+name = "loguru-config"
+version = "0.1.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "loguru" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/2e/c7/e9528e9439214e885ce04fb68725ee1d10d64f333a9d68c9ea1545089cab/loguru-config-0.1.0.tar.gz", hash = "sha256:432fbc134b118cdfbe0de0226eaab3f5247fc142cd005bf1ebe471f7c572aa34", size = 15129 }
+
+[[package]]
 name = "makefun"
 version = "1.15.6"
 source = { registry = "https://pypi.org/simple" }
@@ -2668,6 +2719,19 @@ wheels = [
 ]
 
 [[package]]
+name = "plotly"
+version = "5.24.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "packaging" },
+    { name = "tenacity" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/79/4f/428f6d959818d7425a94c190a6b26fbc58035cbef40bf249be0b62a9aedd/plotly-5.24.1.tar.gz", hash = "sha256:dbc8ac8339d248a4bcc36e08a5659bacfe1b079390b8953533f4eb22169b4bae", size = 9479398 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e5/ae/580600f441f6fc05218bd6c9d5794f4aef072a7d9093b291f1c50a9db8bc/plotly-5.24.1-py3-none-any.whl", hash = "sha256:f67073a1e637eb0dc3e46324d9d51e2fe76e9727c892dde64ddf1e1b51f29089", size = 19054220 },
+]
+
+[[package]]
 name = "pluggy"
 version = "1.5.0"
 source = { registry = "https://pypi.org/simple" }
@@ -2687,6 +2751,19 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/7b/6f/907267f46ae13f35c63e05be5cf10a1e00b305f381d73b033396ba3df9ef/polars-1.17.0-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f8b7d41167c7f381baf9a44c4a7945db74435fde591960106dfceb0e4764a20a", size = 36375574 },
     { url = "https://files.pythonhosted.org/packages/a3/d2/facdb05ae58f7a1d4f3c75f9e6a60258e16c0c7c1643899ed39545866ed2/polars-1.17.0-cp39-abi3-manylinux_2_24_aarch64.whl", hash = "sha256:fb800b7b7ae56ff4e62350aeed38c3ef82dc95fcffe99c2552fc40cd9965485b", size = 32668367 },
     { url = "https://files.pythonhosted.org/packages/d4/68/34153dc47b5f8c40d7f41a474cad4539a0d4eb41be81a70b0c1566a0efc1/polars-1.17.0-cp39-abi3-win_amd64.whl", hash = "sha256:e42847a813f9cfb969839e27cf9ab4c73b8c08a8729b764ec77f8efe0abd745f", size = 35934441 },
+]
+
+[[package]]
+name = "polyfactory"
+version = "2.18.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "faker" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/4f/0c/12b4e50ab0d165f34ae65fbf26bd93debc8d6c4e00ea62a0b086c9eb58d0/polyfactory-2.18.1.tar.gz", hash = "sha256:17c9db18afe4fb8d7dd8e5ba296e69da0fcf7d0f3b63d1840eb10d135aed5aad", size = 185001 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/7e/80/e0bfd57b64009f476112fa81056eb64d9c95bbbbf5bb3257ad010f89907a/polyfactory-2.18.1-py3-none-any.whl", hash = "sha256:1a2b0715e08bfe9f14abc838fc013ab8772cb90e66f2e601e15e1127f0bc1b18", size = 59335 },
 ]
 
 [[package]]
@@ -4588,6 +4665,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/56/fc/238c424fd7f4ebb25f8b1da9a934a3ad7c848286732ae04263661eb0fc03/widgetsnbextension-4.0.13.tar.gz", hash = "sha256:ffcb67bc9febd10234a362795f643927f4e0c05d9342c727b65d2384f8feacb6", size = 1164730 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/21/02/88b65cc394961a60c43c70517066b6b679738caf78506a5da7b88ffcb643/widgetsnbextension-4.0.13-py3-none-any.whl", hash = "sha256:74b2692e8500525cc38c2b877236ba51d34541e6385eeed5aec15a70f88a6c71", size = 2335872 },
+]
+
+[[package]]
+name = "win32-setctime"
+version = "1.2.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/b3/8f/705086c9d734d3b663af0e9bb3d4de6578d08f46b1b101c2442fd9aecaa2/win32_setctime-1.2.0.tar.gz", hash = "sha256:ae1fdf948f5640aae05c511ade119313fb6a30d7eabe25fef9764dca5873c4c0", size = 4867 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e1/07/c6fe3ad3e685340704d314d765b7912993bcb8dc198f0e7a89382d37974b/win32_setctime-1.2.0-py3-none-any.whl", hash = "sha256:95d644c4e708aba81dc3704a116d8cbc974d70b3bdb8be1d150e36be6e9d1390", size = 4083 },
 ]
 
 [[package]]
