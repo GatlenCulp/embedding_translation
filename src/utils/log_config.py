@@ -16,7 +16,7 @@ PROJECT_ROOT = Path(__file__).parent.parent.parent
 class LogHighlighter(RegexHighlighter):
     """Highlight paths and common logging patterns."""
 
-    highlights : ClassVar = [
+    highlights: ClassVar = [
         # Highlight any file paths (with any extension or directory structure)
         r"(?P<path>(?:[\w-]+/)*[\w.-]+(?:\.[a-zA-Z0-9]+)?)",  # <--- [CHANGED] Updated to match all paths
         # Highlight line numbers

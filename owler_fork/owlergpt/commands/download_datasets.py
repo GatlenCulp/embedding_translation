@@ -1,11 +1,11 @@
 import os
-import click
 import re
-import requests
-from typing import List
 from pathlib import Path
 
+import click
+import requests
 from flask import current_app
+
 
 # NOTE: all of these have a folder structure with these two we care about:
 # - corpus.jsonl
@@ -16,25 +16,28 @@ DEFAULT_DATASETS = [
     "mteb/hotpotqa",
     "mteb/trec-covid",
     "mteb/scidocs",
-    "mteb/arguana"
+    "mteb/arguana",
 ]
 
+
 # could subproc. curl or chunking be faster/better?
-def download_dataset_jsonl(dataset_name: str, files: List[str], folder: Path) -> None:
+def download_dataset_jsonl(dataset_name: str, files: list[str], folder: Path) -> None:
     download_link_template = "https://huggingface.co/datasets/{dataset_name}/resolve/main/{file}?download=true"
-    download_links = [download_link_template.format(dataset_name=dataset_name, file=file) for file in files]
-    for file, link in zip(files, download_links):
+    download_links = [
+        download_link_template.format(dataset_name=dataset_name, file=file)
+        for file in files
+    ]
+    for file, link in zip(files, download_links, strict=False):
         click.echo(f"Downloading {link}...")
         response = requests.get(link, stream=True)
         response.raise_for_status()
-        with open(folder / file, 'wb') as f:
+        with open(folder / file, "wb") as f:
             f.write(response.content)
+
 
 @current_app.cli.command("download_ds")
 def download_datasets() -> None:
-    """
-    Downloads datasets from the BEIR leaderboard.
-    """
+    """Downloads datasets from the BEIR leaderboard."""
     _datasets_folder = os.environ["DATASET_FOLDER_PATH"]
     if not _datasets_folder:
         raise ValueError("DATASET_FOLDER_PATH is not set")
@@ -48,5 +51,8 @@ def download_datasets() -> None:
             continue
         folder.mkdir(parents=True, exist_ok=False)
         click.echo(f"Downloading dataset {name} to {folder}")
-        file_names = ["corpus.jsonl", "queries.jsonl"] # train set ok, no training happening
+        file_names = [
+            "corpus.jsonl",
+            "queries.jsonl",
+        ]  # train set ok, no training happening
         download_dataset_jsonl(name, file_names, folder)

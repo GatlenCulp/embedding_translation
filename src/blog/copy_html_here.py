@@ -1,4 +1,5 @@
 """Copy HTML files from the project's figures directory to the current directory."""
+
 import shutil
 from pathlib import Path
 
@@ -11,6 +12,7 @@ setup("copy_html_here")
 
 PROJ_ROOT = Path(__file__).parent.parent.parent
 
+
 def copy_html_files() -> None:
     """Copy all HTML files from PROJ_ROOT/data/figs/html to the current directory.
 
@@ -18,7 +20,6 @@ def copy_html_files() -> None:
     :return: None
     :raises FileNotFoundError: If project root or source directory cannot be found
     """
-
     # Define source and destination directories
     src_dir = PROJ_ROOT / "data" / "figs" / "html"
     target_dir = Path(__file__).parent / "figs"
@@ -26,7 +27,7 @@ def copy_html_files() -> None:
     # Verify source directory exists
     if not src_dir.exists():
         raise FileNotFoundError(f"Source directory not found: {src_dir}")
-    
+
     target_dir.mkdir(parents=True, exist_ok=True)
 
     # Copy all HTML files

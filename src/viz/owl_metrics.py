@@ -37,11 +37,17 @@ def _pairwise_similarity(
         return cosine_similarity(embeds1.to(device), embeds2.to(device))
     if metric == EUCLIDEAN:
         return pairwise_distance(embeds1.to(device), embeds2.to(device))
-    raise NotImplementedError(f"Provided unsupported metric {metric} for pairwise similarity!")
+    raise NotImplementedError(
+        f"Provided unsupported metric {metric} for pairwise similarity!"
+    )
 
 
 def _mean_pairwise_similarity(
-    embeds1: torch.Tensor, embeds2: torch.Tensor, metric: str, batch_size: int, device: torch.device
+    embeds1: torch.Tensor,
+    embeds2: torch.Tensor,
+    metric: str,
+    batch_size: int,
+    device: torch.device,
 ) -> torch.Tensor:
     """Calculates the pairwise cosine similarity or Euclidean distance between batches of the given tensors and sums them
     up. In the end, the mean score is returned.
@@ -78,7 +84,10 @@ def _jaccard_sim(indices1: np.ndarray, indices2: np.ndarray) -> np.float64:
     inds = np.concatenate((indices1, indices2), axis=1)
     len_union = np.array([len(np.unique(i)) for i in inds])
     len_intersection = np.array(
-        [len(set(i).intersection(set(j))) for i, j in zip(indices1, indices2, strict=False)]
+        [
+            len(set(i).intersection(set(j)))
+            for i, j in zip(indices1, indices2, strict=False)
+        ]
     )
     return np.mean(len_intersection / len_union)
 
@@ -98,7 +107,10 @@ def _get_rank_sum(indices1: np.ndarray, indices2: np.ndarray) -> Any:
     ar1_indices = aux_sort_indices[:-1][mask] + 1
     ar2_indices = aux_sort_indices[1:][mask] - indices1.size + 1
     rank_sum = np.sum(
-        [2 / ((1 + abs(i - j)) * (i + j)) for i, j in zip(ar1_indices, ar2_indices, strict=False)]
+        [
+            2 / ((1 + abs(i - j)) * (i + j))
+            for i, j in zip(ar1_indices, ar2_indices, strict=False)
+        ]
     )
     return rank_sum
 
@@ -113,7 +125,10 @@ def _rank_sim(indices1: np.ndarray, indices2: np.ndarray):
     """
     rank_sums = [_get_rank_sum(i, j) for i, j in zip(indices1, indices2, strict=False)]
     len_intersection = np.array(
-        [len(set(i).intersection(set(j))) for i, j in zip(indices1, indices2, strict=False)]
+        [
+            len(set(i).intersection(set(j)))
+            for i, j in zip(indices1, indices2, strict=False)
+        ]
     )
     factors = []
     for idx, elem1 in enumerate(len_intersection):
@@ -246,7 +261,9 @@ def _calculate_embed_metric(
         )
     if metric == CKA:
         return _cka(embeds1, embeds2)
-    raise NotImplementedError(f"Provided unsupported metric {metric} for embedding similarity!")
+    raise NotImplementedError(
+        f"Provided unsupported metric {metric} for embedding similarity!"
+    )
 
 
 def _sample_embeddings(

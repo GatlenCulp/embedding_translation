@@ -16,6 +16,7 @@ from src.utils.general_setup import setup
 
 setup("reduce_embedding_dims")
 
+
 # %% Transformation functions
 def reduce_embeddings_dimensionality(
     embeddings_dict: dict[str, np.ndarray],
@@ -35,7 +36,9 @@ def reduce_embeddings_dimensionality(
     :return: Dictionary with same keys but values reduced to shape (n_samples, 2)
     :rtype: dict[str, np.ndarray]
     """
-    logger.info(f"Starting dimensionality reduction with {len(embeddings_dict)} embedding spaces")
+    logger.info(
+        f"Starting dimensionality reduction with {len(embeddings_dict)} embedding spaces"
+    )
 
     # Combine all embeddings
     all_embeddings = np.vstack(list(embeddings_dict.values()))

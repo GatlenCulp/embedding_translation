@@ -69,17 +69,23 @@ def create_semantic_search_evaluation(
     logger.info("Starting semantic search evaluation...")
 
     # Extract embeddings and record IDs
-    training_embeddings = load_embeddings(training_dataset.dataset_filepath)["embeddings"]
+    training_embeddings = load_embeddings(training_dataset.dataset_filepath)[
+        "embeddings"
+    ]
     test_embeddings = load_embeddings(test_dataset.dataset_filepath)["embeddings"]
 
     training_embeddings_size = len(training_embeddings)
     test_embeddings_size = len(test_embeddings)
 
     training_record_ids = np.arange(training_embeddings_size)
-    test_record_ids = np.arange(start=training_embeddings_size, stop=test_embeddings_size)
+    test_record_ids = np.arange(
+        start=training_embeddings_size, stop=test_embeddings_size
+    )
 
     # Create mapping from record_id to label
-    training_labels_map = dict(zip(training_record_ids, training_record_ids))
+    training_labels_map = dict(
+        zip(training_record_ids, training_record_ids, strict=False)
+    )
 
     # Find nearest neighbors
     indices, distances = find_k_nearest_neighbors(

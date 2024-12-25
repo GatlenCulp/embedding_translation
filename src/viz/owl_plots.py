@@ -1,15 +1,14 @@
-import numpy as np
 import os
+
+import numpy as np
 import pandas as pd
 import seaborn as sns
-
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
 
 def _save_heatmap(results: list, file_name: str, folder: str, models: list):
-    """
-    Creates a heatmap for the given scores of embedding similarity and saves them as a PDF.
+    """Creates a heatmap for the given scores of embedding similarity and saves them as a PDF.
 
     :param results: A list containing similarity scores for each pair of models.
     :param file_name: The name of the file that should be saved.
@@ -18,7 +17,9 @@ def _save_heatmap(results: list, file_name: str, folder: str, models: list):
     """
     fig, ax = plt.subplots(figsize=(20, 20))
     df = pd.DataFrame(
-        np.array(results).reshape(len(models), len(models)), index=models, columns=models
+        np.array(results).reshape(len(models), len(models)),
+        index=models,
+        columns=models,
     )
     sns.heatmap(data=df, ax=ax, annot=True)
     plt.show()
@@ -30,8 +31,7 @@ def _save_heatmap(results: list, file_name: str, folder: str, models: list):
 
 
 def _save_cluster_heatmap(results: list, file_name: str, folder: str, models: list):
-    """
-    Creates a cluster heatmap for the given scores of embedding similarity and saves them as a PDF.
+    """Creates a cluster heatmap for the given scores of embedding similarity and saves them as a PDF.
 
     :param results: A list containing similarity scores for each pair of models.
     :param file_name: The name of the file that should be saved.
@@ -39,7 +39,9 @@ def _save_cluster_heatmap(results: list, file_name: str, folder: str, models: li
     :param models: A list containing the names of all compared models.
     """
     df = pd.DataFrame(
-        np.array(results).reshape(len(models), len(models)), index=models, columns=models
+        np.array(results).reshape(len(models), len(models)),
+        index=models,
+        columns=models,
     )
     clustermap = sns.clustermap(data=df, annot=True, fmt=".2f")
     file_name += "_cluster.pdf"
@@ -48,8 +50,7 @@ def _save_cluster_heatmap(results: list, file_name: str, folder: str, models: li
 
 
 def _save_lineplot(results: dict, file_name: str, folder: str, models: list, k: int):
-    """
-    Creates a lineplot with multiple lines using the data provided in the given dictionary.
+    """Creates a lineplot with multiple lines using the data provided in the given dictionary.
 
     :param results: The data that should be plotted.
     :param file_name: The name of the file to be saved.
@@ -65,15 +66,16 @@ def _save_lineplot(results: dict, file_name: str, folder: str, models: list, k: 
         for j in results[i]:
             if i != j:
                 ax.plot(x, results[i][j], label=f"{model}_vs_{models[j]}")
-        fig.legend(loc="outside upper center", fontsize="xx-large", mode="expand", ncols=3)
+        fig.legend(
+            loc="outside upper center", fontsize="xx-large", mode="expand", ncols=3
+        )
         path = os.path.join(folder, f"{file_name}_{model}.pdf")
         plt.savefig(path, bbox_inches="tight")
         plt.close()
 
 
 def plot_results(results: dict, file_name: str, folder: str, models: list, k: int):
-    """
-    Visualizes the embedding similarity results passed in the given dictionary and stores the plots.
+    """Visualizes the embedding similarity results passed in the given dictionary and stores the plots.
 
     :param results: The data to be visualized.
     :param file_name: The name of the file.

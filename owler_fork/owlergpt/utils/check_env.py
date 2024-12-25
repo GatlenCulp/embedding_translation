@@ -2,8 +2,7 @@ import os
 
 
 def check_env() -> bool:
-    """
-    Checks that required env variables are available.
+    """Checks that required env variables are available.
     Throws if properties are missing or unusable.
     """
     environ = os.environ
@@ -25,7 +24,7 @@ def check_env() -> bool:
         "MEAN_CENTER",
         "K_NN_METRIC",
         "K",
-        "BASELINE"
+        "BASELINE",
     ]:
         if prop not in environ:
             raise Exception(f"env var {prop} must be defined.")

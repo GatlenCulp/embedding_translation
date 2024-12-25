@@ -27,7 +27,9 @@ def evaluate_ds_collections() -> None:
     offers different measures for evaluating similarity.
     """
     environ = os.environ
-    default_chunk_size = int(environ.get("VECTOR_SEARCH_SENTENCE_DEFAULT_CHUNK_SIZE", 100))
+    default_chunk_size = int(
+        environ.get("VECTOR_SEARCH_SENTENCE_DEFAULT_CHUNK_SIZE", 100)
+    )
     target_dimension = int(
         environ.get("EMBEDDING_DIMENSION")
     )  # Target dimension for the embeddings
@@ -93,7 +95,9 @@ def evaluate_ds_collections() -> None:
         return
 
     if not match_dimension:
-        num_queries = click.prompt("Please choose the number of queries to perform", type=int)
+        num_queries = click.prompt(
+            "Please choose the number of queries to perform", type=int
+        )
 
     if num_queries < 1:
         click.echo("Invalid number of queries. Exiting.")
@@ -173,8 +177,12 @@ def evaluate_ds_collections() -> None:
                     else:
                         results[0].append(results[0][j * len(collections) + i])
                 else:
-                    collection1 = chroma_client.get_collection(name=collections[i]["name"])
-                    collection2 = chroma_client.get_collection(name=collections[j]["name"])
+                    collection1 = chroma_client.get_collection(
+                        name=collections[i]["name"]
+                    )
+                    collection2 = chroma_client.get_collection(
+                        name=collections[j]["name"]
+                    )
                     queries1, queries2 = None, None
                     embeddings1 = collection1.get(include=["metadatas", "embeddings"])
                     embeddings2 = collection2.get(include=["metadatas", "embeddings"])
@@ -226,9 +234,13 @@ def evaluate_ds_collections() -> None:
         if metric not in MATCH_DIM_METRICS:
             file_name = f"{dataset}_{chunk_size}_{num_embeds}{mc}{metric}"
             if metric in NEAREST_NEIGHBORS:
-                plot_results(lines, file_name, environ["VISUALIZATIONS_FOLDER_PATH"], models, k)
+                plot_results(
+                    lines, file_name, environ["VISUALIZATIONS_FOLDER_PATH"], models, k
+                )
                 for key in sims_at_early_k:
-                    file_name = f"{dataset}_{chunk_size}_{num_embeds}{mc}{metric}_top{key}"
+                    file_name = (
+                        f"{dataset}_{chunk_size}_{num_embeds}{mc}{metric}_top{key}"
+                    )
                     plot_results(
                         sims_at_early_k[key],
                         file_name,
@@ -237,7 +249,9 @@ def evaluate_ds_collections() -> None:
                         k,
                     )
             else:
-                plot_results(results, file_name, environ["VISUALIZATIONS_FOLDER_PATH"], models, k)
+                plot_results(
+                    results, file_name, environ["VISUALIZATIONS_FOLDER_PATH"], models, k
+                )
 
         for i in results:
             j = i + 1
@@ -248,6 +262,7 @@ def evaluate_ds_collections() -> None:
             )
             path = os.path.join(
                 environ["EVAL_FOLDER_PATH"],
-                f"{dataset}_{chunk_size}_{num_embeds}_{num_queries}_top{j}" f"{mc}{metric}.csv",
+                f"{dataset}_{chunk_size}_{num_embeds}_{num_queries}_top{j}"
+                f"{mc}{metric}.csv",
             )
             df.to_csv(path)

@@ -129,13 +129,13 @@ def main() -> None:
     logger.info("Starting example figure saving")
 
     # Create example figure
-    fig = go.Figure(data=[go.Scatter(x=[1, 2, 3], y=[4, 5, 6])], layout={"title": "Example Plot"})
+    fig = go.Figure(
+        data=[go.Scatter(x=[1, 2, 3], y=[4, 5, 6])], layout={"title": "Example Plot"}
+    )
 
     # Method 1: Combined
     logger.info("Testing combined method...")
-    html_path, png_path = save_figure(
-        fig=fig, filename="example_plot_combined"
-    )
+    html_path, png_path = save_figure(fig=fig, filename="example_plot_combined")
 
 
 # %% Example usage

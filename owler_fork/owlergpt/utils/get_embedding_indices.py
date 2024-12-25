@@ -1,6 +1,7 @@
-def _get_record_type_indices(meta1: list, meta2: list, inds1: list, inds2: list, num_queries: int):
-    """
-    Returns the indices of document and query embeddings for the two lists containing embedding metadata.
+def _get_record_type_indices(
+    meta1: list, meta2: list, inds1: list, inds2: list, num_queries: int
+):
+    """Returns the indices of document and query embeddings for the two lists containing embedding metadata.
 
     :param meta1: A list of embedding metadata for the first model.
     :param meta2: A list of embedding metadata for the second model.
@@ -27,8 +28,7 @@ def _get_record_type_indices(meta1: list, meta2: list, inds1: list, inds2: list,
 
 
 def get_embedding_indices(meta1: list, meta2: list, num_queries: int):
-    """
-    Returns the indices of document and query embeddings given two lists of metadata containing additional information
+    """Returns the indices of document and query embeddings given two lists of metadata containing additional information
     about embeddings generated for two different models. If the number of embeddings generated for the two models is
     different, the indices of matching embeddings ids are identified first.
 
@@ -45,7 +45,11 @@ def get_embedding_indices(meta1: list, meta2: list, num_queries: int):
 
     common_records = records1_set.intersection(records2_set)
 
-    match_idx1 = [i for i, record_id in enumerate(records1) if record_id in common_records]
-    match_idx2 = [i for i, record_id in enumerate(records2) if record_id in common_records]
+    match_idx1 = [
+        i for i, record_id in enumerate(records1) if record_id in common_records
+    ]
+    match_idx2 = [
+        i for i, record_id in enumerate(records2) if record_id in common_records
+    ]
 
     return _get_record_type_indices(meta1, meta2, match_idx1, match_idx2, num_queries)

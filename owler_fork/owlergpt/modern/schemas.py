@@ -31,7 +31,9 @@ class EmbeddingMetadata(BaseModel):
     record_type: Literal["query", "document"]
     # TODO(Adriano) not everything should be train by default
     record_split: Literal["train", "test"] = "train"
-    tags: dict[str, str] | None = {}  # <---- should insert some meaning tags for umap cluster
+    tags: (
+        dict[str, str] | None
+    ) = {}  # <---- should insert some meaning tags for umap cluster
 
 
 class IngestionSettings(BaseModel):
@@ -46,12 +48,8 @@ class IngestionSettings(BaseModel):
     normalize_embeddings: bool | None = None  # does not matter
     chunk_preprocessing_mode: Literal["add_prefix"] = "add_prefix"
     query_preprocessing_mode: Literal["add_prefix"] = "add_prefix"
-    chunk_prefix: str = (
-        "passage: "  # Can be used to add prefix to text embeddings stored in vector store
-    )
-    query_prefix: str = (
-        "query: "  # Can be used to add prefix to text embeddings used for semantic search
-    )
+    chunk_prefix: str = "passage: "  # Can be used to add prefix to text embeddings stored in vector store
+    query_prefix: str = "query: "  # Can be used to add prefix to text embeddings used for semantic search
     chunk_overlap: int = 25  # Determines, for a given chunk of text, how many tokens must overlap with adjacent chunks.
     dataloader_batch_size: int = 32
     dataloader_num_workers: int = 4
@@ -62,7 +60,9 @@ class EvaluationSettings(BaseModel):
 
     chunk_size: int = 256
     embedding_dimension: int = 1024
-    mean_center: bool = False  # Mean-center embedding vectors before calculating similarity
+    mean_center: bool = (
+        False  # Mean-center embedding vectors before calculating similarity
+    )
     k_nn_metric: str = "cosine"  # Metric to use for calculating nearest neighbors for exact query, see sklearn.metrics.pairwise.distance_metrics for allowed values
     k: int = 10  # The number of nearest neighbors to consider
     baseline: bool = False  # Compute baseline scores
@@ -96,7 +96,7 @@ class EmbeddingDatasetInformation(BaseModel):
 
     This object is SERIALIZEABLE and can be put into ChromaDB metadata AND it can alsobe stored in
     a JSON seperately.
-    
+
     GATLEN NOTE: This does NOT represent the embeddings themselves, but rather
         where the embeddings are stored.
 
@@ -265,7 +265,9 @@ class StitchEvaluation(BaseModel):
     # Evaluation info
     stitching_mse: float
     stitching_mae: float
-    stitching_additional_metrics: dict[str, Any] | None = {}  # <--- if you want more data use this
+    stitching_additional_metrics: (
+        dict[str, Any] | None
+    ) = {}  # <--- if you want more data use this
     evaluation_data_split: Literal["train", "test"] = "train"
 
 
@@ -346,13 +348,17 @@ class StitchSummary(BaseModel):
     training_experiment_config: ExperimentConfig = Field(
         description="The inputs for training the stitch."
     )
-    train_settings: TrainSettings = Field(description="The settings used to train the stitch.")
+    train_settings: TrainSettings = Field(
+        description="The settings used to train the stitch."
+    )
 
     # Training Results
     training_evaluation_log: StitchEvaluationLog = Field(
         description="Epoch-by-epoch WandB-style evaluations."
     )
-    train_status_final: TrainStatus = Field(description="The stitch save location and other info.")
+    train_status_final: TrainStatus = Field(
+        description="The stitch save location and other info."
+    )
     train_stitch_embeddings: EmbeddingDatasetInformation = Field(
         description="The stitch embeddings resulting from feeding the original training embeddings through stitch model"
     )

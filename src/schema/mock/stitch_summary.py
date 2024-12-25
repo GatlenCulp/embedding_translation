@@ -69,7 +69,10 @@ def create_example_stitch_summary(
     if create_safetensors:
         # Generate target embeddings file
         generate_mock_safetensor(
-            shape=(1000, target_embeddings.embedding_dimension),  # 1000 embeddings of dimension 768
+            shape=(
+                1000,
+                target_embeddings.embedding_dimension,
+            ),  # 1000 embeddings of dimension 768
             output_path=target_embeddings.dataset_filepath,
             tensor_names=["embeddings"],
         )
@@ -232,7 +235,9 @@ def create_inverse_stitch_summary(stitch_summary: StitchSummary) -> StitchSummar
     return inv_stitch
 
 
-def save_inverse_stitch(stitch_summary: StitchSummary, suffix: str = "") -> StitchSummary:
+def save_inverse_stitch(
+    stitch_summary: StitchSummary, suffix: str = ""
+) -> StitchSummary:
     """Creates a mock inverse stitch by reversing the source and target embeddings.
 
     :param stitch_summary: Original StitchSummary to invert
