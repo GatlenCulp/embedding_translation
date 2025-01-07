@@ -828,11 +828,11 @@ dependencies = [
     { name = "jinja2" },
     { name = "packaging" },
     { name = "protobuf" },
-    { name = "psutil", marker = "platform_system == 'Windows'" },
+    { name = "psutil", marker = "sys_platform == 'win32'" },
     { name = "pydantic" },
     { name = "python-dotenv" },
     { name = "pytz" },
-    { name = "pywin32", marker = "platform_system == 'Windows'" },
+    { name = "pywin32", marker = "sys_platform == 'win32'" },
     { name = "pyyaml" },
     { name = "requests" },
     { name = "rich" },
@@ -844,7 +844,7 @@ dependencies = [
     { name = "toposort" },
     { name = "tqdm" },
     { name = "typing-extensions" },
-    { name = "tzdata", marker = "platform_system == 'Windows'" },
+    { name = "tzdata", marker = "sys_platform == 'win32'" },
     { name = "universal-pathlib" },
     { name = "watchdog" },
 ]
@@ -1107,6 +1107,7 @@ dependencies = [
     { name = "loguru" },
     { name = "loguru-config" },
     { name = "plotly" },
+    { name = "polars" },
     { name = "pydantic" },
     { name = "rich" },
     { name = "tokenize-rt" },
@@ -1232,6 +1233,7 @@ requires-dist = [
     { name = "loguru", specifier = ">=0.7.3" },
     { name = "loguru-config", specifier = ">=0.1.0" },
     { name = "plotly", specifier = ">=5.24.1" },
+    { name = "polars", specifier = ">=1.17.0" },
     { name = "pydantic", specifier = ">=2.10.3" },
     { name = "rich", specifier = ">=13.9.4" },
     { name = "tokenize-rt" },
@@ -1759,7 +1761,7 @@ name = "ipykernel"
 version = "6.29.5"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "appnope", marker = "platform_system == 'Darwin'" },
+    { name = "appnope", marker = "sys_platform == 'darwin'" },
     { name = "comm" },
     { name = "debugpy" },
     { name = "ipython" },
@@ -2600,7 +2602,7 @@ version = "1.6.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
-    { name = "colorama", marker = "platform_system == 'Windows'" },
+    { name = "colorama", marker = "sys_platform == 'win32'" },
     { name = "ghp-import" },
     { name = "jinja2" },
     { name = "markdown" },
@@ -3993,6 +3995,7 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/8f/52/84630dcbdc7eebbf7f95a38c395765835f5d28acf54b1a5d4d4f596879c5/pyprojectsort-0.3.0.tar.gz", hash = "sha256:a5d315e0bd32f90f354315aa7c66654d3be809793fcd16c09afd7b38beb5d86a", size = 4943 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/d6/87/1597bc0a6c3d2c4c0b90eeed17ade7f98e3653f432a03454519343331fed/pyprojectsort-0.3.0-py2.py3-none-any.whl", hash = "sha256:2958a1a3a95f61cda61bc2c1d51b803b7f0e3e1c99793bff94929f0ac041b094", size = 5885 },
+    { url = "https://files.pythonhosted.org/packages/20/7c/ff615da1d0e321802f219c915f8bc010a2c40e7f663c818bec7bdccc35df/pyprojectsort-0.3.0-py3-none-any.whl", hash = "sha256:b206da036fe669c6de0c3f2878180b0bae7d0be59f310f8f4ce4a93b4a4097ad", size = 6851 },
 ]
 
 [[package]]
@@ -5318,7 +5321,7 @@ dependencies = [
     { name = "toml" },
     { name = "tornado" },
     { name = "typing-extensions" },
-    { name = "watchdog", marker = "platform_system != 'Darwin'" },
+    { name = "watchdog", marker = "sys_platform != 'darwin'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/78/33/14b5ac0369ecf0af675911e5e84b934e6fcc2cec850857d2390eb373b0a6/streamlit-1.41.1.tar.gz", hash = "sha256:6626d32b098ba1458b71eebdd634c62af2dd876380e59c4b6a1e828a39d62d69", size = 8712473 }
 wheels = [
@@ -5657,7 +5660,7 @@ name = "tqdm"
 version = "4.67.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "colorama", marker = "platform_system == 'Windows'" },
+    { name = "colorama", marker = "sys_platform == 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/a8/4b/29b4ef32e036bb34e4ab51796dd745cdba7ed47ad142a9f4a1eb8e0c744d/tqdm-4.67.1.tar.gz", hash = "sha256:f8aef9c52c08c13a65f30ea34f4e5aac3fd1a34959879d7e59e63027286627f2", size = 169737 }
 wheels = [

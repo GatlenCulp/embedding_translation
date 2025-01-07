@@ -133,6 +133,7 @@ dependencies = [
     "pydantic>=2.10.3",
     "rich>=13.9.4",
     "tokenize-rt",
+    "polars>=1.17.0",
 ]
 description = "A final project for MIT's Deep Learning class"
 keywords = []
@@ -188,146 +189,60 @@ testpaths = [
     "tests",
 ]
 
-[tool.ruff]
-cache-dir = ".cache/ruff"
-exclude = [
-    ".bzr",
-    ".direnv",
-    ".eggs",
-    ".git",
-    ".hg",
-    ".mypy_cache",
-    ".nox",
-    ".pants.d",
-    ".pytype",
-    ".ruff_cache",
-    ".svn",
-    ".tox",
-    ".venv",
-    "__pypackages__",
-    "_build",
-    "buck-out",
-    "build",
-    "dist",
-    "node_modules",
-    "venv",
-]
-extend-include = [
-    "*.ipynb",
-]
-line-length = 88
-target-version = "py312"
-
-[tool.ruff.format]
-docstring-code-format = true
-docstring-code-line-length = 88
-indent-style = "space"
-line-ending = "auto"
-quote-style = "double"
-skip-magic-trailing-comma = false
-
-[tool.ruff.lint]
-dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
-fixable = [
-    "A",
-    "ANN",
-    "ARG",
-    "B",
-    "BLE",
-    "C",
-    "COM",
-    "D",
-    "DJ",
-    "DTZ",
-    "E",
-    "EM",
-    "ERA",
-    "EXE",
-    "F",
-    "FBT",
-    "G",
-    "I",
-    "ICN",
-    "INP",
-    "ISC",
-    "N",
-    "NPY",
-    "PD",
-    "PGH",
-    "PIE",
-    "PL",
-    "PT",
-    "PTH",
-    "PYI",
-    "Q",
-    "RET",
-    "RSE",
-    "RUF",
-    "S",
-    "SIM",
-    "SLF",
-    "T",
-    "TCH",
-    "TID",
-    "TRY",
-    "UP",
-    "W",
-    "YTT",
-]
-ignore = [
-    "COM812",
-    "E203",
-    "E266",
-    "E501",
-    "E731",
-    "E741",
-    "F722",
-    "FA102",
-    "FBT001",
-    "FBT002",
-    "FIX002",
-    "INP001",
-    "ISC001",
-    "PGH003",
-    "TC002",
-    "TD002",
-    "TD003",
-]
-select = [
-    "ALL",
-]
-unfixable = []
-
-[tool.ruff.lint.flake8-quotes]
-docstring-quotes = "double"
-
-[tool.ruff.lint.isort]
-force-single-line = true
-lines-after-imports = 2
-
-[tool.ruff.lint.mccabe]
-max-complexity = 10
-
-[tool.ruff.lint.per-file-ignores]
-"__init__.py" = [
-    "F401",
-]
-
-[tool.ruff.lint.pycodestyle]
-max-doc-length = 88
-
-[tool.ruff.lint.pydocstyle]
-convention = "google"
-
-[tool.ruff.lint.pylint]
-max-args = 5
-max-branches = 12
-max-locals = 15
-max-public-methods = 20
-max-returns = 6
-max-statements = 50
-
 [tool.uv]
 default-groups = [
     "dev",
 ]
+
+
+[tool.ruff]
+cache-dir = ".cache/ruff"
+line-length = 100
+# Doesn't work, this is a bug with ruff.
+# https://github.com/astral-sh/ruff/issues/9381
+# exclude = ["*/{{{{ cookiecutter.repo_name }}}}/*"]
+exclude = [
+  "*cookiecutter*",
+  "tests/test-linting/*"
+]
+
+[tool.ruff.lint]
+# TODO: Different groups of linting styles depending on code use.
+select = ["ALL"]
+ignore = [
+  "FIX002", # Allow TODOs
+  "TD003" # Allow TODO to not have link to issue
+]
+
+
+[tool.ruff.lint.isort]
+known-first-party = ["{{ cookiecutter.module_name }}"]
+force-sort-within-sections = true
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"] # Allow unused imports in __init__.py
+
+"tests/**/*.py" = [
+    # at least this three should be fine in tests:
+    "S101", # asserts allowed in tests...
+    "ARG", # Unused function args -> fixtures nevertheless are functionally relevant...
+    "FBT", # Don't care about booleans as positional arguments in tests, e.g. via @pytest.mark.parametrize()
+    # The below are debateable
+    "PLR2004", # Magic value used in comparison, ...
+    "S311", # Standard pseudo-random generators are not suitable for cryptographic purposes
+    "ANN001", "ANN201", # Allow for non-typed functions
+    "RET503", # Allow for implicit ignores
+]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.ruff.lint.pycodestyle]
+max-doc-length = 99
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
