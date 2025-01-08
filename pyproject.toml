@@ -134,6 +134,11 @@ dependencies = [
     "rich>=13.9.4",
     "tokenize-rt",
     "polars>=1.17.0",
+    "ipykernel>=6.29.5",
+    "jsonlines>=4.0.0",
+    "orjson>=3.10.12",
+    "numpy>=1.26.4",
+    "safetensors>=0.4.5",
 ]
 description = "A final project for MIT's Deep Learning class"
 keywords = []

@@ -1104,12 +1104,17 @@ name = "embedding-translation"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
+    { name = "ipykernel" },
+    { name = "jsonlines" },
     { name = "loguru" },
     { name = "loguru-config" },
+    { name = "numpy" },
+    { name = "orjson" },
     { name = "plotly" },
     { name = "polars" },
     { name = "pydantic" },
     { name = "rich" },
+    { name = "safetensors" },
     { name = "tokenize-rt" },
 ]
 
@@ -1230,12 +1235,17 @@ web = [
 
 [package.metadata]
 requires-dist = [
+    { name = "ipykernel", specifier = ">=6.29.5" },
+    { name = "jsonlines", specifier = ">=4.0.0" },
     { name = "loguru", specifier = ">=0.7.3" },
     { name = "loguru-config", specifier = ">=0.1.0" },
+    { name = "numpy", specifier = ">=1.26.4" },
+    { name = "orjson", specifier = ">=3.10.12" },
     { name = "plotly", specifier = ">=5.24.1" },
     { name = "polars", specifier = ">=1.17.0" },
     { name = "pydantic", specifier = ">=2.10.3" },
     { name = "rich", specifier = ">=13.9.4" },
+    { name = "safetensors", specifier = ">=0.4.5" },
     { name = "tokenize-rt" },
 ]
 
@@ -1956,6 +1966,18 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/85/3d/bbe62f3d0c05a689c711cff57b2e3ac3d3e526380adb7c781989f075115c/json5-0.10.0.tar.gz", hash = "sha256:e66941c8f0a02026943c52c2eb34ebeb2a6f819a0be05920a6f5243cd30fd559", size = 48202 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/aa/42/797895b952b682c3dafe23b1834507ee7f02f4d6299b65aaa61425763278/json5-0.10.0-py3-none-any.whl", hash = "sha256:19b23410220a7271e8377f81ba8aacba2fdd56947fbb137ee5977cbe1f5e8dfa", size = 34049 },
+]
+
+[[package]]
+name = "jsonlines"
+version = "4.0.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "attrs" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/35/87/bcda8e46c88d0e34cad2f09ee2d0c7f5957bccdb9791b0b934ec84d84be4/jsonlines-4.0.0.tar.gz", hash = "sha256:0c6d2c09117550c089995247f605ae4cf77dd1533041d366351f6f298822ea74", size = 11359 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/f8/62/d9ba6323b9202dd2fe166beab8a86d29465c41a0288cbe229fac60c1ab8d/jsonlines-4.0.0-py3-none-any.whl", hash = "sha256:185b334ff2ca5a91362993f42e83588a360cf95ce4b71a73548502bda52a7c55", size = 8701 },
 ]
 
 [[package]]

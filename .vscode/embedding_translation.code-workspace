@@ -47,6 +47,10 @@
 			"**/*.synctex.gz*": false
 		},
 		"explorerExclude.backup": {},
+		"python.analysis.extraPaths": [
+			".."
+		],
+		// "python.analysis.autoImportCompletions": true
 	},
 	"launch": {
 		"configurations": [
