@@ -1,30 +1,29 @@
 from __future__ import annotations
+
+import json
 import os
+from pathlib import Path
+from typing import Any
+
+import chromadb
 import click
 import cohere
-from typing import List, Literal, Optional, Dict, Tuple, Any
-from sentence_transformers import SentenceTransformer
-from langchain.text_splitter import SentenceTransformersTokenTextSplitter, TokenTextSplitter
-import chromadb
-from chromadb import PersistentClient, Settings
+from chromadb import PersistentClient
+from chromadb import Settings
 from chromadb.api.client import AdminClient
 from chromadb.config import DEFAULT_TENANT
 from chromadb.db.base import UniqueConstraintError
-from flask import current_app
+from langchain.text_splitter import SentenceTransformersTokenTextSplitter
+from langchain.text_splitter import TokenTextSplitter
 from openai import OpenAI
-from owlergpt.utils import JSONDataset, collate_fn, choose_dataset_folders
+from sentence_transformers import SentenceTransformer
 from torch.utils.data import DataLoader
 from tqdm import tqdm
-from pathlib import Path
-from owlergpt.modern.collection_utils import OPENAI_MODELS, COHERE_MODELS
-import yaml
 
-
-from datasets import load_dataset
-import json
-from typing import List, Dict, Any
-import os
-from pathlib import Path
+from owlergpt.modern.collection_utils import COHERE_MODELS
+from owlergpt.modern.collection_utils import OPENAI_MODELS
+from owlergpt.utils import JSONDataset
+from owlergpt.utils import collate_fn
 
 
 # TODO(Adriano) also add a HF method? Maybe convert into HF dataset instead?
@@ -38,29 +37,29 @@ class StringsToJSONDataset:
     """Creates a JSONDataset from a list of strings by writing them to a JSONL file."""
 
     def __init__(self, output_path: str | Path):
-        """
-        Args:
-            output_path: Path where the JSONL file will be written
+        """Args:
+        output_path: Path where the JSONL file will be written
         """
         self.output_path = Path(output_path)
         self.output_path.mkdir(parents=True, exist_ok=True)
         self.queries_output_path = Path(output_path) / "queries.jsonl"
         self.corpus_output_path = Path(output_path) / "corpus.jsonl"
 
-    def create_dataset(self, texts: List[str], queries: List[str]) -> None:
-        """
-        Creates a JSONL file from list of strings that can be loaded by JSONDataset.
+    def create_dataset(self, texts: list[str], queries: list[str]) -> None:
+        """Creates a JSONL file from list of strings that can be loaded by JSONDataset.
 
         Args:
             texts: List of text strings to convert
             record_type: Type of records ("document" or "query")
         """
-        assert self.output_path.exists(), f"Output path {self.output_path} does not exist"
+        assert (
+            self.output_path.exists()
+        ), f"Output path {self.output_path} does not exist"
         for output_path, records in [
             (self.queries_output_path, queries),
             (self.corpus_output_path, texts),
         ]:
-            records: List[Dict[str, Any]] = []
+            records: list[dict[str, Any]] = []
             for i, text in enumerate(texts):
                 record = {
                     # Look at arguana example above, all MTEB datasets SEEM to be like this
@@ -72,15 +71,16 @@ class StringsToJSONDataset:
 
             # Write records to JSONL file
             assert not output_path.exists(), f"Output path {output_path} already exists"
-            assert output_path.parent.exists(), f"Output path parent {output_path.parent} does not exist"
+            assert (
+                output_path.parent.exists()
+            ), f"Output path parent {output_path.parent} does not exist"
             with open(output_path, "w") as f:
                 for record in records:
                     f.write(json.dumps(record) + "\n")
 
 
 class OriginalIngestion:
-    """
-    A static class to provide support for (a lot of) the original ingestion logic. This allows
+    """A static class to provide support for (a lot of) the original ingestion logic. This allows
     us to, for example, test. It also has methods to facilitate testing on fake datasets by
     turning hard-coded string datasets into JSONDataset datasets.
     """
@@ -88,7 +88,7 @@ class OriginalIngestion:
     @staticmethod
     def __create_split_embedding_models(
         model_name: str, parallelism_batch_size: int = 1
-    ) -> List[SentenceTransformer]:
+    ) -> list[SentenceTransformer]:
         return [
             SentenceTransformer(
                 model_name,
@@ -103,14 +103,16 @@ class OriginalIngestion:
         chunk_overlap: int,
         tokens_per_chunk: int,
         # none => get from environ
-        openai_key: Optional[str] = None,
-        cohere_key: Optional[str] = None,
-    ) -> Tuple[TokenTextSplitter, str, Any]:
+        openai_key: str | None = None,
+        cohere_key: str | None = None,
+    ) -> tuple[TokenTextSplitter, str, Any]:
         """Helper to acquire the (text_splitter, transformer_model, client) tuple from a model name and other parameters."""
         text_splitter, transformer_model, client = None, None, None
         if model_name in OPENAI_MODELS:
             text_splitter = TokenTextSplitter(
-                model_name=model_name, chunk_overlap=chunk_overlap, chunk_size=tokens_per_chunk
+                model_name=model_name,
+                chunk_overlap=chunk_overlap,
+                chunk_size=tokens_per_chunk,
             )
             transformer_model = model_name
             if openai_key is None:
@@ -145,9 +147,9 @@ class OriginalIngestion:
 
     @staticmethod
     def create_collection(
-        chroma_client: Optional[PersistentClient],
+        chroma_client: PersistentClient | None,
         vector_dataset_path: str,
-        selected_folders: List[str],
+        selected_folders: list[str],
         tokens_per_chunk: int,
         chunk_overlap: int,
         normalize_embeddings: bool,
@@ -158,19 +160,21 @@ class OriginalIngestion:
         vector_search_distance_function: str,
         log: bool = True,
         # none => get from environ
-        openai_key: Optional[str] = None,
-        cohere_key: Optional[str] = None,
+        openai_key: str | None = None,
+        cohere_key: str | None = None,
         num_workers: int = 4,
-    ) -> Tuple[PersistentClient, chromadb.Collection]:
+    ) -> tuple[PersistentClient, chromadb.Collection]:
         if log:
             print("Getting text_splitter, transformer_model, client")
-        text_splitter, transformer_model, client = OriginalIngestion.__get_splitter_and_model(
-            # fetch keys from environ
-            model_name,
-            chunk_overlap,
-            tokens_per_chunk,
-            openai_key,
-            cohere_key,
+        text_splitter, transformer_model, client = (
+            OriginalIngestion.__get_splitter_and_model(
+                # fetch keys from environ
+                model_name,
+                chunk_overlap,
+                tokens_per_chunk,
+                openai_key,
+                cohere_key,
+            )
         )
 
         if log:
@@ -192,7 +196,7 @@ class OriginalIngestion:
             # wtf? "._identifier?" cmon man, it came from here
             # ```
             # In [4]: chroma_client.__dict__
-            # Out[4]: 
+            # Out[4]:
             # {'_identifier': './hi',
             # 'tenant': 'default_tenant',
             # 'database': 'default_database',
@@ -205,16 +209,22 @@ class OriginalIngestion:
         # 1. Create databases
         if log:
             print(f"Creating {len(selected_folders)} databases")
-        db_names = [f"{selected_folder}_{tokens_per_chunk}" for selected_folder in selected_folders]
+        db_names = [
+            f"{selected_folder}_{tokens_per_chunk}"
+            for selected_folder in selected_folders
+        ]
         assert len(db_names) == len(selected_folders)
         collections = []
         for db_name, selected_folder in tqdm_func(
-            zip(db_names, selected_folders), desc="| Creating databases + collections |"
+            zip(db_names, selected_folders, strict=False),
+            desc="| Creating databases + collections |",
         ):
             try:
                 admin_client.create_database(db_name)
                 if log:
-                    click.echo(f"Created dataset-specific DB {db_name} to store embeddings.")
+                    click.echo(
+                        f"Created dataset-specific DB {db_name} to store embeddings."
+                    )
             except UniqueConstraintError:
                 if log:
                     click.echo(
@@ -222,9 +232,7 @@ class OriginalIngestion:
                     )
             chroma_client.set_tenant(tenant=DEFAULT_TENANT, database=db_name)
             # Include VECTOR_SEARCH_SENTENCE_TRANSFORMER_MODEL in the collection name
-            collection_name = (
-                f"{selected_folder}_{transformer_model}_CharacterSplitting_{tokens_per_chunk}"
-            )
+            collection_name = f"{selected_folder}_{transformer_model}_CharacterSplitting_{tokens_per_chunk}"
 
             try:
                 # Attempt to create a new collection with the selected folder name
@@ -270,7 +278,10 @@ class OriginalIngestion:
                 record_type,
             )
             dataloader = DataLoader(
-                dataset, batch_size=batch_size, collate_fn=collate_fn, num_workers=num_workers
+                dataset,
+                batch_size=batch_size,
+                collate_fn=collate_fn,
+                num_workers=num_workers,
             )
             total_records += dataset.__len__()
             for documents, ids, text_chunks in tqdm(
@@ -281,7 +292,9 @@ class OriginalIngestion:
                 # Generate embeddings for each chunk
                 if model_name in OPENAI_MODELS:
                     embeddings = []
-                    data = client.embeddings.create(input=text_chunks, model=model_name).data
+                    data = client.embeddings.create(
+                        input=text_chunks, model=model_name
+                    ).data
                     for entry in data:
                         embeddings.append(entry.embedding)
                 elif model_name in COHERE_MODELS:
@@ -298,7 +311,11 @@ class OriginalIngestion:
 
                 # Prepare metadata for each chunk
                 metadatas = [
-                    {"record_id": ids[i], "record_text": text_chunks[i], "record_type": record_type}
+                    {
+                        "record_id": ids[i],
+                        "record_text": text_chunks[i],
+                        "record_type": record_type,
+                    }
                     for i in range(len(text_chunks))
                 ]
 
@@ -306,7 +323,10 @@ class OriginalIngestion:
 
                 # Store embeddings and metadata in the vector store
                 chroma_collection.add(
-                    documents=documents, embeddings=embeddings, metadatas=metadatas, ids=ids
+                    documents=documents,
+                    embeddings=embeddings,
+                    metadatas=metadatas,
+                    ids=ids,
                 )
 
             click.echo(

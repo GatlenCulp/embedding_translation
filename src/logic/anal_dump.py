@@ -35,7 +35,8 @@ class DataFile(BaseModel):
 
     # Metadata fields
     created_at: datetime = Field(
-        default_factory=datetime.utcnow, description="UTC timestamp when the dump was created"
+        default_factory=datetime.utcnow,
+        description="UTC timestamp when the dump was created",
     )
     version: str = Field(default="1.0.0", description="Version of the data format")
     description: str | None = Field(

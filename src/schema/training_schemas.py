@@ -32,7 +32,9 @@ class EmbeddingMetadata(BaseModel):
     record_type: Literal["query", "document"]
     # TODO(Adriano) not everything should be train by default
     record_split: Literal["train", "test"] = "train"
-    tags: dict[str, str] | None = {}  # <---- should insert some meaning tags for umap cluster
+    tags: (
+        dict[str, str] | None
+    ) = {}  # <---- should insert some meaning tags for umap cluster
 
 
 class IngestionSettings(BaseModel):
@@ -48,12 +50,8 @@ class IngestionSettings(BaseModel):
     # TODO: (Adriano) in the future we will want to try passing this through a model before
     chunk_preprocessing_mode: Literal["add_prefix"] = "add_prefix"
     query_preprocessing_mode: Literal["add_prefix"] = "add_prefix"
-    chunk_prefix: str = (
-        "passage: "  # Can be used to add prefix to text embeddings stored in vector store
-    )
-    query_prefix: str = (
-        "query: "  # Can be used to add prefix to text embeddings used for semantic search
-    )
+    chunk_prefix: str = "passage: "  # Can be used to add prefix to text embeddings stored in vector store
+    query_prefix: str = "query: "  # Can be used to add prefix to text embeddings used for semantic search
     chunk_overlap: int = 25  # Determines, for a given chunk of text, how many tokens must overlap with adjacent chunks.
     dataloader_batch_size: int = 32
     dataloader_num_workers: int = 4
@@ -64,7 +62,9 @@ class EvaluationSettings(BaseModel):
 
     chunk_size: int = 256
     embedding_dimension: int = 1024
-    mean_center: bool = False  # Mean-center embedding vectors before calculating similarity
+    mean_center: bool = (
+        False  # Mean-center embedding vectors before calculating similarity
+    )
     k_nn_metric: str = "cosine"  # Metric to use for calculating nearest neighbors for exact query, see sklearn.metrics.pairwise.distance_metrics for allowed values
     k: int = 10  # The number of nearest neighbors to consider
     baseline: bool = False  # Compute baseline scores
@@ -267,7 +267,9 @@ class StitchEvaluation(BaseModel):
     # Evaluation info
     stitching_mse: float
     stitching_mae: float
-    stitching_additional_metrics: dict[str, Any] | None = {}  # <--- if you want more data use this
+    stitching_additional_metrics: (
+        dict[str, Any] | None
+    ) = {}  # <--- if you want more data use this
     evaluation_data_split: Literal["train", "test"] = "train"
 
 
@@ -300,7 +302,9 @@ class StitchSummary(BaseModel):
     6. The trained stitch model dump
     """
 
-    @computed_field(repr=True, description="This is the name that will be displayed on graphs.")
+    @computed_field(
+        repr=True, description="This is the name that will be displayed on graphs."
+    )
     @property
     def display_name(self) -> str:
         """This is the name that will be displayed on graphs."""
@@ -309,7 +313,9 @@ class StitchSummary(BaseModel):
             f"using {self.architecture_name} Architecture"
         )
 
-    @computed_field(repr=False, description="This is the name that appears on file names.")
+    @computed_field(
+        repr=False, description="This is the name that appears on file names."
+    )
     @property
     def slug(self) -> str:
         """This is the name that appears on file names."""
@@ -424,7 +430,8 @@ class StitchSummary(BaseModel):
 
     # Test Experiment Configuration (source = resulting stitched embeddings)
     test_experiment_config: ExperimentConfig = Field(
-        description="The setup for the test experiment on witheld text data.", repr=False
+        description="The setup for the test experiment on witheld text data.",
+        repr=False,
     )
     test_evaluation_log: StitchEvaluationLog = Field(
         description="No-epoch WandB-style evaluation on the test data. Just MSE and such.",

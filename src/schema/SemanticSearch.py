@@ -26,9 +26,13 @@ class SemanticSearchEvaluation(BaseModel):
     )
 
     # Process
-    distance_function: Literal["euclidean"] = Field(description="Name of distance function used")
+    distance_function: Literal["euclidean"] = Field(
+        description="Name of distance function used"
+    )
     # NOTE: For now we just use one/the nearest
-    k: int = Field(description="Number of neighbors the test data was labled with", gt=0)
+    k: int = Field(
+        description="Number of neighbors the test data was labled with", gt=0
+    )
 
     # Results
     nearest_neighbors: dict[str | int, dict[str | int, float]] = Field(

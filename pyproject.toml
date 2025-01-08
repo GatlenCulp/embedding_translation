@@ -1,51 +1,160 @@
-[project]
-name = "embedding-translation"
-requires-python = ">=3.11,<3.13"
-dependencies = [
-    "nbformat",
-    "nbqa",
-    "plotly>=5.24.1",
-    "scikit-learn",
-    "tokenize-rt",
-    "umap-learn",
-    "numpy<2.0.0",
-    "kaleido",
-    "chromadb",
-    "flask",
-    "cohere",
-    "polyfactory",
-    "orjson>=3.10.12",
-    "bump-pydantic",
+[dependency-groups]
+ai-apps = [
+    "ell-ai>=0.0.15",
+    "langchain>=0.3.12",
+    "megaparse>=0.0.45",
+]
+ai-train = [
+    "datasets>=3.1.0",
+    "einops>=0.8.0",
+    "jaxtyping>=0.2.36",
+    "nnsight>=0.3.7",
+    "onnx>=1.17.0",
+    "pytorch-lightning>=2.4.0",
+    "ray[tune]>=2.40.0",
     "safetensors>=0.4.5",
+    "scikit-learn>=1.6.0",
+    "shap>=0.46.0",
+    "torch>=2.5.1",
+    "transformers>=4.47.0",
+    "umap-learn>=0.5.7",
+    "wandb>=0.19.1",
+]
+async = [
+    "uvloop>=0.21.0",
+]
+cli = [
+    "typer>=0.15.1",
+]
+cloud = [
+    "ansible>=11.1.0",
+    "boto3>=1.35.81",
+]
+config = [
+    "cookiecutter>=2.6.0",
+    "gin-config>=0.5.0",
+    "jinja2>=3.1.4",
+]
+data = [
+    "dagster>=1.9.5",
+    "duckdb>=1.1.3",
+    "lancedb>=0.17.0",
+    "networkx>=3.4.2",
+    "numpy>=1.26.4",
+    "orjson>=3.10.12",
+    "pillow>=10.4.0",
+    "polars>=1.17.0",
+    "pygwalker>=0.4.9.13",
+    "sqlmodel>=0.0.22",
+    "tomli>=2.0.1",
+]
+dev = [
+    "bandit>=1.8.0",
+    "better-exceptions>=0.3.3",
+    "cruft>=2.15.0",
+    "faker>=33.1.0",
+    "hypothesis>=6.122.3",
+    "pip>=24.3.1",
+    "polyfactory>=2.18.1",
+    "pydoclint>=0.5.11",
+    "pyinstrument>=5.0.0",
+    "pyprojectsort>=0.3.0",
+    "pyright>=1.1.390",
+    "pytest-cases>=3.8.6",
+    "pytest-cov>=6.0.0",
+    "pytest-icdiff>=0.9",
+    "pytest-mock>=3.14.0",
+    "pytest-playwright>=0.6.2",
+    "pytest-profiling>=1.8.1",
+    "pytest-random-order>=1.1.1",
+    "pytest-shutil>=1.8.1",
+    "pytest-split>=0.10.0",
+    "pytest-sugar>=1.0.0",
+    "pytest-timeout>=2.3.1",
+    "pytest>=8.3.4",
+    "ruff>=0.8.3",
+    "taplo>=0.9.3",
+    "tox>=4.23.2",
+    "uv>=0.5.7",
+]
+dev-doc = [
+    "mdformat>=0.7.19",
+    "mkdocs-material>=9.5.48",
+    "mkdocs>=1.6.1",
+]
+dev-nb = [
+    "jupyter-book>=1.0.3",
+    "nbformat>=5.10.4",
+    "nbqa>=1.9.1",
+    "testbook>=0.4.2",
+]
+gui = [
+    "streamlit>=1.41.1",
+]
+misc = [
+    "boltons>=24.1.0",
+    "cachetools>=5.5.0",
+    "wrapt>=1.17.0",
+]
+nb = [
+    "chime>=0.7.0",
+    "ipykernel>=6.29.5",
+    "ipython>=7.34.0",
+    "ipywidgets>=8.1.5",
+    "jupyterlab>=4.3.3",
+]
+web = [
+    "beautifulsoup4>=4.12.3",
+    "fastapi>=0.115.6",
+    "playwright>=1.49.1",
+    "requests>=2.32.3",
+    "scrapy>=2.12.0",
+    "uvicorn>=0.33.0",
+    "zrok>=0.4.42",
 ]
 
-[tool.poetry]
-
-name = "embedding-translation"
-version = "0.0"
-description = "A final project for MIT's Deep Learning class"
-
-packages = [{ include = "src" }, { include = "owler_fork" }]
-
-license = "MIT"
-authors = ["Gatlen Culp, Adriano Hernandez <GatlenCulp@gmail.com>"]
-
-readme = "README.md"
-repository = "https://github.com/GatlenCulp/embedding_translation"
-
-keywords = [
+[project]
+authors = [
+    { email = "gculp@mit.edu", name = "Gatlen Culp" },
 ]
 classifiers = [
-    # TODO: update this list to match your application: https://pypi.org/pypi?%3Aaction=list_classifiers
     "Development Status :: 1 - Planning",
     "Natural Language :: English",
     "Operating System :: OS Independent",
+    "Private :: Do Not Upload",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.12",
 ]
+dependencies = [
+    "loguru-config>=0.1.0",
+    "loguru>=0.7.3",
+    "plotly>=5.24.1",
+    "pydantic>=2.10.3",
+    "rich>=13.9.4",
+    "tokenize-rt",
+    "polars>=1.17.0",
+    "ipykernel>=6.29.5",
+    "jsonlines>=4.0.0",
+    "orjson>=3.10.12",
+    "numpy>=1.26.4",
+    "safetensors>=0.4.5",
+]
+description = "A final project for MIT's Deep Learning class"
+keywords = []
+name = "embedding-translation"
+requires-python = ">=3.11,<3.13"
+version = "0.1.0"
 
+[project.license]
+content-type = "text/markdown"
+file = "LICENSE.md"
 
+<<<<<<< HEAD
+[project.readme]
+content-type = "text/markdown"
+file = "README.md"
+=======
 [tool.poetry.dependencies]
 
 python = ">=3.11,<3.13"
@@ -174,193 +283,114 @@ lint = { cmd = "ruff check . --fix", help = "Lint (with autofix)" }
 docstring-lint = { cmd = "pydoclint .", help = "Lint docstrings" }
 test = { cmd = "pytest", help = "Run tests" }
 typecheck = { cmd = "pyright", help = "Typecheck" }
+>>>>>>> origin/main
 
+[project.urls]
+Repository = "https://github.com/GatlenCulp/embedding_translation"
 
 [tool.poetry.scripts]
-
 embedding_tranlation = "src:main"
 
-[tool.pytest.ini_options]
-pythonpath = ["src"]
-testpaths = ["tests"]
-addopts = """
---show-capture=no
---code-highlight=yes
---tb=long
--rA
--x
---doctest-modules
---cov=src
---cov-report=html
---cov-report=term-missing:skip-covered
---no-cov-on-fail
-"""
-markers = [
-    "potentially_harmful: mark test as potentially harmful to the system (uninstalls, etc.)",
-]
-filterwarnings = [
-    "ignore::DeprecationWarning",
-    "ignore::UserWarning",
-    "ignore::pydantic.warnings.PydanticDeprecatedSince20",
-]
-
-[tool.ruff]
-cache-dir = ".cache/ruff"
-line-length = 88
-extend-include = ["*.ipynb"]
-target-version = "py312"
-
-exclude = [
-    ".bzr",
-    ".direnv",
-    ".eggs",
-    ".git",
-    ".hg",
-    ".mypy_cache",
-    ".nox",
-    ".pants.d",
-    ".pytype",
-    ".ruff_cache",
-    ".svn",
-    ".tox",
-    ".venv",
-    "__pypackages__",
-    "_build",
-    "buck-out",
-    "build",
-    "dist",
-    "node_modules",
-    "venv",
-]
-
-[tool.ruff.lint]
-select = ["ALL"]
-ignore = [
-    "COM812", # Conflicts with ruff format
-    "F722",   # Forward annotations
-    "FA102",  # Annotations support
-    "FBT001", # Bool args for Fire CLI
-    "FBT002", # Bool args for Fire CLI
-    "FIX002", # Allow TODO
-    "INP001", # __init__.py
-    "ISC001", # Conflicts with ruff format
-    "PGH003", # Type ignore
-    "TC002", # Type checking imports
-    "TD002",  # Allow TODO
-    "TD003",  # Allow TODO
-    "E203",   # Whitespace before ':' (black formats this differently)
-    "E266",   # Too many leading '#' for block comment
-    "E501",   # Line too long (using B950 instead)
-    "E731",   # Do not assign lambda expression
-    "E741",   # Ambiguous variable name
-]
-
-fixable = [
-    "A",
-    "B",
-    "C",
-    "D",
-    "E",
-    "F",
-    "G",
-    "I",
-    "N",
-    "Q",
-    "S",
-    "T",
-    "W",
-    "ANN",
-    "ARG",
-    "BLE",
-    "COM",
-    "DJ",
-    "DTZ",
-    "EM",
-    "ERA",
-    "EXE",
-    "FBT",
-    "ICN",
-    "INP",
-    "ISC",
-    "NPY",
-    "PD",
-    "PGH",
-    "PIE",
-    "PL",
-    "PT",
-    "PTH",
-    "PYI",
-    "RET",
-    "RSE",
-    "RUF",
-    "SIM",
-    "SLF",
-    "TCH",
-    "TID",
-    "TRY",
-    "UP",
-    "YTT",
-]
-unfixable = []
-
-dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
-
-[tool.ruff.lint.per-file-ignores]
-"__init__.py" = ["F401"] # Allow unused imports in __init__.py
-
-[tool.ruff.lint.mccabe]
-max-complexity = 10
-
-[tool.ruff.lint.pycodestyle]
-max-doc-length = 88
-
-[tool.ruff.lint.pydocstyle]
-convention = "google"
-
-[tool.ruff.lint.flake8-quotes]
-docstring-quotes = "double"
-
-[tool.ruff.lint.isort]
-force-single-line = true
-lines-after-imports = 2
-
-[tool.ruff.lint.pylint]
-max-args = 5
-max-branches = 12
-max-locals = 15
-max-public-methods = 20
-max-returns = 6
-max-statements = 50
-
-[tool.ruff.format]
-quote-style = "double"
-indent-style = "space"
-skip-magic-trailing-comma = false
-line-ending = "auto"
-docstring-code-format = true
-docstring-code-line-length = 88
+[tool.pydoclint]
+allow-init-docstring = true
+arg-type-hints-in-docstring = false
+check-return-types = false
+exclude = "\\.venv"
+style = "google"
 
 [tool.pyright]
-include = ["."]
+include = [
+    ".",
+]
 reportMissingTypeStubs = false
 reportUnknownArgumentType = false
 reportUnknownMemberType = false
 reportUnknownParameterType = false
 reportUnknownVariableType = false
 
-[tool.pydoclint]
-style = "google"
-arg-type-hints-in-docstring = false
-check-return-types = false
-allow-init-docstring = true
-exclude = '\.venv'
+[tool.pytest.ini_options]
+addopts = "--show-capture=no\n--code-highlight=yes\n--tb=long\n-rA\n-x\n--doctest-modules\n--cov=src\n--cov-report=html\n--cov-report=term-missing:skip-covered\n--no-cov-on-fail\n"
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::UserWarning",
+    "ignore::pydantic.warnings.PydanticDeprecatedSince20",
+]
+markers = [
+    "potentially_harmful: mark test as potentially harmful to the system (uninstalls, etc.)",
+]
+pythonpath = [
+    "src",
+]
+testpaths = [
+    "tests",
+]
 
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+[tool.uv]
+default-groups = [
+    "dev",
+]
 
-[dependency-groups]
-dev = [
-    "pip>=24.3.1",
-    "uv>=0.5.7",
+
+[tool.ruff]
+cache-dir = ".cache/ruff"
+line-length = 100
+# Doesn't work, this is a bug with ruff.
+# https://github.com/astral-sh/ruff/issues/9381
+# exclude = ["*/{{{{ cookiecutter.repo_name }}}}/*"]
+exclude = [
+  "*cookiecutter*",
+  "tests/test-linting/*"
+]
+
+[tool.ruff.lint]
+# TODO: Different groups of linting styles depending on code use.
+select = ["ALL"]
+ignore = [
+  "FIX002", # Allow TODOs
+  "TD003" # Allow TODO to not have link to issue
+]
+
+
+[tool.ruff.lint.isort]
+known-first-party = ["{{ cookiecutter.module_name }}"]
+force-sort-within-sections = true
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"] # Allow unused imports in __init__.py
+
+"tests/**/*.py" = [
+    # at least this three should be fine in tests:
+    "S101", # asserts allowed in tests...
+    "ARG", # Unused function args -> fixtures nevertheless are functionally relevant...
+    "FBT", # Don't care about booleans as positional arguments in tests, e.g. via @pytest.mark.parametrize()
+    # The below are debateable
+    "PLR2004", # Magic value used in comparison, ...
+    "S311", # Standard pseudo-random generators are not suitable for cryptographic purposes
+    "ANN001", "ANN201", # Allow for non-typed functions
+    "RET503", # Allow for implicit ignores
+]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.ruff.lint.pycodestyle]
+max-doc-length = 99
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.gitleaks]
+allowlist = [
+    # Standard Author-Year-ID format
+    { description = "Citation keys in Distill.pub HTML", regex = '''key="[A-Za-z-]+[0-9]{4}(-[a-z]{2})?"\s*''' },
+    # D-cite tags with standard format
+    { description = "D-cite tags in Distill.pub HTML", regex = '''<d-cite key="[A-Za-z-]+[0-9]{4}(-[a-z]{2})?"\s*''' },
+    # Conference paper citations (like NEURIPS2020_XXXX)
+    { description = "Conference paper citations", regex = '''key="[A-Z]+[0-9]{4}_[0-9]+"\s*''' },
+    # Citations within text
+    { description = "In-text citations", regex = '''<d-cite key="[A-Za-z0-9_-]+[0-9]{4}(-[a-z]{2})?"\s*''' }
 ]

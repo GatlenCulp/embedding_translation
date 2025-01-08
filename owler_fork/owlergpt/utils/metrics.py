@@ -1,11 +1,13 @@
+import random
+
 import click
 import numpy as np
 import plotly.express as px
-import random
 import torch
-
 from sklearn.neighbors import NearestNeighbors
-from torch.nn.functional import cosine_similarity, pairwise_distance
+from torch.nn.functional import cosine_similarity
+from torch.nn.functional import pairwise_distance
+
 
 COSINE = "cosine"
 EUCLIDEAN = "euclidean"
@@ -20,8 +22,7 @@ NEAREST_NEIGHBORS = [JACCARD, RANK]
 def _pairwise_similarity(
     embeds1: torch.Tensor, embeds2: torch.Tensor, metric: str, device: torch.device
 ):
-    """
-    Calculates the pairwise cosine similarity or Euclidean distance between the given tensors.
+    """Calculates the pairwise cosine similarity or Euclidean distance between the given tensors.
 
     :param embeds1: The first tensors of dimension (N, D).
     :param embeds2: The second tensors of dimension (N, D).
@@ -31,17 +32,21 @@ def _pairwise_similarity(
     """
     if metric == COSINE:
         return cosine_similarity(embeds1.to(device), embeds2.to(device))
-    elif metric == EUCLIDEAN:
+    if metric == EUCLIDEAN:
         return pairwise_distance(embeds1.to(device), embeds2.to(device))
-    else:
-        raise NotImplementedError(f"Provided unsupported metric {metric} for pairwise similarity!")
+    raise NotImplementedError(
+        f"Provided unsupported metric {metric} for pairwise similarity!"
+    )
 
 
 def _mean_pairwise_similarity(
-    embeds1: torch.Tensor, embeds2: torch.Tensor, metric: str, batch_size: int, device: torch.device
+    embeds1: torch.Tensor,
+    embeds2: torch.Tensor,
+    metric: str,
+    batch_size: int,
+    device: torch.device,
 ):
-    """
-    Calculates the pairwise cosine similarity or Euclidean distance between batches of the given tensors and sums them
+    """Calculates the pairwise cosine similarity or Euclidean distance between batches of the given tensors and sums them
     up. In the end, the mean score is returned.
 
     :param embeds1: A tensor of dimension (N, D).
@@ -56,7 +61,7 @@ def _mean_pairwise_similarity(
     embeds2_batches = embeds2.split(batch_size)
     sum = 0
     sims = []
-    for embed1, embed2 in zip(embeds1_batches, embeds2_batches):
+    for embed1, embed2 in zip(embeds1_batches, embeds2_batches, strict=False):
         sim = _pairwise_similarity(embed1, embed2, metric, device)
         sims = sims + sim.detach().cpu().tolist()
         sum += torch.sum(sim).detach().cpu()
@@ -66,8 +71,7 @@ def _mean_pairwise_similarity(
 
 
 def _jaccard_sim(indices1: np.ndarray, indices2: np.ndarray):
-    """
-    Calculates the Jaccard similarity between two 2D arrays by dividing the number of overlapping entries by the union
+    """Calculates the Jaccard similarity between two 2D arrays by dividing the number of overlapping entries by the union
     of entries per row. The mean score over all rows is returned in the end.
 
     :param indices1: The first array of indices of shape (N, D).
@@ -77,14 +81,16 @@ def _jaccard_sim(indices1: np.ndarray, indices2: np.ndarray):
     inds = np.concatenate((indices1, indices2), axis=1)
     len_union = np.array([len(np.unique(i)) for i in inds])
     len_intersection = np.array(
-        [len(set(i).intersection(set(j))) for i, j in zip(indices1, indices2)]
+        [
+            len(set(i).intersection(set(j)))
+            for i, j in zip(indices1, indices2, strict=False)
+        ]
     )
     return np.mean(len_intersection / len_union)
 
 
 def _get_rank_sum(indices1: np.ndarray, indices2: np.ndarray):
-    """
-    Computes the sum term for rank similarity given the two 1D-arrays containing the indices of the k-nearest neighbors
+    """Computes the sum term for rank similarity given the two 1D-arrays containing the indices of the k-nearest neighbors
     of two sets of activations.
 
     :param indices1: One row of indices calculated for the first set of activations.
@@ -97,22 +103,29 @@ def _get_rank_sum(indices1: np.ndarray, indices2: np.ndarray):
     mask = aux[1:] == aux[:-1]
     ar1_indices = aux_sort_indices[:-1][mask] + 1
     ar2_indices = aux_sort_indices[1:][mask] - indices1.size + 1
-    rank_sum = np.sum([2 / ((1 + abs(i - j)) * (i + j)) for i, j in zip(ar1_indices, ar2_indices)])
+    rank_sum = np.sum(
+        [
+            2 / ((1 + abs(i - j)) * (i + j))
+            for i, j in zip(ar1_indices, ar2_indices, strict=False)
+        ]
+    )
     return rank_sum
 
 
 def _rank_sim(indices1: np.ndarray, indices2: np.ndarray):
-    """
-    Computes the rank similarity between two sets of indices. Rank similarities are calculated for each pair of rows and
+    """Computes the rank similarity between two sets of indices. Rank similarities are calculated for each pair of rows and
     averaged.
 
     :param indices1: The first array of indices of shape (N, D).
     :param indices2: The second array of indices of shape (N, D).
     :return: The mean rank similarity.
     """
-    rank_sums = [_get_rank_sum(i, j) for i, j in zip(indices1, indices2)]
+    rank_sums = [_get_rank_sum(i, j) for i, j in zip(indices1, indices2, strict=False)]
     len_intersection = np.array(
-        [len(set(i).intersection(set(j))) for i, j in zip(indices1, indices2)]
+        [
+            len(set(i).intersection(set(j)))
+            for i, j in zip(indices1, indices2, strict=False)
+        ]
     )
     factors = []
     for idx, elem1 in enumerate(len_intersection):
@@ -125,8 +138,7 @@ def _rank_sim(indices1: np.ndarray, indices2: np.ndarray):
 
 
 def nn_sim(indices1: np.ndarray, indices2: np.ndarray, metric: str):
-    """
-    Calculates the similarity of two sets of indices representing the index of nearest neighbors using Jaccard or rank
+    """Calculates the similarity of two sets of indices representing the index of nearest neighbors using Jaccard or rank
     similarity.
 
     :param indices1: The first array of indices of shape (N, D).
@@ -135,8 +147,7 @@ def nn_sim(indices1: np.ndarray, indices2: np.ndarray, metric: str):
     """
     if metric == JACCARD:
         return _jaccard_sim(indices1, indices2)
-    else:
-        return _rank_sim(indices1, indices2)
+    return _rank_sim(indices1, indices2)
 
 
 def _nearest_neighbors(
@@ -149,8 +160,7 @@ def _nearest_neighbors(
     nn_function: str,
     baseline: bool = False,
 ):
-    """
-    Calculates the nearest neighbors for two sets of queries and returns the k indices of the closest embeddings for
+    """Calculates the nearest neighbors for two sets of queries and returns the k indices of the closest embeddings for
     each query. After obtaining the indices, their similarity is calculated.
 
     :param embeds1: The first set of embeddings of shape (N, D1).
@@ -217,8 +227,7 @@ def _calculate_embed_metric(
     nn_function: str,
     baseline: bool = False,
 ):
-    """
-    Calculates the similarity between two embedding matrices using the given metric.
+    """Calculates the similarity between two embedding matrices using the given metric.
 
     :param embeds1: Document embedding tensor of shape (N, D1).
     :param embeds2: Document embedding tensor of shape (N, D1) if the metric requires matching dimensions or (N, D2).
@@ -236,7 +245,7 @@ def _calculate_embed_metric(
 
     if metric in MATCH_DIM_METRICS:
         return _mean_pairwise_similarity(embeds1, embeds2, metric, batch_size, device)
-    elif metric in NEAREST_NEIGHBORS:
+    if metric in NEAREST_NEIGHBORS:
         return _nearest_neighbors(
             np.array(embeds1),
             np.array(embeds2),
@@ -247,10 +256,11 @@ def _calculate_embed_metric(
             nn_function,
             baseline,
         )
-    elif metric == CKA:
+    if metric == CKA:
         return _cka(embeds1, embeds2)
-    else:
-        raise NotImplementedError(f"Provided unsupported metric {metric} for embedding similarity!")
+    raise NotImplementedError(
+        f"Provided unsupported metric {metric} for embedding similarity!"
+    )
 
 
 def _sample_embeddings(
@@ -260,8 +270,7 @@ def _sample_embeddings(
     num_embeds: int,
     baseline: bool = False,
 ):
-    """
-    Returns a subset of embeddings if the desired number of embeddings to be compared is lower than the available ones.
+    """Returns a subset of embeddings if the desired number of embeddings to be compared is lower than the available ones.
     If a baseline score should be computed, the first set of embeddings is shuffled randomly if all embeddings are used
     or two different random subsets are returned.
 
@@ -301,8 +310,7 @@ def calculate_metric(
     center: bool = False,
     baseline: bool = False,
 ):
-    """
-    Calculates the similarity between document embeddings after pre-processing the embedding vectors.
+    """Calculates the similarity between document embeddings after pre-processing the embedding vectors.
 
     :param embeds1: Document embedding tensor of shape (N, D1).
     :param embeds2: Document embedding tensor of shape (N, D1) if the metric requires matching dimensions or (N, D2).
@@ -345,17 +353,15 @@ def calculate_metric(
 
 
 def self_sim_score(metric: str):
-    """
-    Returns the similarity score between two identical vectors for the given metric.
+    """Returns the similarity score between two identical vectors for the given metric.
 
     :param metric: The name of the metric.
     :return: The self-similarity score.
     """
     if metric == COSINE or metric == JACCARD or metric == RANK or metric == CKA:
         return 1
-    elif metric == EUCLIDEAN:
+    if metric == EUCLIDEAN:
         return 0
-    else:
-        raise NotImplementedError(
-            f"Cannot return self-similarity score of unsupported metric {metric}!"
-        )
+    raise NotImplementedError(
+        f"Cannot return self-similarity score of unsupported metric {metric}!"
+    )

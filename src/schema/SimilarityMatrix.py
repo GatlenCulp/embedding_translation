@@ -17,7 +17,9 @@ class SimilarityMatrixEvaluation(BaseModel):
     """
 
     # Data Source
-    test_dataset: EmbeddingDatasetInformation = Field(description="stitched or non-stitched testing dataset")
+    test_dataset: EmbeddingDatasetInformation = Field(
+        description="stitched or non-stitched testing dataset"
+    )
 
     @model_validator(mode="after")
     def validate_dataset_is_test(self) -> "SimilarityMatrixPairwiseEvaluation":
@@ -58,8 +60,13 @@ class SimilarityMatrixPairwiseEvaluation(BaseModel):
     @model_validator(mode="after")
     def validate_matching_record_ids(self) -> "SimilarityMatrixPairwiseEvaluation":
         """Validate that both datasets have the same record IDs."""
-        if self.target_similarity_matrix.record_ids != self.stitched_similarity_matrix.record_ids:
-            raise ValueError("Target and stitched datasets must have identical record IDs")
+        if (
+            self.target_similarity_matrix.record_ids
+            != self.stitched_similarity_matrix.record_ids
+        ):
+            raise ValueError(
+                "Target and stitched datasets must have identical record IDs"
+            )
         return self
 
     @computed_field

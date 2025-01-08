@@ -1,8 +1,14 @@
 from .check_env import check_env
-from .list_available_collections import list_available_collections
-from .json_loader import JSONDataset, collate_fn
 from .dataset_folders import choose_dataset_folders
 from .filter_collections import filter_collections
-from .metrics import AVAILABLE_METRICS, MATCH_DIM_METRICS, NEAREST_NEIGHBORS, calculate_metric, self_sim_score, nn_sim
-from .plots import plot_results
 from .get_embedding_indices import get_embedding_indices
+from .json_loader import JSONDataset
+from .json_loader import collate_fn
+from .list_available_collections import list_available_collections
+from .metrics import AVAILABLE_METRICS
+from .metrics import MATCH_DIM_METRICS
+from .metrics import NEAREST_NEIGHBORS
+from .metrics import calculate_metric
+from .metrics import nn_sim
+from .metrics import self_sim_score
+from .plots import plot_results

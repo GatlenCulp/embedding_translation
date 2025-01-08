@@ -130,7 +130,9 @@ class StitchSummaryFactory(BaseFactory[StitchSummary]):
                 stitch_model_name="stitch_v1"
             ),
             test_experiment_config=test_config,
-            test_evaluation_log=StitchEvaluationLog(evaluations=[StitchEvaluationFactory.build()]),
+            test_evaluation_log=StitchEvaluationLog(
+                evaluations=[StitchEvaluationFactory.build()]
+            ),
             test_stitch_embeddings=EmbeddingDatasetInformationFactory.build(
                 stitch_model_name="stitch_v1"
             ),

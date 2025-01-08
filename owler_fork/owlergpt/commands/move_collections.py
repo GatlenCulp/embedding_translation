@@ -1,18 +1,20 @@
-import click
-import chromadb
 import os
 
+import chromadb
+import click
 from chromadb.api.client import AdminClient
-from chromadb.config import DEFAULT_DATABASE, DEFAULT_TENANT
+from chromadb.config import DEFAULT_DATABASE
+from chromadb.config import DEFAULT_TENANT
 from chromadb.db.base import UniqueConstraintError
 from flask import current_app
-from owlergpt.utils import list_available_collections, choose_dataset_folders
+
+from owlergpt.utils import choose_dataset_folders
+from owlergpt.utils import list_available_collections
+
 
 @current_app.cli.command("move_col")
 def move_collections() -> None:
-    """
-    Moves data persisted for a specific dataset from the default chromadb database to a new one.
-    """
+    """Moves data persisted for a specific dataset from the default chromadb database to a new one."""
     environ = os.environ
     chunk_size = environ.get("CHUNK_SIZE")
     collections = list_available_collections()
@@ -57,6 +59,10 @@ def move_collections() -> None:
             name=collection_name,
             metadata={"hnsw:space": os.environ["VECTOR_SEARCH_DISTANCE_FUNCTION"]},
         )
-        chroma_collection.add(documents=data["documents"], embeddings=data["embeddings"], metadatas=data["metadatas"],
-                              ids=data["ids"])
+        chroma_collection.add(
+            documents=data["documents"],
+            embeddings=data["embeddings"],
+            metadatas=data["metadatas"],
+            ids=data["ids"],
+        )
         click.echo("moved collection " + collection_name)

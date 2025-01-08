@@ -1,35 +1,38 @@
 from __future__ import annotations
 
+
 """
 Shitty train script. This is NOT meant to be used later when it is replaced by the actual schemas. Does not actually log everything. Is
 really jank ngl. 
 
 [WARNING: DEPRECATED] (try to use the `train_on_safetensors_dbs.ipynb`)
 """
-from typing import List, Tuple, Literal, Optional, Dict, Any
-import yaml
+import itertools
+import json
 import os
-import click
-from torch.utils.data import DataLoader, Dataset
-import wandb
+import time
+from pathlib import Path
+from typing import Literal
+from uuid import uuid4
+
 import chromadb
+import click
 import numpy as np
-import pandas as pd
 import safetensors
 import torch
-import torch.nn as nn
-import itertools
-import time
-import pydantic
-import json
-from pydantic import BaseModel
+import wandb
 from flask import current_app
+from pydantic import BaseModel
+from torch import nn
+from torch.utils.data import DataLoader
+from torch.utils.data import Dataset
 from tqdm import tqdm
-from pathlib import Path
-from uuid import uuid4
-from datetime import datetime
-from owlergpt.utils.cli_helpers import get_selected_folder, get_chroma_collections
-from owlergpt.modern.collection_utils import parse_collection_name, model2model_dimension
+
+from owlergpt.modern.collection_utils import model2model_dimension
+from owlergpt.modern.collection_utils import parse_collection_name
+from owlergpt.utils.cli_helpers import get_chroma_collections
+from owlergpt.utils.cli_helpers import get_selected_folder
+
 
 class ModelInfo(BaseModel):
     model_name: str
@@ -41,13 +44,19 @@ class StitchPair(BaseModel):
     source: ModelInfo
     target: ModelInfo
     dataset: str
-    mode: Literal["affine"] = "affine"  # TODO(Adriano) later we will support more shit here
+    mode: Literal["affine"] = (
+        "affine"  # TODO(Adriano) later we will support more shit here
+    )
 
     def save_linear_transform(self, linear: nn.Linear, save_path: Path) -> None:
         linear_path = save_path / "linear_transform.safetensors"
         stitch_info_path = save_path / "stitch_info.json"
-        assert not linear_path.exists(), f"Linear transform already exists at {linear_path}"
-        assert not stitch_info_path.exists(), f"Stitch info already exists at {stitch_info_path}"
+        assert (
+            not linear_path.exists()
+        ), f"Linear transform already exists at {linear_path}"
+        assert (
+            not stitch_info_path.exists()
+        ), f"Stitch info already exists at {stitch_info_path}"
         safetensors.torch.save_file(linear.state_dict(), linear_path)
         stitch_info_path.write_text(self.model_dump_json())
 
@@ -86,10 +95,10 @@ class StitchPair(BaseModel):
 
 def get_train_test_set_ids(
     chroma_client: chromadb.PersistentClient,
-    collections: List[str],
-    record_types: List[str],
+    collections: list[str],
+    record_types: list[str],
     train_test_split: float = 0.8,
-) -> Tuple[List[str], List[str]]:
+) -> tuple[list[str], list[str]]:
     # Get all record IDs from one of the collections
     print("Getting the initial record ids...")
     collection1 = chroma_client.get_collection(collections[0])
@@ -105,11 +114,15 @@ def get_train_test_set_ids(
     collection_record_ids = set(_)
     assert len(collection_record_ids) == len(_)  # all shud be unique or we die
 
-    for collection_name in tqdm(collections, desc="Verifying all collections have the same record IDs..."):
+    for collection_name in tqdm(
+        collections, desc="Verifying all collections have the same record IDs..."
+    ):
         collection = chroma_client.get_collection(collection_name)
         records = collection.get(where={"record_type": {"$in": record_types}})
         record_ids = set([record["record_id"] for record in records["metadatas"]])
-        assert record_ids == collection_record_ids  # if not all are same record id i cry a river
+        assert (
+            record_ids == collection_record_ids
+        )  # if not all are same record id i cry a river
 
     # random split ftw
     print("Getting the splits (I'm no acrobat doe)")
@@ -134,8 +147,10 @@ class StitchingDataset(Dataset):
         source_collection: chromadb.Collection,
         target_collection: chromadb.Collection,
         # {"record_id": ids[i], "record_text": text_chunks[i], "record_type": record_type} = metadata per record
-        record_ids: List[str],
-        device: torch.device = torch.device("cuda" if torch.cuda.is_available() else "cpu"),
+        record_ids: list[str],
+        device: torch.device = torch.device(
+            "cuda" if torch.cuda.is_available() else "cpu"
+        ),
     ):
         """Dataset for training linear transformations between embeddings.
 
@@ -162,12 +177,12 @@ class StitchingDataset(Dataset):
         # Convert embeddings to tensors
         # TODO(Adriano) is this acceptable? seems like from back of the envelope its not even a gig:
         # `2000 * 10000 * 8 / 1000 / 1000` (I guess we regularly load billion parameter models, this should be OK for small models!)
-        self.source_embeddings = torch.tensor(source_records["embeddings"], dtype=torch.float32).to(
-            device
-        )
-        self.target_embeddings = torch.tensor(target_records["embeddings"], dtype=torch.float32).to(
-            device
-        )
+        self.source_embeddings = torch.tensor(
+            source_records["embeddings"], dtype=torch.float32
+        ).to(device)
+        self.target_embeddings = torch.tensor(
+            target_records["embeddings"], dtype=torch.float32
+        ).to(device)
 
     def __len__(self):
         return len(self.record_ids)
@@ -179,9 +194,9 @@ class StitchingDataset(Dataset):
 def create_train_test_datasets(
     source_collection: chromadb.Collection,
     target_collection: chromadb.Collection,
-    train_ids: List[str],
-    test_ids: List[str],
-) -> Tuple[StitchingDataset, StitchingDataset]:
+    train_ids: list[str],
+    test_ids: list[str],
+) -> tuple[StitchingDataset, StitchingDataset]:
     """Creates train and test datasets from two collections using provided ID splits.
 
     Args:
@@ -197,6 +212,7 @@ def create_train_test_datasets(
     test_dataset = StitchingDataset(source_collection, target_collection, test_ids)
     return train_dataset, test_dataset
 
+
 # TODO(Adriano) get more dank by training multiple of these dummies at once, check this out
 # 10 vectors = 1 vector 10 times long cat cat cat cat cat cat cat cat cat cat
 # then you do mse on the entire damn thing because thats the same as mse seperately
@@ -211,8 +227,8 @@ class LinearTransformTrainer:
         target_collection: str,
         chroma_client: chromadb.PersistentClient,
         device: torch.device | str,
-        train_ids: List[str],
-        test_ids: List[str],
+        train_ids: list[str],
+        test_ids: list[str],
         num_epochs: int = 50,
         batch_size: int = 32,
         learning_rate: float = 0.001,
@@ -225,7 +241,9 @@ class LinearTransformTrainer:
         self.num_epochs = num_epochs
         self.batch_size = batch_size
         self.learning_rate = learning_rate
-        self.optimizer = torch.optim.Adam(self.linear.parameters(), lr=self.learning_rate)
+        self.optimizer = torch.optim.Adam(
+            self.linear.parameters(), lr=self.learning_rate
+        )
         self.device = device
         self.train_ids = train_ids
         self.test_ids = test_ids
@@ -242,7 +260,9 @@ class LinearTransformTrainer:
             self.train_ids,
             self.test_ids,
         )
-        train_loader = DataLoader(train_dataset, batch_size=self.batch_size, shuffle=True)
+        train_loader = DataLoader(
+            train_dataset, batch_size=self.batch_size, shuffle=True
+        )
         test_loader = DataLoader(test_dataset, batch_size=self.batch_size)
 
         mse_loss = nn.MSELoss()
@@ -285,7 +305,9 @@ class LinearTransformTrainer:
                     output = self.linear(source_emb)
 
                     test_mse += mse_loss(output, target_emb).item()
-                    test_mae += (output.detach() - target_emb.detach()).abs().mean().item()
+                    test_mae += (
+                        (output.detach() - target_emb.detach()).abs().mean().item()
+                    )
                     num_test_batches += 1
 
             avg_test_mse = test_mse / num_test_batches
@@ -313,8 +335,7 @@ class LinearTransformTrainer:
 
 @current_app.cli.command("train_ds")
 def train_linear_transforms_dataset() -> None:
-    """
-    This simple script will train AFFINE linear transformations between each ordered pair of
+    """This simple script will train AFFINE linear transformations between each ordered pair of
     embedded models' datasets. We can see in the $DATASET_FOLDER_PATH the datasets that will be used
     (to get their names) and then use this to get the relevant collections from Chroma DB. We then
     train for all non-equal ordered pairs (so, bidirectionally: n(n-1) pairs if there are n models)
@@ -341,7 +362,11 @@ def train_linear_transforms_dataset() -> None:
         raise ValueError(
             "CPU is not supported for training (because it'll take so long ur trolling dummy)"
         )
-    print("Using device:", device, "(hella epic - icelandic water™ brings you viking power)")
+    print(
+        "Using device:",
+        device,
+        "(hella epic - icelandic water™ brings you viking power)",
+    )
     # nn_metric = environ.get("K_NN_METRIC")
     # baseline = bool(int(environ.get("BASELINE")))
     k = int(environ.get("K"))
@@ -355,62 +380,98 @@ def train_linear_transforms_dataset() -> None:
     )
     selected_folder = get_selected_folder(environ)
     # get rid of ultra_debug_small collections
-    collections_who_most_die = [collection for collection in chroma_client.list_collections() if "ultra_debug_small" in collection.name]
+    collections_who_most_die = [
+        collection
+        for collection in chroma_client.list_collections()
+        if "ultra_debug_small" in collection.name
+    ]
     print(f"Deleting {len(collections_who_most_die)} collections")
-    print("  " + "\n  ".join(collection.name for collection in collections_who_most_die))
+    print(
+        "  " + "\n  ".join(collection.name for collection in collections_who_most_die)
+    )
     click.confirm("Continue?", abort=True)
     for collection in tqdm(list(collections_who_most_die), desc="Deleting collections"):
         chroma_client.delete_collection(collection.name)
-    
-    collections: List[str] = get_chroma_collections(chroma_client, selected_folder)
-    SHRINK_COLLECTIONS_FOR_TESTING = True # comment/uncomment
+
+    collections: list[str] = get_chroma_collections(chroma_client, selected_folder)
+    SHRINK_COLLECTIONS_FOR_TESTING = True  # comment/uncomment
     if SHRINK_COLLECTIONS_FOR_TESTING:
-        print("TIME TO SHRINK ---- we musT DESCEND into the QUANTUM REALM....;;;::::::>>>>>>>>.......````")
+        print(
+            "TIME TO SHRINK ---- we musT DESCEND into the QUANTUM REALM....;;;::::::>>>>>>>>.......````"
+        )
         # small collection => good testing
         print("------- [quantum enabled] getting collection objs")
-        collection_objs = [chroma_client.get_collection(collection) for collection in collections]
+        collection_objs = [
+            chroma_client.get_collection(collection) for collection in collections
+        ]
         limit = 1
         print(f"------- [quantum enabled] getting small subset data (limit={limit})")
-        small_subset_data = [collection_obj.get(limit=limit) for collection_obj in tqdm(collection_objs, desc="Getting small subset data")]
+        small_subset_data = [
+            collection_obj.get(limit=limit)
+            for collection_obj in tqdm(
+                collection_objs, desc="Getting small subset data"
+            )
+        ]
         print("------- [quantum enabled] creating new collections")
-        new_collections = [chromadb.Collection(name=f"ultra_debug_small_{collection.name}") for collection in collections]
+        new_collections = [
+            chromadb.Collection(name=f"ultra_debug_small_{collection.name}")
+            for collection in collections
+        ]
         print("------- [quantum enabled] adding small subset data to new collections")
-        for new_collection, subset_data in tqdm(list(zip(new_collections, small_subset_data)), desc="Adding small subset data to new collections"):
+        for new_collection, subset_data in tqdm(
+            list(zip(new_collections, small_subset_data, strict=False)),
+            desc="Adding small subset data to new collections",
+        ):
             new_collection.add(
-                embeddings=subset_data['embeddings'],
-                documents=subset_data['documents'],
-                metadatas=subset_data['metadatas'],
-                ids=subset_data['ids']
+                embeddings=subset_data["embeddings"],
+                documents=subset_data["documents"],
+                metadatas=subset_data["metadatas"],
+                ids=subset_data["ids"],
             )
         print("[quantum enabled] sans dat")
         assert len(collections) == len(new_collections)
-        assert all(nc.name == f"small_{c.name}" for nc, c in zip(new_collections, collections))
-        print("[quantum enabled] replac ->>>> our journey is complete [returning <<>> to MACROSCOPIC world]........ | E X  P   A    N     D || |  |   |    |     |")
-        collections = new_collections # replace ftw
+        assert all(
+            nc.name == f"small_{c.name}"
+            for nc, c in zip(new_collections, collections, strict=False)
+        )
+        print(
+            "[quantum enabled] replac ->>>> our journey is complete [returning <<>> to MACROSCOPIC world]........ | E X  P   A    N     D || |  |   |    |     |"
+        )
+        collections = new_collections  # replace ftw
     print(f"Found {len(collections)} collections")
     # We are only training on the documents right now
-    print("Fetching train/test set IDs... and making sure this shit aint too sussy backa (hella viz in there too nw, tqdm, and even print statements)")
+    print(
+        "Fetching train/test set IDs... and making sure this shit aint too sussy backa (hella viz in there too nw, tqdm, and even print statements)"
+    )
     train_set_ids, test_set_ids = get_train_test_set_ids(
         chroma_client, collections, record_types=["document"]
     )
     print(f"Train set size: {len(train_set_ids)}")
     print(f"Test set size: {len(test_set_ids)}")
 
-    model_names: List[str] = [parse_collection_name(collection)[1] for collection in collections]
-    model_dims: List[int] = [model2model_dimension(model_name) for model_name in model_names]
-    model_infos: List[ModelInfo] = [
+    model_names: list[str] = [
+        parse_collection_name(collection)[1] for collection in collections
+    ]
+    model_dims: list[int] = [
+        model2model_dimension(model_name) for model_name in model_names
+    ]
+    model_infos: list[ModelInfo] = [
         ModelInfo(
             model_name=model_name,
             collection_name=collection,
             model_dimension=model_dim,
         )
-        for model_name, collection, model_dim in zip(model_names, collections, model_dims)
+        for model_name, collection, model_dim in zip(
+            model_names, collections, model_dims, strict=False
+        )
     ]
     print("\n".join(mf.model_dump_json(indent=4) for mf in model_infos))
     click.confirm("Continue?", abort=True)
 
-    train_pairs: List[StitchPair] = list(itertools.product(model_infos, model_infos))
-    train_pairs = [pair for pair in train_pairs if pair[0].model_name != pair[1].model_name]
+    train_pairs: list[StitchPair] = list(itertools.product(model_infos, model_infos))
+    train_pairs = [
+        pair for pair in train_pairs if pair[0].model_name != pair[1].model_name
+    ]
     assert len(train_pairs) == len(model_infos) * (len(model_infos) - 1)
     print(f"Will train on {len(train_pairs)} pairs")
     click.confirm("Continue?", abort=True)
@@ -427,10 +488,14 @@ def train_linear_transforms_dataset() -> None:
 
     # Create subfolders and save data for each pair
     # TODO(Adriano) consider looking for duplicates?
-    print("<><><><><><>< IT IS TIME ><><>< ... I am braking my chains... 0%... 5%.......... 29%..... 420%... UNLEASH THE KRAKEN~~~~ ! DOOM SHALL BEFALL THIS WORLD <><><><><><>< ~~~<~><><><~>~<>~<><~>~<~> UUAOUAOUOUOGHH~<")
+    print(
+        "<><><><><><>< IT IS TIME ><><>< ... I am braking my chains... 0%... 5%.......... 29%..... 420%... UNLEASH THE KRAKEN~~~~ ! DOOM SHALL BEFALL THIS WORLD <><><><><><>< ~~~<~><><><~>~<>~<><~>~<~> UUAOUAOUOUOGHH~<"
+    )
     for pair in tqdm(train_pairs, desc="Training each pair of models' stitching..."):
         start_time = time.time()
-        linear = nn.Linear(pair[0].model_dimension, pair[1].model_dimension, bias=True).to(device)
+        linear = nn.Linear(
+            pair[0].model_dimension, pair[1].model_dimension, bias=True
+        ).to(device)
         # Validate model names don't contain slashes
         assert isinstance(pair[0], ModelInfo)
         assert isinstance(pair[1], ModelInfo)
@@ -450,11 +515,15 @@ def train_linear_transforms_dataset() -> None:
         with open(pair_info_path, "w") as f:
             # chunk size alwasys 256
             # all dat shit is default AF
-            f.write(StitchPair(source=pair[0], target=pair[1]).model_dump_json(indent=4))
+            f.write(
+                StitchPair(source=pair[0], target=pair[1]).model_dump_json(indent=4)
+            )
 
         # 1.5 Setup wandb
         wandb_run_project = environ["WANDB_PROJECT"]  # ay lmao
-        wandb_run_name = pair[0].model_name + "_" + pair[1].model_name + "_" + str(uuid4())
+        wandb_run_name = (
+            pair[0].model_name + "_" + pair[1].model_name + "_" + str(uuid4())
+        )
         wandb.init(project=wandb_run_project, name=wandb_run_name)
 
         # 2. Train the linear transform

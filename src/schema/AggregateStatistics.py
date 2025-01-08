@@ -13,6 +13,6 @@ class AggregateStatistics(BaseModel):
     """
 
     # Input
-    summaries: list[StitchSummary] = Field(description="Literally every training run as input.")
-
-
+    summaries: list[StitchSummary] = Field(
+        description="Literally every training run as input."
+    )

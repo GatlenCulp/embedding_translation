@@ -1,13 +1,20 @@
-""""
+""" "
 `utils.filter_collections` module: Filter collections to evaluate the constructed embeddings.
 """
+
 import chromadb
 
-def filter_collections(chroma_client: chromadb.PersistentClient, collections: list, target_dimension: int,
-                       chunk_size: str, default_chunk_size: int, dataset_name: str,
-                       match_dimension: bool = True) -> tuple[dict, list]:
-    """
-    Filters the given list of collection names present in the database according to the used chunk size, the dataset
+
+def filter_collections(
+    chroma_client: chromadb.PersistentClient,
+    collections: list,
+    target_dimension: int,
+    chunk_size: str,
+    default_chunk_size: int,
+    dataset_name: str,
+    match_dimension: bool = True,
+) -> tuple[dict, list]:
+    """Filters the given list of collection names present in the database according to the used chunk size, the dataset
     name, if present, and the target dimension, if the evaluation metric requires embeddings to be of the same size.
 
     :param chroma_client: The client used to access embeddings.
@@ -38,20 +45,24 @@ def filter_collections(chroma_client: chromadb.PersistentClient, collections: li
         chunking_size = parts[3] if len(parts) > 3 else default_chunk_size
 
         collection = chroma_client.get_collection(name=collection_name)
-        sample_embedding = collection.get(include=["embeddings"], limit=1, offset=0)["embeddings"]
+        sample_embedding = collection.get(include=["embeddings"], limit=1, offset=0)[
+            "embeddings"
+        ]
         if sample_embedding and chunking_size == chunk_size:
-            if match_dimension and not len(sample_embedding[0]) == target_dimension:
+            if match_dimension and len(sample_embedding[0]) != target_dimension:
                 continue
             valid_collections.append(collection_name)
 
             if dataset not in collections_info:
                 collections_info[dataset] = []
 
-            collections_info[dataset].append({
-                "name": collection_name,
-                "embedding_model": embedding_model,
-                "chunking_strategy": chunking_strategy,
-                "chunking_size": chunking_size,
-            })
+            collections_info[dataset].append(
+                {
+                    "name": collection_name,
+                    "embedding_model": embedding_model,
+                    "chunking_strategy": chunking_strategy,
+                    "chunking_size": chunking_size,
+                }
+            )
 
     return collections_info, valid_collections
