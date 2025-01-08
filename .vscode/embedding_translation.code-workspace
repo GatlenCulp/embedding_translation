@@ -1,7 +1,10 @@
 {
 	"folders": [
 		{
-			"path": ".."
+			"path": "..",
+		},
+		{
+			"path": "../data/00_raw/LEAD-Embeddings"
 		}
 	],
 	"settings": {

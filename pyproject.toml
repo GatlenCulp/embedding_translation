@@ -251,3 +251,15 @@ convention = "google"
 [tool.ruff.format]
 quote-style = "double"
 indent-style = "space"
+
+[tool.gitleaks]
+allowlist = [
+    # Standard Author-Year-ID format
+    { description = "Citation keys in Distill.pub HTML", regex = '''key="[A-Za-z-]+[0-9]{4}(-[a-z]{2})?"\s*''' },
+    # D-cite tags with standard format
+    { description = "D-cite tags in Distill.pub HTML", regex = '''<d-cite key="[A-Za-z-]+[0-9]{4}(-[a-z]{2})?"\s*''' },
+    # Conference paper citations (like NEURIPS2020_XXXX)
+    { description = "Conference paper citations", regex = '''key="[A-Z]+[0-9]{4}_[0-9]+"\s*''' },
+    # Citations within text
+    { description = "In-text citations", regex = '''<d-cite key="[A-Za-z0-9_-]+[0-9]{4}(-[a-z]{2})?"\s*''' }
+]

@@ -8,3 +8,4 @@ In data:
 - embeddings = the json embeddings
 - figs = generated plotly figures from data analysis
 - 
+
