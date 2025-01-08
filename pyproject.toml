@@ -76,7 +76,7 @@ orjson = "^3.10.12" # High-performance JSON parser (recommended for data process
 
 # === Development Tools ===
 # -- Interactive Computing --
-ipython = "^7.12.0"   # Enhanced Python REPL
+ipython = "^8.10.0"   # Enhanced Python REPL
 ipykernel = "^6.29.5" # Jupyter kernel
 ipywidgets = "^8.1.5" # Interactive Jupyter widgets
 
