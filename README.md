@@ -2,7 +2,7 @@
 
 _Note: This project/paper is not yet fully complete._
 
-This is a repository containing the source code for the [LEAD Blog Post](https://gatlenculp.github.io/embedding_translation/) and Gatlen Culp and Adriano Hernandez from MIT.
+This is a repository containing the source code for the [LEAD Blog Post](https://gatlenculp.github.io/embedding_translation/) by Gatlen Culp and Adriano Hernandez from MIT.
 
 Published December 10th, 2024
 
