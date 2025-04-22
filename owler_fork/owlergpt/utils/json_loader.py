@@ -68,7 +68,11 @@ class JSONDataset(Dataset):
                 if token[0] == "tokens":
                     tokens = tokens + token[1]
             text_chunks = _get_text_chunks(
-                tokens, self.chunk_size, self.chunk_overlap, self.model, self.splitter
+                tokens,
+                self.chunk_size,
+                self.chunk_overlap,
+                self.model,
+                self.splitter,
             )
         else:
             text_chunks = self.splitter.split_text(text)

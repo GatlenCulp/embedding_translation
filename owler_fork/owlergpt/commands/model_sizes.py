@@ -3,8 +3,7 @@ import os
 from flask import current_app
 from tqdm import tqdm
 
-from owlergpt.modern.collection_utils import MODEL_NAMES
-from owlergpt.modern.collection_utils import ModelLatentSizing
+from owlergpt.modern.collection_utils import MODEL_NAMES, ModelLatentSizing
 
 
 @current_app.cli.command("model_sizes_info")
@@ -13,9 +12,7 @@ def model_sizes() -> None:
     device = os.environ["VECTOR_SEARCH_SENTENCE_TRANSFORMER_DEVICE"]
     print(f"Using device: {device}")
     openai_models = [model for model in MODEL_NAMES if model.startswith("openai/")]
-    non_openai_models = [
-        model for model in MODEL_NAMES if not model.startswith("openai/")
-    ]
+    non_openai_models = [model for model in MODEL_NAMES if not model.startswith("openai/")]
 
     print("Getting OpenAI model sizes...")
     openai_model_sizes = [(model, ModelLatentSizing.get_openai_model_size(model)) for model in tqdm(openai_models, desc="OpenAI Models", total=len(openai_models))]  # fmt: skip

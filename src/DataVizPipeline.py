@@ -27,14 +27,13 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
-import numpy as np
 from loguru import logger
+import numpy as np
 from rich.console import Console
 from rich.table import Table
 
 from src.logic.anal_dump import DataFile
-from src.logic.knn_labeling import SemanticSearchEvaluation
-from src.logic.knn_labeling import create_semantic_search_evaluation
+from src.logic.knn_labeling import SemanticSearchEvaluation, create_semantic_search_evaluation
 from src.logic.load_embeddings import load_embeddings
 from src.logic.reduce_embedding_dims import reduce_embeddings_dimensionality
 from src.schema.training_schemas import StitchSummary
@@ -42,7 +41,6 @@ from src.utils.general_setup import setup
 from src.viz.dimensionality_reduction import visualize_embeddings
 from src.viz.plot_heatmap import visualize_heatmap
 from src.viz.save_figure import save_figure
-
 
 rng = setup("run_dataviz_pipeline")
 
@@ -76,10 +74,10 @@ class DataVizPipeline:
 
         # Load embeddings
         test_stitch_embeddings = DataVizPipeline._load_embeddings(
-            data_path=test_stitch_embeddings_dataset.dataset_filepath
+            data_path=test_stitch_embeddings_dataset.dataset_filepath,
         )["embeddings"]
         test_target_embeddings = DataVizPipeline._load_embeddings(
-            data_path=test_target_embeddings_dataset.dataset_filepath
+            data_path=test_target_embeddings_dataset.dataset_filepath,
         )["embeddings"]
 
         embeddings_dict = {
@@ -111,12 +109,8 @@ class DataVizPipeline:
             - list[str]: Column labels (target model names)
         """
         # Get unique source and target models
-        source_models = sorted(
-            {s.source_embedding_model_name for s in stitch_summaries}
-        )
-        target_models = sorted(
-            {s.target_embedding_model_name for s in stitch_summaries}
-        )
+        source_models = sorted({s.source_embedding_model_name for s in stitch_summaries})
+        target_models = sorted({s.target_embedding_model_name for s in stitch_summaries})
 
         # Initialize matrix with None values
         matrix = [[None for _ in target_models] for _ in source_models]
@@ -154,7 +148,8 @@ class DataVizPipeline:
 
     @staticmethod
     def _apply_to_matrix(
-        matrix: list[list[Any]], fn: Callable[[StitchSummary], Any]
+        matrix: list[list[Any]],
+        fn: Callable[[StitchSummary], Any],
     ) -> list[list[Any]]:
         """Apply a function to each StitchSummary element in a matrix.
 
@@ -163,10 +158,7 @@ class DataVizPipeline:
         :return: A new matrix with the function applied to StitchSummary elements
         """
         return [
-            [
-                fn(element) if isinstance(element, StitchSummary) else element
-                for element in row
-            ]
+            [fn(element) if isinstance(element, StitchSummary) else element for element in row]
             for row in matrix
         ]
 
@@ -185,9 +177,7 @@ class DataVizPipeline:
             architecture = representative_sample.architecture_name
         if epochs is None:
             epochs = representative_sample.train_settings.num_epochs
-        mse_matrix = DataVizPipeline._apply_to_matrix(
-            matrix, lambda stitch: stitch.test_mse
-        )
+        mse_matrix = DataVizPipeline._apply_to_matrix(matrix, lambda stitch: stitch.test_mse)
         fig = visualize_heatmap(
             matrix=mse_matrix,
             config={
@@ -215,9 +205,7 @@ class DataVizPipeline:
             architecture = representative_sample.architecture_name
         if epochs is None:
             epochs = representative_sample.train_settings.num_epochs
-        mae_matrix = DataVizPipeline._apply_to_matrix(
-            matrix, lambda stitch: stitch.test_mae
-        )
+        mae_matrix = DataVizPipeline._apply_to_matrix(matrix, lambda stitch: stitch.test_mae)
         fig = visualize_heatmap(
             matrix=mae_matrix,
             config={
@@ -246,18 +234,17 @@ class DataVizPipeline:
             architecture = representative_sample.architecture_name
         if epochs is None:
             epochs = representative_sample.train_settings.num_epochs
-        knn_matrix: list[list[SemanticSearchEvaluation]] = (
-            DataVizPipeline._apply_to_matrix(
-                matrix,
-                lambda stitch: create_semantic_search_evaluation(
-                    training_dataset=stitch.test_result,
-                    test_dataset=stitch.train_target,
-                    k=1,
-                ),
-            )
+        knn_matrix: list[list[SemanticSearchEvaluation]] = DataVizPipeline._apply_to_matrix(
+            matrix,
+            lambda stitch: create_semantic_search_evaluation(
+                training_dataset=stitch.test_result,
+                test_dataset=stitch.train_target,
+                k=1,
+            ),
         )
         closest_indices = DataVizPipeline._apply_to_matrix(
-            knn_matrix, lambda eval: eval.nearest_neighbors
+            knn_matrix,
+            lambda eval: eval.nearest_neighbors,
         )
         fig = visualize_heatmap(
             matrix=closest_indices,
@@ -276,8 +263,7 @@ class DataVizPipeline:
         """Runs entire data visualization pipeline on saved data."""
         logger.info(f"Running DataViz pipeline with {len(paths_to_stitch_summaries)}")
         stitch_summaries: list[StitchSummary] = [
-            DataVizPipeline._load_data_as_stitch_summary(path)
-            for path in paths_to_stitch_summaries
+            DataVizPipeline._load_data_as_stitch_summary(path) for path in paths_to_stitch_summaries
         ]
         # for stitch_summary in stitch_summaries:
         #     DataVizPipeline._run_embedding_viz(stitch_summary)

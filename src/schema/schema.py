@@ -1,11 +1,10 @@
 """Contains schema for our project. Unused shit"""
 
 import importlib.util
-import sys
 from pathlib import Path
+import sys
 
 from pydantic import BaseModel
-
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
 

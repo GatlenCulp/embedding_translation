@@ -5,7 +5,6 @@ from torch import nn
 
 from owlergpt.modern.schemas import EmbeddingDatasetInformation
 
-
 ################################ STITCHES AVAILABLE ################################
 
 

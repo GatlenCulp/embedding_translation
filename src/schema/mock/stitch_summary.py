@@ -7,22 +7,24 @@ from loguru import logger
 
 from src.logic.anal_dump import anal_dump
 from src.schema.mock.safe_tensor import generate_mock_safetensor
-from src.schema.training_schemas import EmbeddingDatasetInformation
-from src.schema.training_schemas import ExperimentConfig
-from src.schema.training_schemas import IngestionSettings
-from src.schema.training_schemas import StitchEvaluation
-from src.schema.training_schemas import StitchEvaluationLog
-from src.schema.training_schemas import StitchSummary
-from src.schema.training_schemas import TrainSettings
-from src.schema.training_schemas import TrainStatus
+from src.schema.training_schemas import (
+    EmbeddingDatasetInformation,
+    ExperimentConfig,
+    IngestionSettings,
+    StitchEvaluation,
+    StitchEvaluationLog,
+    StitchSummary,
+    TrainSettings,
+    TrainStatus,
+)
 from src.utils.general_setup import setup
-
 
 rng = setup("stitch_summary")
 
 
 def create_example_stitch_summary(
-    base_path: str | Path = "data/embeddings", create_safetensors: bool = True
+    base_path: str | Path = "data/embeddings",
+    create_safetensors: bool = True,
 ) -> StitchSummary:
     """Create a mock StitchSummary and generate corresponding safetensor files.
 
@@ -171,7 +173,7 @@ def create_example_stitch_summary(
                 evaluation_data_split="train",
             )
             for i in range(10)
-        ]
+        ],
     )
 
     test_eval_log = StitchEvaluationLog(
@@ -182,8 +184,8 @@ def create_example_stitch_summary(
                 stitching_mse=0.15,
                 stitching_mae=0.12,
                 evaluation_data_split="test",
-            )
-        ]
+            ),
+        ],
     )
 
     # Create the complete StitchSummary
@@ -235,9 +237,7 @@ def create_inverse_stitch_summary(stitch_summary: StitchSummary) -> StitchSummar
     return inv_stitch
 
 
-def save_inverse_stitch(
-    stitch_summary: StitchSummary, suffix: str = ""
-) -> StitchSummary:
+def save_inverse_stitch(stitch_summary: StitchSummary, suffix: str = "") -> StitchSummary:
     """Creates a mock inverse stitch by reversing the source and target embeddings.
 
     :param stitch_summary: Original StitchSummary to invert

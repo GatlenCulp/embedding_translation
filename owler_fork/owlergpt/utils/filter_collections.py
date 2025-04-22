@@ -45,9 +45,7 @@ def filter_collections(
         chunking_size = parts[3] if len(parts) > 3 else default_chunk_size
 
         collection = chroma_client.get_collection(name=collection_name)
-        sample_embedding = collection.get(include=["embeddings"], limit=1, offset=0)[
-            "embeddings"
-        ]
+        sample_embedding = collection.get(include=["embeddings"], limit=1, offset=0)["embeddings"]
         if sample_embedding and chunking_size == chunk_size:
             if match_dimension and len(sample_embedding[0]) != target_dimension:
                 continue
@@ -62,7 +60,7 @@ def filter_collections(
                     "embedding_model": embedding_model,
                     "chunking_strategy": chunking_strategy,
                     "chunking_size": chunking_size,
-                }
+                },
             )
 
     return collections_info, valid_collections

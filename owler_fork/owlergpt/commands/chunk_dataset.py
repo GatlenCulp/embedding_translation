@@ -5,8 +5,7 @@ from pathlib import Path
 import click
 from flask import current_app
 from langchain.text_splitter import TokenTextSplitter
-from pydantic import BaseModel
-from pydantic import Field
+from pydantic import BaseModel, Field
 from tqdm import tqdm
 
 
@@ -27,9 +26,7 @@ def valid_datasets_folder(dataset_path: Path):
 def validate_all_ids_unique(dataset_path: Path, enforce_intra: bool = False):
     """Ensure intra-dataset and inter-dataset uniqueness of ids."""
     set_of_all_ids = set()
-    for file in tqdm(
-        list(dataset_path.glob("**/*.jsonl")), desc="Validating all ids are unique"
-    ):
+    for file in tqdm(list(dataset_path.glob("**/*.jsonl")), desc="Validating all ids are unique"):
         with open(file) as f:
             lines = f.readlines()
         jsons = [json.loads(line) for line in lines]
@@ -43,7 +40,7 @@ def validate_all_ids_unique(dataset_path: Path, enforce_intra: bool = False):
 
 class Chunk(BaseModel):
     id: str = Field(
-        alias="id"
+        alias="id",
     )  # unique id for the chunk (can combine doc id with index within that chunk)
     doc_id: str = Field(alias="doc_id")
     index_in_doc: int = Field(alias="index_in_doc")

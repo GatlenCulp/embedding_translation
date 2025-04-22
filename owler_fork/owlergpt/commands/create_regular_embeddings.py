@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-import sys
 from pathlib import Path
-
+import sys
 
 _ = Path(__file__).parent.parent.parent
 print("=====================> Adding to sys.path", _)
@@ -14,15 +13,13 @@ import os
 import time
 
 import click
+from pydantic import BaseModel, Field
 import safetensors
-import torch
-from pydantic import BaseModel
-from pydantic import Field
 from sentence_transformers import SentenceTransformer
+import torch
 
 # from torch.utils.data import DataLoader
 from tqdm import tqdm
-
 
 # from owlergpt.utils.json_loader import JSONDataset, collate_fn # unused
 # from owlergpt.modern.collection_utils import MODEL_NAMES, OPENAI_MODELS
@@ -103,16 +100,14 @@ def model2model_dimension(model_name: str) -> int:
 # NOTE copied from chunk_dataset.py
 class Chunk(BaseModel):
     id: str = Field(
-        alias="id"
+        alias="id",
     )  # unique id for the chunk (can combine doc id with index within that chunk)
     doc_id: str = Field(alias="doc_id")
     index_in_doc: int = Field(alias="index_in_doc")
     text: str = Field(alias="text")
 
 
-NON_OPENAI_MODELS = [
-    m for m in MODEL_NAMES if not any(oai in m for oai in OPENAI_MODELS)
-]
+NON_OPENAI_MODELS = [m for m in MODEL_NAMES if not any(oai in m for oai in OPENAI_MODELS)]
 
 DATASETS = [
     # (numbers are counts for documents, there may be some longer documents -> slightly more chunks)
@@ -141,13 +136,9 @@ class SingletonInjestor:
         # self.chunk_size = 256
         # self.chunk_overlap = 25
         self.chunk_size = int(os.environ.get("CHUNK_SIZE", None))
-        self.chunk_overlap = int(
-            os.environ.get("VECTOR_SEARCH_TEXT_SPLITTER_CHUNK_OVERLAP", None)
-        )
+        self.chunk_overlap = int(os.environ.get("VECTOR_SEARCH_TEXT_SPLITTER_CHUNK_OVERLAP", None))
         # self.normalize_embeddings = False
-        self.normalize_embeddings = bool(
-            os.environ.get("VECTOR_SEARCH_NORMALIZE_EMBEDDINGS", None)
-        )
+        self.normalize_embeddings = bool(os.environ.get("VECTOR_SEARCH_NORMALIZE_EMBEDDINGS", None))
         self.batch_size = int(os.environ.get("BATCH_SIZE", None))
         self.chunk_prefix = os.environ.get("VECTOR_SEARCH_CHUNK_PREFIX", None)
         self.query_prefix = os.environ.get("VECTOR_SEARCH_QUERY_PREFIX", None)
@@ -156,9 +147,7 @@ class SingletonInjestor:
         ]
         print(f"CAN USE {len(_NON_OPENAI_MODELS)} NON OPENAI MODELS")
         print("  " + "\n  ".join(_NON_OPENAI_MODELS))
-        chunks_path = (
-            Path(__file__).parent.parent.parent / "chunks" / self.dataset_chosen
-        )
+        chunks_path = Path(__file__).parent.parent.parent / "chunks" / self.dataset_chosen
         print("-------------------------------- chunks_path", chunks_path)
         self.datasets_path = chunks_path  # lol
         self.transformer_names: list[list[str]] = [[m for m in _NON_OPENAI_MODELS]]
@@ -177,7 +166,8 @@ class SingletonInjestor:
         subsubfolder: Path,
     ) -> None:
         safetensors.torch.save_file(
-            {"embeddings": embedding}, subsubfolder / "embeddings.safetensors"
+            {"embeddings": embedding},
+            subsubfolder / "embeddings.safetensors",
         )
         with open(subsubfolder / "ids.json", "w") as f:
             json.dump({"ids": ids}, f)
@@ -205,21 +195,21 @@ class SingletonInjestor:
         raise ValueError(f"Unknown jsonl file type: {jsonl_file}")
 
     def get_embeddings_metadatas_target_dir_paths(
-        self, jsonl_file: Path, transformer_name: str
+        self,
+        jsonl_file: Path,
+        transformer_name: str,
     ) -> tuple[Path, Path, Path]:
         # 1. validate the filename and parse out the types
         jsonl_doctype: str = self.get_jsonl_file_doctype(jsonl_file)
         jsonl_traintype: str = self.get_jsonl_file_traintype(jsonl_file)
-        assert (
-            jsonl_file.name == f"{jsonl_doctype}_{jsonl_traintype}.jsonl"
-        ), f"Expected {jsonl_file.name} to be {jsonl_doctype}.{jsonl_traintype}.jsonl"
+        assert jsonl_file.name == f"{jsonl_doctype}_{jsonl_traintype}.jsonl", (
+            f"Expected {jsonl_file.name} to be {jsonl_doctype}.{jsonl_traintype}.jsonl"
+        )
         # 2. Dataset
-        assert (
-            self.dataset_chosen in DATASETS
-        ), f"Expected {self.dataset_chosen} to be a dataset, but not in {DATASETS}"
-        assert (
-            jsonl_file.parent.name == self.dataset_chosen
-        ), (
+        assert self.dataset_chosen in DATASETS, (
+            f"Expected {self.dataset_chosen} to be a dataset, but not in {DATASETS}"
+        )
+        assert jsonl_file.parent.name == self.dataset_chosen, (
             f"Expected {jsonl_file.parent.name} to be {self.dataset_chosen}"
         )  # one dataset per :P
 
@@ -230,9 +220,7 @@ class SingletonInjestor:
         embeddings_file_path = (
             target_path / f"embeddings_{jsonl_doctype}_{jsonl_traintype}.safetensors"
         )
-        metadatas_file_path = (
-            target_path / f"metadatas_{jsonl_doctype}_{jsonl_traintype}.jsonl"
-        )
+        metadatas_file_path = target_path / f"metadatas_{jsonl_doctype}_{jsonl_traintype}.jsonl"
         return embeddings_file_path, metadatas_file_path, target_path
 
     def ingest(self) -> None:
@@ -257,9 +245,7 @@ class SingletonInjestor:
         assert len(self.transformer_names) == 1  # LMAO
         jsonl_files_list = list(self.datasets_path.glob("**/*.jsonl"))
         jsonl_files_list = [
-            x
-            for x in jsonl_files_list
-            if x.name not in ["corpus.jsonl", "queries.jsonl"]
+            x for x in jsonl_files_list if x.name not in ["corpus.jsonl", "queries.jsonl"]
         ]  # we don't do these again (they are in train/validation)
         assert all(
             x.name
@@ -276,9 +262,7 @@ class SingletonInjestor:
         assert all((parent / "corpus_train.jsonl").exists() for parent in _parents)
         assert all((parent / "corpus_validation.jsonl").exists() for parent in _parents)
         assert all((parent / "queries_train.jsonl").exists() for parent in _parents)
-        assert all(
-            (parent / "queries_validation.jsonl").exists() for parent in _parents
-        )
+        assert all((parent / "queries_validation.jsonl").exists() for parent in _parents)
         print("[END SANS]")
         for transformer_names in self.transformer_names:
             assert isinstance(transformer_names, list)
@@ -286,18 +270,14 @@ class SingletonInjestor:
             assert self.device is not None and self.device != "cpu"  # lol
             print("CREATING TRANSFORMERS")
             transformers = [
-                SentenceTransformer(
-                    t, device=self.device, token=os.environ.get("HF_ACCESS_TOKEN")
-                )
+                SentenceTransformer(t, device=self.device, token=os.environ.get("HF_ACCESS_TOKEN"))
                 for t in tqdm(transformer_names, desc="Creating transformers")
             ]
             # transformers = [None for _ in transformer_names] # [DEBUG]
-            transformer_names_folderable = [
-                t.replace("/", "_") for t in transformer_names
-            ]
+            transformer_names_folderable = [t.replace("/", "_") for t in transformer_names]
             assert len(set(transformer_names_folderable)) == len(transformer_names)
             print(
-                "---------------------------------------- PROCESSING JSONL FILES ----------------------------------------"
+                "---------------------------------------- PROCESSING JSONL FILES ----------------------------------------",
             )
             # TODO(Adriano) parallel plz
             for transformer, transformer_name_folderable, transformer_name in zip(
@@ -309,13 +289,12 @@ class SingletonInjestor:
                 for jsonl_file in tqdm(jsonl_files_list, desc="Processing jsonl files"):
                     embeddings_file_path, metadatas_file_path, target_dir = (
                         self.get_embeddings_metadatas_target_dir_paths(
-                            jsonl_file, transformer_name_folderable
+                            jsonl_file,
+                            transformer_name_folderable,
                         )
                     )
                     target_dir.mkdir(parents=True, exist_ok=True)
-                    assert (
-                        not embeddings_file_path.exists()
-                    )  # every write should be new!
+                    assert not embeddings_file_path.exists()  # every write should be new!
                     assert not metadatas_file_path.exists()
                     # embeddings_file_path.touch() # [DEBUG]
                     # metadatas_file_path.touch() #  [DEBUG]
@@ -343,19 +322,16 @@ class SingletonInjestor:
                         assert isinstance(batch_embeddings, torch.Tensor)
                         assert len(batch_embeddings.shape) == 2
                         assert batch_embeddings.shape[0] == len(batch)
-                        assert batch_embeddings.shape[1] == model2model_dimension(
-                            transformer_name
-                        )
+                        assert batch_embeddings.shape[1] == model2model_dimension(transformer_name)
                         all_embeddings.append(batch_embeddings.detach().cpu())
                     all_embeddings_pt = torch.cat(all_embeddings, dim=0)
                     assert len(all_embeddings_pt.shape) == 2
                     assert all_embeddings_pt.shape[0] == len(chunks)
-                    assert all_embeddings_pt.shape[1] == model2model_dimension(
-                        transformer_name
-                    )
+                    assert all_embeddings_pt.shape[1] == model2model_dimension(transformer_name)
                     # 1. Save embeddings
                     safetensors.torch.save_file(
-                        {"embeddings": all_embeddings_pt}, embeddings_file_path
+                        {"embeddings": all_embeddings_pt},
+                        embeddings_file_path,
                     )
                     # 2. Save metadatas (just copy over)
                     with open(jsonl_file) as f1:
@@ -396,9 +372,7 @@ def ingest_hf(output: str, device: str, parallelize: bool, dataset: str):
     click.echo(f"Output: {output}")
     click.echo(f"Device: {device}")
     click.echo("========== INITIALIZING INGESTOR ==========")
-    injestor = SingletonInjestor(
-        Path(output), device, parallelize, dataset
-    )  # <--- no side-effects
+    injestor = SingletonInjestor(Path(output), device, parallelize, dataset)  # <--- no side-effects
     click.echo("========== INGESTING DATASET ==========")
     injestor.ingest()  # <--- side-effects
     click.echo("========== DONE INGESTING ==========")

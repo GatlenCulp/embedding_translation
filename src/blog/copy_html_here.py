@@ -1,12 +1,11 @@
 """Copy HTML files from the project's figures directory to the current directory."""
 
-import shutil
 from pathlib import Path
+import shutil
 
 from loguru import logger
 
 from src.utils.general_setup import setup
-
 
 setup("copy_html_here")
 

@@ -4,14 +4,13 @@ import os
 
 import chromadb
 import click
-import torch
 from flask import current_app
 from langchain.text_splitter import SentenceTransformersTokenTextSplitter
 from sentence_transformers import SentenceTransformer
+import torch
 
 from owlergpt.modern.collection_utils import MODEL_NAMES
-from owlergpt.utils.cli_helpers import get_chroma_collections
-from owlergpt.utils.cli_helpers import get_selected_folder
+from owlergpt.utils.cli_helpers import get_chroma_collections, get_selected_folder
 
 
 @current_app.cli.command("metadata_ds")
@@ -25,7 +24,7 @@ def fix_metadata_ds() -> None:
     if split_frac < 0 or split_frac > 1:
         raise ValueError("Fraction must be between 0 and 1")
     print(
-        f"Splitting dataset with fraction {split_frac} for training and {1 - split_frac} for testing"
+        f"Splitting dataset with fraction {split_frac} for training and {1 - split_frac} for testing",
     )
 
     assert os.environ.get("VECTOR_SEARCH_PATH") is not None
@@ -37,7 +36,9 @@ def fix_metadata_ds() -> None:
         settings=chromadb.Settings(anonymized_telemetry=False),
     )
     collection_names: list[str] = get_chroma_collections(
-        chroma_client, selected_folder, enforce_valid=True
+        chroma_client,
+        selected_folder,
+        enforce_valid=True,
     )
     print("=" * 40 + " Will modify the following collections:" + "=" * 40)
     print("\n".join(collection_names))
@@ -66,9 +67,7 @@ def test_fix_metadata_ds():
     """
     print("=" * 40 + " Testing me" + "=" * 40)
     if os.environ.get("CUDA_VISIBLE_DEVICES") is None:
-        raise RuntimeError(
-            "CUDA must be available and CUDA_VISIBLE_DEVICES must be set"
-        )
+        raise RuntimeError("CUDA must be available and CUDA_VISIBLE_DEVICES must be set")
     device = "cuda" if torch.cuda.is_available() else "cpu"
     if device == "cpu":
         print("WARNING: CUDA is not available, using CPU")
@@ -81,15 +80,12 @@ def test_fix_metadata_ds():
     # Filter for small models, cap at 3
     small_model_names = [m for m in MODEL_NAMES if "small" in m.lower()][:3]
     assert all("/" in m for m in small_model_names), f"Expected all small models to be HF models, got {small_model_names}"  # fmt: skip
-    assert (
-        len(small_model_names) == 3
-    ), f"Expected 3 small models, got {len(small_model_names)}"  # should be multiple
+    assert len(small_model_names) == 3, (
+        f"Expected 3 small models, got {len(small_model_names)}"
+    )  # should be multiple
     if len(small_model_names) == 0:
         raise ValueError("No small models found in OPENAI_MODELS")
-    models = [
-        SentenceTransformer(model_name, device=device)
-        for model_name in small_model_names
-    ]
+    models = [SentenceTransformer(model_name, device=device) for model_name in small_model_names]
     model_names = [
         s_model_name.split("/")[-1] for s_model_name in small_model_names
     ]  # get the model names for saving

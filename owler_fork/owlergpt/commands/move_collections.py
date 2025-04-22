@@ -1,15 +1,13 @@
 import os
 
 import chromadb
-import click
 from chromadb.api.client import AdminClient
-from chromadb.config import DEFAULT_DATABASE
-from chromadb.config import DEFAULT_TENANT
+from chromadb.config import DEFAULT_DATABASE, DEFAULT_TENANT
 from chromadb.db.base import UniqueConstraintError
+import click
 from flask import current_app
 
-from owlergpt.utils import choose_dataset_folders
-from owlergpt.utils import list_available_collections
+from owlergpt.utils import choose_dataset_folders, list_available_collections
 
 
 @current_app.cli.command("move_col")

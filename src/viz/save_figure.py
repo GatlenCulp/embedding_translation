@@ -7,12 +7,11 @@ kaleido for high-quality PNG exports.
 
 from pathlib import Path
 
-import plotly.graph_objects as go
 from loguru import logger
 from plotly.basedatatypes import BaseFigure
+import plotly.graph_objects as go
 
 from src.utils.general_setup import setup
-
 
 setup("save_figure")
 
@@ -129,9 +128,7 @@ def main() -> None:
     logger.info("Starting example figure saving")
 
     # Create example figure
-    fig = go.Figure(
-        data=[go.Scatter(x=[1, 2, 3], y=[4, 5, 6])], layout={"title": "Example Plot"}
-    )
+    fig = go.Figure(data=[go.Scatter(x=[1, 2, 3], y=[4, 5, 6])], layout={"title": "Example Plot"})
 
     # Method 1: Combined
     logger.info("Testing combined method...")

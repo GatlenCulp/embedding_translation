@@ -9,15 +9,10 @@ from loguru import logger
 from pydantic import BaseModel
 
 from src.collection_utils import model2model_dimension
-from src.DataVizPipeline import DataFile
-from src.DataVizPipeline import save_figure
-from src.DataVizPipeline import visualize_heatmap
+from src.DataVizPipeline import DataFile, save_figure, visualize_heatmap
 from src.logic.anal_dump import anal_dump
-from src.schema.training_schemas import EmbeddingDatasetInformation
-from src.schema.training_schemas import ExperimentConfig
-from src.schema.training_schemas import StitchSummary
+from src.schema.training_schemas import EmbeddingDatasetInformation, ExperimentConfig, StitchSummary
 from src.utils.general_setup import setup
-
 
 setup("StitchSummaryGenerator")
 
@@ -106,9 +101,7 @@ class ModelGenerator:
 
                 # Skip if either file is missing
                 if not info_path.exists() or not log_path.exists():
-                    logger.warning(
-                        f"Skipping {dataset_dir.name} - missing required files"
-                    )
+                    logger.warning(f"Skipping {dataset_dir.name} - missing required files")
                     continue
 
                 try:
@@ -148,35 +141,27 @@ class ModelGenerator:
         return matrix
 
     @staticmethod
-    def get_mse_matrix_from_matrix(
-        matrix: dict[str, dict[str, Any]], labels: list[str]
-    ):
+    def get_mse_matrix_from_matrix(matrix: dict[str, dict[str, Any]], labels: list[str]):
         mse_matrix = [[None for _ in labels] for _ in labels]  # Initialize with zeros
         for i, row_label in enumerate(labels):
             for j, col_label in enumerate(labels):
                 if i == j:
                     continue
                 try:
-                    mse_matrix[i][j] = matrix[row_label][col_label]["log"][-1][
-                        "test_mse"
-                    ]
+                    mse_matrix[i][j] = matrix[row_label][col_label]["log"][-1]["test_mse"]
                 except (KeyError, IndexError):
                     continue
         return mse_matrix
 
     @staticmethod
-    def get_mae_matrix_from_matrix(
-        matrix: dict[str, dict[str, Any]], labels: list[str]
-    ):
+    def get_mae_matrix_from_matrix(matrix: dict[str, dict[str, Any]], labels: list[str]):
         mae_matrix = [[None for _ in labels] for _ in labels]  # Initialize with zeros
         for i, row_label in enumerate(labels):
             for j, col_label in enumerate(labels):
                 if i == j:
                     continue
                 try:
-                    mae_matrix[i][j] = matrix[row_label][col_label]["log"][-1][
-                        "test_mse"
-                    ]
+                    mae_matrix[i][j] = matrix[row_label][col_label]["log"][-1]["test_mse"]
                 except (KeyError, IndexError):
                     continue
         return mae_matrix
@@ -192,7 +177,8 @@ class ModelGenerator:
 
     @staticmethod
     def stitches_from_directory(
-        native_embeddings_dir: Path, stitched_embeddings_dir: Path
+        native_embeddings_dir: Path,
+        stitched_embeddings_dir: Path,
     ) -> list[StitchSummary]:
         """Create StitchSummaries from a directory of embeddings.
 
@@ -206,7 +192,7 @@ class ModelGenerator:
             List of StitchSummary objects, one for each embedding
         """
         naitve_embeddings = ModelGenerator.native_embedding_dataset_info_from_dir(
-            native_embeddings_dir
+            native_embeddings_dir,
         )
 
         if not stitched_embeddings_dir.exists():
@@ -217,17 +203,10 @@ class ModelGenerator:
         for model1_to_model2_dir in stitched_embeddings_dir.iterdir():
             for dataset_dir in model1_to_model2_dir.iterdir():
                 for arch_dir in dataset_dir.iterdir():
-                    train_embeddings_file = (
-                        arch_dir / "embeddings_corpus_train.safetensors"
-                    )
-                    test_embeddings_file = (
-                        arch_dir / "embeddings_corpus_test.safetensors"
-                    )
+                    train_embeddings_file = arch_dir / "embeddings_corpus_train.safetensors"
+                    test_embeddings_file = arch_dir / "embeddings_corpus_test.safetensors"
 
-                    if (
-                        not train_embeddings_file.exists()
-                        or test_embeddings_file.exists()
-                    ):
+                    if not train_embeddings_file.exists() or test_embeddings_file.exists():
                         assert False
 
                     model_1, model_2 = model1_to_model2_dir.name.split("_to_")
@@ -264,14 +243,12 @@ def main() -> None:
     train_logs_dir = PROJ_ROOT / "data" / "arguana_loss_logs"
     if train_logs_dir.exists():
         train_values = ModelGenerator.load_data_as_train_logs(
-            train_logs_dir / "arguana_loss_logs.json"
+            train_logs_dir / "arguana_loss_logs.json",
         )
         train_values = train_values.model_dump()["logs"]
     else:
         train_logs_dir.mkdir(parents=True, exist_ok=False)
-        train_values = ModelGenerator.get_train_logs(
-            PROJ_ROOT / "data" / "arguana_loss"
-        )
+        train_values = ModelGenerator.get_train_logs(PROJ_ROOT / "data" / "arguana_loss")
         anal_dump(
             TrainingLogs(logs=train_values),
             "arguana_loss_logs",
@@ -299,9 +276,7 @@ def main() -> None:
     fig["layout"]["yaxis"]["autorange"] = "reversed"
     fig.update_xaxes(side="top")
 
-    save_figure(
-        fig, f"mse_matrix_on{text_dataset_name}", output_dir=PROJ_ROOT / "data" / "figs"
-    )
+    save_figure(fig, f"mse_matrix_on{text_dataset_name}", output_dir=PROJ_ROOT / "data" / "figs")
     logger.info(mse_matrix)
 
     ### MAE MATRIX ###
@@ -321,9 +296,7 @@ def main() -> None:
     fig["layout"]["yaxis"]["autorange"] = "reversed"
     fig.update_xaxes(side="top")
 
-    save_figure(
-        fig, f"mae_matrix_on{text_dataset_name}", output_dir=PROJ_ROOT / "data" / "figs"
-    )
+    save_figure(fig, f"mae_matrix_on{text_dataset_name}", output_dir=PROJ_ROOT / "data" / "figs")
     logger.info(mae_matrix)
 
 

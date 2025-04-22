@@ -6,13 +6,12 @@ embeddings will be an arrow from the original to the translated embedding labele
 with the distance between one and the other.
 """
 
-import numpy as np
-import umap
 from loguru import logger
+import numpy as np
 from sklearn.preprocessing import StandardScaler
+import umap
 
 from src.utils.general_setup import setup
-
 
 setup("reduce_embedding_dims")
 
@@ -36,9 +35,7 @@ def reduce_embeddings_dimensionality(
     :return: Dictionary with same keys but values reduced to shape (n_samples, 2)
     :rtype: dict[str, np.ndarray]
     """
-    logger.info(
-        f"Starting dimensionality reduction with {len(embeddings_dict)} embedding spaces"
-    )
+    logger.info(f"Starting dimensionality reduction with {len(embeddings_dict)} embedding spaces")
 
     # Combine all embeddings
     all_embeddings = np.vstack(list(embeddings_dict.values()))
@@ -90,7 +87,10 @@ def main() -> None:
 
     # Reduce dimensionality
     reduced_embeddings = reduce_embeddings_dimensionality(
-        embeddings_dict=sample_embeddings, random_state=42, n_neighbors=15, min_dist=0.1
+        embeddings_dict=sample_embeddings,
+        random_state=42,
+        n_neighbors=15,
+        min_dist=0.1,
     )
 
     # Print results

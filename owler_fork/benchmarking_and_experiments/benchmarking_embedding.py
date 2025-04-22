@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-
 """
 The point of this file was that I was trying to get my embedding process to go faster by making
 better use of parallelization, batching, etc... In the end I didn't actually do it - adrianoh
@@ -8,19 +7,16 @@ better use of parallelization, batching, etc... In the end I didn't actually do 
 
 import time
 
-import torch
-import yaml
-from datasets import Dataset
-from datasets import load_dataset
+from datasets import Dataset, load_dataset
 from sentence_transformers import SentenceTransformer
+import torch
 from tqdm import tqdm
 from transformers import AutoTokenizer
+import yaml
 
 
 class Chunker:
-    def __init__(
-        self, tokenizer: AutoTokenizer, chunk_size: int, dataset_key: str = "text"
-    ):
+    def __init__(self, tokenizer: AutoTokenizer, chunk_size: int, dataset_key: str = "text"):
         self.tokenizer = tokenizer
         self.chunk_size = chunk_size
         self.dataset_key = dataset_key
@@ -35,8 +31,7 @@ class Chunker:
             this_chunk_size = min(self.chunk_size, len(tokens) - i)
             assert i + this_chunk_size <= len(tokens)
             chunk_tokens = tokens[i : i + this_chunk_size] + [
-                self.tokenizer.eos_token_id
-                for _ in range(this_chunk_size, self.chunk_size)
+                self.tokenizer.eos_token_id for _ in range(this_chunk_size, self.chunk_size)
             ]
             assert all(isinstance(token, int) for token in chunk_tokens), chunk_tokens
             chunks.append(chunk_tokens)
@@ -58,7 +53,9 @@ class Chunker:
 
 
 def benchmark_models(
-    chunk_size: int = 256, batch_size: int = 16284, dataset_max_size: int = 100_000
+    chunk_size: int = 256,
+    batch_size: int = 16284,
+    dataset_max_size: int = 100_000,
 ):
     """Testing method: heavily reduce dataset size so we can try end to end and parallelism."""
     # Read YAML
@@ -82,14 +79,10 @@ def benchmark_models(
         model = SentenceTransformer(model_config["name"], device="cuda")
         tokenizer = AutoTokenizer.from_pretrained(model_config["name"])
         if tokenizer.eos_token_id is None:
-            print(
-                "WARNING: Tokenizer does not have an eos_token_id, using pad_token_id instead"
-            )
+            print("WARNING: Tokenizer does not have an eos_token_id, using pad_token_id instead")
             tokenizer.eos_token_id = tokenizer.pad_token_id
         if tokenizer.eos_token_id is None:
-            print(
-                "WARNING: Tokenizer does not have an eos_token_id, using bos_token_id instead"
-            )
+            print("WARNING: Tokenizer does not have an eos_token_id, using bos_token_id instead")
             tokenizer.eos_token_id = tokenizer.bos_token_id
         assert tokenizer.eos_token_id is not None
         model_creation_duration = time.time() - model_creation_start_time
@@ -114,9 +107,9 @@ def benchmark_models(
 
         print(f"Peak memory during embedding: {(mem_after) / 1024**2:.2f} MB")
         print(f"Time to chunk + embed {len(tokenized_chunks)} chunks: {duration:.2f}s")
-        print(f"Time to chunk + embed PER chunk: {duration/len(tokenized_chunks):.2f}s")
+        print(f"Time to chunk + embed PER chunk: {duration / len(tokenized_chunks):.2f}s")
         print(f"Total time: {total_duration:.2f}s")
-        print(f"Speed: {len(tokenized_chunks)/duration:.2f} chunks/second")
+        print(f"Speed: {len(tokenized_chunks) / duration:.2f} chunks/second")
         print(f"Embeddings shape: {embeddings.shape}")
 
 

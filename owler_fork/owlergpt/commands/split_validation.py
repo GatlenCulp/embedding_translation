@@ -2,8 +2,8 @@ import os
 from pathlib import Path
 
 import click
-import numpy as np
 from flask import current_app
+import numpy as np
 from tqdm import tqdm
 
 
@@ -13,9 +13,7 @@ def valid_datasets_folder(dataset_path: Path):
     _parents = set(f.parent for f in files)
     for parent in _parents:
         assert len(list(parent.glob("**/*.jsonl"))) == 2
-        assert (parent / "corpus.jsonl").exists() and (
-            parent / "queries.jsonl"
-        ).exists()
+        assert (parent / "corpus.jsonl").exists() and (parent / "queries.jsonl").exists()
 
 
 # NOTE 80/20 of 25K (our default max size) -> 20K train and 5K validation
@@ -33,9 +31,7 @@ def split_validation(validation_split: float, delete_original_files: bool):
     valid_datasets_folder(dataset_path)
 
     # 1. Split the validation set
-    for file in tqdm(
-        list(dataset_path.glob("**/*.jsonl")), desc="Splitting validation set"
-    ):
+    for file in tqdm(list(dataset_path.glob("**/*.jsonl")), desc="Splitting validation set"):
         assert file.stem in ["corpus", "queries"]
         train_file = file.parent / (file.stem + "_train.jsonl")
         validation_file = file.parent / (file.stem + "_validation.jsonl")

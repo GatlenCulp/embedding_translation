@@ -9,15 +9,13 @@ NOTE: HAS NOT BEEN CHECKED.
 
 from typing import Literal
 
-import numpy as np
 from loguru import logger
+import numpy as np
 from scipy.spatial.distance import cdist
 
 from src.logic.load_embeddings import load_embeddings
-from src.schema.SemanticSearch import EmbeddingDatasetInformation
-from src.schema.SemanticSearch import SemanticSearchEvaluation
+from src.schema.SemanticSearch import EmbeddingDatasetInformation, SemanticSearchEvaluation
 from src.utils.general_setup import setup
-
 
 setup("knn_labeling")
 
@@ -38,7 +36,7 @@ def find_k_nearest_neighbors(
     :rtype: tuple[np.ndarray, np.ndarray]
     """
     logger.debug(
-        f"Computing distances between {len(test_embeddings)} test and {len(training_embeddings)} training samples"
+        f"Computing distances between {len(test_embeddings)} test and {len(training_embeddings)} training samples",
     )
 
     # Compute pairwise distances
@@ -69,23 +67,17 @@ def create_semantic_search_evaluation(
     logger.info("Starting semantic search evaluation...")
 
     # Extract embeddings and record IDs
-    training_embeddings = load_embeddings(training_dataset.dataset_filepath)[
-        "embeddings"
-    ]
+    training_embeddings = load_embeddings(training_dataset.dataset_filepath)["embeddings"]
     test_embeddings = load_embeddings(test_dataset.dataset_filepath)["embeddings"]
 
     training_embeddings_size = len(training_embeddings)
     test_embeddings_size = len(test_embeddings)
 
     training_record_ids = np.arange(training_embeddings_size)
-    test_record_ids = np.arange(
-        start=training_embeddings_size, stop=test_embeddings_size
-    )
+    test_record_ids = np.arange(start=training_embeddings_size, stop=test_embeddings_size)
 
     # Create mapping from record_id to label
-    training_labels_map = dict(
-        zip(training_record_ids, training_record_ids, strict=False)
-    )
+    training_labels_map = dict(zip(training_record_ids, training_record_ids, strict=False))
 
     # Find nearest neighbors
     indices, distances = find_k_nearest_neighbors(
@@ -137,7 +129,7 @@ def main() -> None:
     training_dataset = {
         "embeddings": rng.normal(0, 1, (n_samples, n_features)),
         "record_ids": [f"train_{i}" for i in range(n_samples)],
-        "labels": [f"label_{i%5}" for i in range(n_samples)],
+        "labels": [f"label_{i % 5}" for i in range(n_samples)],
         "dataset_info": {
             "name": "sample_training",
             "embedding_model_name": "bert-base-uncased",

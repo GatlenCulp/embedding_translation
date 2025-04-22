@@ -22,44 +22,35 @@ from pathlib import Path
 from typing import Literal
 
 import click
+from pydantic import BaseModel
 import safetensors
 import safetensors.torch
+from safetensors.torch import load_file
 import torch
+from torch import nn
+from torch.utils.data import DataLoader, Dataset
 import tqdm
 import wandb
-from pydantic import BaseModel
-from safetensors.torch import load_file
-from torch import nn
-from torch.utils.data import DataLoader
-from torch.utils.data import Dataset
 
 
 class StitchPair(BaseModel):
     source: str
     target: str
     dataset: str
-    mode: Literal["affine"] = (
-        "affine"  # TODO(Adriano) later we will support more shit here
-    )
+    mode: Literal["affine"] = "affine"  # TODO(Adriano) later we will support more shit here
 
     def save_linear_transform(self, linear: nn.Linear, save_path: Path) -> None:
         linear_path = save_path / "linear_transform.safetensors"
         stitch_info_path = save_path / "stitch_info.json"
-        assert (
-            not linear_path.exists()
-        ), f"Linear transform already exists at {linear_path}"
-        assert (
-            not stitch_info_path.exists()
-        ), f"Stitch info already exists at {stitch_info_path}"
+        assert not linear_path.exists(), f"Linear transform already exists at {linear_path}"
+        assert not stitch_info_path.exists(), f"Stitch info already exists at {stitch_info_path}"
         safetensors.torch.save_file(linear.state_dict(), linear_path)
         stitch_info_path.write_text(self.model_dump_json())
 
 
 # Now, we can try to train linear transforms between embeddings...
 class EmbeddingDataset(Dataset):
-    def __init__(
-        self, source_embeddings: torch.Tensor, target_embeddings: torch.Tensor
-    ):
+    def __init__(self, source_embeddings: torch.Tensor, target_embeddings: torch.Tensor):
         assert source_embeddings.shape[0] == target_embeddings.shape[0]
         self.source_embeddings = source_embeddings
         self.target_embeddings = target_embeddings
@@ -111,9 +102,7 @@ class LinearTransformTrainer:
         self.use_tqdm = args.use_tqdm
         if self.linear is None:
             self.linear = self.create_linear_transform()
-        self.optimizer = torch.optim.Adam(
-            self.linear.parameters(), lr=self.learning_rate
-        )
+        self.optimizer = torch.optim.Adam(self.linear.parameters(), lr=self.learning_rate)
 
     #### PRE-TRAINING HELPERS ####
     def create_datasets(self):
@@ -127,26 +116,24 @@ class LinearTransformTrainer:
         # test_indices = indices[split_idx:]
 
         # Create datasets
-        train_dataset = EmbeddingDataset(
-            self.source_embeddings_train, self.target_embeddings_train
-        )
+        train_dataset = EmbeddingDataset(self.source_embeddings_train, self.target_embeddings_train)
         test_dataset = EmbeddingDataset(
-            self.source_embeddings_validation, self.target_embeddings_validation
+            self.source_embeddings_validation,
+            self.target_embeddings_validation,
         )
 
         return train_dataset, test_dataset
 
     def create_linear_transform(self):
         return nn.Linear(
-            self.source_embeddings_train.shape[1], self.target_embeddings_train.shape[1]
+            self.source_embeddings_train.shape[1],
+            self.target_embeddings_train.shape[1],
         ).to(self.device)
 
     #### TRAINING HELPERS ####
     def train(self):
         train_dataset, test_dataset = self.create_datasets()
-        train_loader = DataLoader(
-            train_dataset, batch_size=self.batch_size, shuffle=True
-        )
+        train_loader = DataLoader(train_dataset, batch_size=self.batch_size, shuffle=True)
         test_loader = DataLoader(test_dataset, batch_size=self.batch_size)
 
         mse_loss = nn.MSELoss()
@@ -191,9 +178,7 @@ class LinearTransformTrainer:
                     output = self.linear(source_emb)
 
                     test_mse += mse_loss(output, target_emb).item()
-                    test_mae += (
-                        (output.detach() - target_emb.detach()).abs().mean().item()
-                    )
+                    test_mae += (output.detach() - target_emb.detach()).abs().mean().item()
                     num_test_batches += 1
 
             avg_test_mse = test_mse / num_test_batches
@@ -280,17 +265,12 @@ class EmbeddingTransformTrainer:
         self.record_type = "corpus"
 
     def get_embeddings_paths(self, embeddings_path: Path):
-        embeddings_train_path = (
-            embeddings_path / f"embeddings_{self.record_type}_train.safetensors"
-        )
+        embeddings_train_path = embeddings_path / f"embeddings_{self.record_type}_train.safetensors"
         embeddings_validation_path = (
             embeddings_path / f"embeddings_{self.record_type}_validation.safetensors"
         )
-        assert (
-            embeddings_train_path.exists() and embeddings_validation_path.exists()
-        ) or (
-            not embeddings_train_path.exists()
-            and not embeddings_validation_path.exists()
+        assert (embeddings_train_path.exists() and embeddings_validation_path.exists()) or (
+            not embeddings_train_path.exists() and not embeddings_validation_path.exists()
         )
         if not embeddings_train_path.exists():
             # NOTE: that sometimes the path names are reversed, i.e. when using OpenAI models; you can observe
@@ -299,8 +279,7 @@ class EmbeddingTransformTrainer:
                 embeddings_path / f"{self.record_type}_train_embeddings.safetensors"
             )
             embeddings_validation_path = (
-                embeddings_path
-                / f"{self.record_type}_validation_embeddings.safetensors"
+                embeddings_path / f"{self.record_type}_validation_embeddings.safetensors"
             )
         assert embeddings_train_path.exists() and embeddings_validation_path.exists(), f"Files {embeddings_train_path} and {embeddings_validation_path} do not exist"  # fmt: skip
         return embeddings_train_path, embeddings_validation_path
@@ -326,19 +305,13 @@ class EmbeddingTransformTrainer:
             ]
         for filter_for_model in filter_for_model:
             # TODO(Adriano) allow for conjunction and dysjunction more smartly plz
-            combos = [
-                x
-                for x in combos
-                if filter_for_model in x[1] or filter_for_model in x[2]
-            ]
+            combos = [x for x in combos if filter_for_model in x[1] or filter_for_model in x[2]]
         # 2. filter for datasets
         for filter_for_dataset in filter_for_dataset:
             combos = [x for x in combos if filter_for_dataset in x[0]]
         for filter_against_dataset in filter_against_dataset:
             combos = [x for x in combos if filter_against_dataset not in x[0]]
-        combos = sorted(
-            combos, key=lambda x: (x[0], x[1], x[2])
-        )  # visualize more nicely
+        combos = sorted(combos, key=lambda x: (x[0], x[1], x[2]))  # visualize more nicely
         if verbose:
             click.echo("  " + "\n  ".join([f"{x[0]} {x[1]} {x[2]}" for x in combos]))
             click.echo(f"Training {len(combos)} transforms")
@@ -346,7 +319,8 @@ class EmbeddingTransformTrainer:
         # End filtering...
         print(f"Training {len(combos)} transforms")
         for dataset, src, dest in tqdm.tqdm(
-            combos, desc="Training transforms (all default settings)"
+            combos,
+            desc="Training transforms (all default settings)",
         ):
             assert src != dest
             # plz plz
@@ -361,11 +335,11 @@ class EmbeddingTransformTrainer:
             # TODO(Adriano) validate and copy the metadatas jsonls? We don't do this because right now in
             # `sanity_check_embeddings_note_equal.ipynb` we validate that this stuff matches up OK and so
             # we can uset he index of the row as the ID of that chunk etc...
-            embeddings1_train_path, embeddings1_validation_path = (
-                self.get_embeddings_paths(embeddings1_path)
+            embeddings1_train_path, embeddings1_validation_path = self.get_embeddings_paths(
+                embeddings1_path,
             )
-            embeddings2_train_path, embeddings2_validation_path = (
-                self.get_embeddings_paths(embeddings2_path)
+            embeddings2_train_path, embeddings2_validation_path = self.get_embeddings_paths(
+                embeddings2_path,
             )
             if any(
                 not x.exists()
@@ -377,7 +351,7 @@ class EmbeddingTransformTrainer:
                 ]
             ):
                 print(
-                    f"Skipping {src} to {dest} because some files do not exist in {embeddings1_path.name} or {embeddings2_path.name}"
+                    f"Skipping {src} to {dest} because some files do not exist in {embeddings1_path.name} or {embeddings2_path.name}",
                 )
                 for file in [
                     embeddings1_train_path,
@@ -392,9 +366,7 @@ class EmbeddingTransformTrainer:
                 continue
 
             # 2. make sure shit is NOT present in save
-            save_parent = (
-                self.save_path_parent / f"{src_name_ok}_{dest_name_ok}" / dataset_ok
-            )
+            save_parent = self.save_path_parent / f"{src_name_ok}_{dest_name_ok}" / dataset_ok
             stitch_info_pair_file = save_parent / "stitch_info_pairs.json"
             linear_transform_file = save_parent / "linear_transform.safetensors"
             assert not linear_transform_file.exists()
@@ -405,13 +377,9 @@ class EmbeddingTransformTrainer:
 
             # 3. load
             embeddings1_train = load_file(embeddings1_train_path)["embeddings"]  # X
-            embeddings1_validation = load_file(embeddings1_validation_path)[
-                "embeddings"
-            ]  # Y
+            embeddings1_validation = load_file(embeddings1_validation_path)["embeddings"]  # Y
             embeddings2_train = load_file(embeddings2_train_path)["embeddings"]  # x
-            embeddings2_validation = load_file(embeddings2_validation_path)[
-                "embeddings"
-            ]  # y
+            embeddings2_validation = load_file(embeddings2_validation_path)["embeddings"]  # y
             # Initialize wandb run
             wandb.init(
                 project=self.wandb_project,
@@ -459,7 +427,7 @@ def main(
 ):
     assert dataset in DATASETS
     save_path_parent = Path(
-        f"/mnt/align3_drive/adrianoh/dl_final_project_layers/{dataset}_hf_cartesian_product"
+        f"/mnt/align3_drive/adrianoh/dl_final_project_layers/{dataset}_hf_cartesian_product",
     )
     # assert not save_path_parent.exists()
     trainer = EmbeddingTransformTrainer(

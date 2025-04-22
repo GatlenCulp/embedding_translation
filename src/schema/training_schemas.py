@@ -7,13 +7,9 @@ from __future__ import annotations
 
 from datetime import datetime
 from pathlib import Path
-from typing import Any
-from typing import Literal
+from typing import Any, Literal
 
-from pydantic import BaseModel
-from pydantic import Field
-from pydantic import computed_field
-
+from pydantic import BaseModel, Field, computed_field
 
 ################################ INGEST, EVAL, TRAIN SCHEMAS ################################
 
@@ -32,9 +28,7 @@ class EmbeddingMetadata(BaseModel):
     record_type: Literal["query", "document"]
     # TODO(Adriano) not everything should be train by default
     record_split: Literal["train", "test"] = "train"
-    tags: (
-        dict[str, str] | None
-    ) = {}  # <---- should insert some meaning tags for umap cluster
+    tags: dict[str, str] | None = {}  # <---- should insert some meaning tags for umap cluster
 
 
 class IngestionSettings(BaseModel):
@@ -50,8 +44,12 @@ class IngestionSettings(BaseModel):
     # TODO: (Adriano) in the future we will want to try passing this through a model before
     chunk_preprocessing_mode: Literal["add_prefix"] = "add_prefix"
     query_preprocessing_mode: Literal["add_prefix"] = "add_prefix"
-    chunk_prefix: str = "passage: "  # Can be used to add prefix to text embeddings stored in vector store
-    query_prefix: str = "query: "  # Can be used to add prefix to text embeddings used for semantic search
+    chunk_prefix: str = (
+        "passage: "  # Can be used to add prefix to text embeddings stored in vector store
+    )
+    query_prefix: str = (
+        "query: "  # Can be used to add prefix to text embeddings used for semantic search
+    )
     chunk_overlap: int = 25  # Determines, for a given chunk of text, how many tokens must overlap with adjacent chunks.
     dataloader_batch_size: int = 32
     dataloader_num_workers: int = 4
@@ -62,9 +60,7 @@ class EvaluationSettings(BaseModel):
 
     chunk_size: int = 256
     embedding_dimension: int = 1024
-    mean_center: bool = (
-        False  # Mean-center embedding vectors before calculating similarity
-    )
+    mean_center: bool = False  # Mean-center embedding vectors before calculating similarity
     k_nn_metric: str = "cosine"  # Metric to use for calculating nearest neighbors for exact query, see sklearn.metrics.pairwise.distance_metrics for allowed values
     k: int = 10  # The number of nearest neighbors to consider
     baseline: bool = False  # Compute baseline scores
@@ -190,7 +186,8 @@ class ExperimentConfig(BaseModel):
     # Dataset config
     dataset_name: str  # e.g. "HotPotQA"
     dataset_split: Literal["train", "test"] = Field(
-        default="train", description="Whether this is a training or testing experiment."
+        default="train",
+        description="Whether this is a training or testing experiment.",
     )
     dataset_train_test_split_frac: float = 0.8
     dataset_size: int | None = None
@@ -202,10 +199,12 @@ class ExperimentConfig(BaseModel):
 
     # Architecture config
     architecture: Literal["affine"] = Field(
-        default="affine", description="The class of architecture"
+        default="affine",
+        description="The class of architecture",
     )
     architecture_config: dict[str, Any] | None = Field(
-        default=None, description="The kwargs for the architecture class"
+        default=None,
+        description="The kwargs for the architecture class",
     )
 
 
@@ -267,9 +266,7 @@ class StitchEvaluation(BaseModel):
     # Evaluation info
     stitching_mse: float
     stitching_mae: float
-    stitching_additional_metrics: (
-        dict[str, Any] | None
-    ) = {}  # <--- if you want more data use this
+    stitching_additional_metrics: dict[str, Any] | None = {}  # <--- if you want more data use this
     evaluation_data_split: Literal["train", "test"] = "train"
 
 
@@ -302,9 +299,7 @@ class StitchSummary(BaseModel):
     6. The trained stitch model dump
     """
 
-    @computed_field(
-        repr=True, description="This is the name that will be displayed on graphs."
-    )
+    @computed_field(repr=True, description="This is the name that will be displayed on graphs.")
     @property
     def display_name(self) -> str:
         """This is the name that will be displayed on graphs."""
@@ -313,9 +308,7 @@ class StitchSummary(BaseModel):
             f"using {self.architecture_name} Architecture"
         )
 
-    @computed_field(
-        repr=False, description="This is the name that appears on file names."
-    )
+    @computed_field(repr=False, description="This is the name that appears on file names.")
     @property
     def slug(self) -> str:
         """This is the name that appears on file names."""
@@ -406,7 +399,8 @@ class StitchSummary(BaseModel):
 
     # Training Experiment Configuration
     training_experiment_config: ExperimentConfig = Field(
-        description="The inputs for training the stitch.", repr=False
+        description="The inputs for training the stitch.",
+        repr=False,
     )
     train_settings: TrainSettings = Field(
         default_factory=TrainSettings,
@@ -416,10 +410,13 @@ class StitchSummary(BaseModel):
 
     # Training Results
     training_evaluation_log: StitchEvaluationLog | None = Field(
-        None, description="Epoch-by-epoch WandB-style evaluations.", repr=False
+        None,
+        description="Epoch-by-epoch WandB-style evaluations.",
+        repr=False,
     )
     train_status_final: TrainStatus | None = Field(
-        None, description="The stitch save location and other info."
+        None,
+        description="The stitch save location and other info.",
     )
     train_stitch_embeddings: EmbeddingDatasetInformation = Field(
         description="The stitch embeddings resulting from feeding the original training embeddings through stitch model",

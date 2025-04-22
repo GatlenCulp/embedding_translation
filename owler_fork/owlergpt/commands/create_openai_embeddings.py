@@ -1,19 +1,17 @@
 from __future__ import annotations
 
 import os
-import re
 from pathlib import Path
+import re
 
 import click
+from flask import current_app
+from openai import OpenAI
 import pydantic
+from pydantic import BaseModel, Field
 import safetensors.torch
 import torch
 import tqdm
-from flask import current_app
-from openai import OpenAI
-from pydantic import BaseModel
-from pydantic import Field
-
 
 # ...
 
@@ -53,7 +51,11 @@ def model_name2dim(model_name: str) -> int:
     default="/mnt/align3_drive/adrianoh/dl_final_project_embeddings_openai",
 )
 @click.option(
-    "--regex-datasets", "-re", "-r", type=str, default=".*"
+    "--regex-datasets",
+    "-re",
+    "-r",
+    type=str,
+    default=".*",
 )  # filter all datasets with a regex
 @click.option(
     "--chunks-path",
@@ -83,9 +85,7 @@ def ingest_openai(
 
     print("Fetching environment variables (defaults)")
     tokens_per_chunk = int(os.environ.get("CHUNK_SIZE", None))
-    chunk_overlap = int(
-        os.environ.get("VECTOR_SEARCH_TEXT_SPLITTER_CHUNK_OVERLAP", None)
-    )
+    chunk_overlap = int(os.environ.get("VECTOR_SEARCH_TEXT_SPLITTER_CHUNK_OVERLAP", None))
     batch_size = int(os.environ.get("BATCH_SIZE", None))
     chunk_document_prefix = os.environ.get("VECTOR_SEARCH_CHUNK_PREFIX", None)
     chunk_query_prefix = os.environ.get("VECTOR_SEARCH_QUERY_PREFIX", None)
@@ -95,9 +95,7 @@ def ingest_openai(
     dataset_folders = [d for d in dataset_path.iterdir() if d.is_dir()]
     print("Found dataset folders:")
     print("  " + "  \n".join([d.as_posix() for d in dataset_folders]))
-    dataset_folders = [
-        d for d in dataset_folders if re.match(regex_datasets, d.name) is not None
-    ]
+    dataset_folders = [d for d in dataset_folders if re.match(regex_datasets, d.name) is not None]
     print("Filtered dataset folder (with regex):")
     print("  " + "  \n".join([d.as_posix() for d in dataset_folders]))
     for dataset_folder in dataset_folders:
@@ -127,19 +125,18 @@ def ingest_openai(
             jsonl_files = list(dataset_folder.glob("**/*.jsonl"))
             assert all(f.is_file() for f in jsonl_files)
             for jsonl_file in tqdm.tqdm(
-                jsonl_files, desc="Processing JSONL files from all of the documents..."
+                jsonl_files,
+                desc="Processing JSONL files from all of the documents...",
             ):
                 # 1. Make sure folders are OK and set up to write
                 _rel = jsonl_file.parent.relative_to(dataset_folder.parent)
                 _new_parent = model_path / _rel
                 _new_parent.mkdir(parents=True, exist_ok=True)
                 embeddings_file_path = (
-                    _new_parent
-                    / f"{jsonl_file.name.replace('.jsonl', '_embeddings.safetensors')}"
+                    _new_parent / f"{jsonl_file.name.replace('.jsonl', '_embeddings.safetensors')}"
                 )
                 metadatas_file_path = (
-                    _new_parent
-                    / f"{jsonl_file.name.replace('.jsonl', '_metadatas.jsonl')}"
+                    _new_parent / f"{jsonl_file.name.replace('.jsonl', '_metadatas.jsonl')}"
                 )
                 # [START DEBUG]
                 # print("\n\nNEW PARENT IS", _new_parent.as_posix(), "\n\nREL IS", _rel.as_posix(), "\n\nJSONL FILE IS", jsonl_file.as_posix(), "\n\nMODEL PATH IS", model_path.as_posix(), "\n\nDATASET FOLDER IS", dataset_folder.as_posix(), "\n\n")
@@ -152,9 +149,7 @@ def ingest_openai(
                 assert not metadatas_file_path.exists()
                 # 2. Set up datasets and splitters, etc...
                 record_type = "document" if "corpus" in jsonl_file.name else "query"
-                assert record_type == (
-                    "query" if "queries" in jsonl_file.name else "document"
-                )
+                assert record_type == ("query" if "queries" in jsonl_file.name else "document")
                 # dataset = JSONDataset(
                 #     path=jsonl_file.as_posix(),
                 #     splitter=text_splitter, # Is None if chunks path is provided
@@ -175,9 +170,7 @@ def ingest_openai(
                     # is_chunk=(chunks_path is not None) # always true
                 )
                 # 4. Save embeddings
-                safetensors.torch.save_file(
-                    {"embeddings": embeddings}, embeddings_file_path
-                )
+                safetensors.torch.save_file({"embeddings": embeddings}, embeddings_file_path)
                 # 5. Copy over the jsonl file (metadatas)
                 with open(jsonl_file) as f1:
                     with open(metadatas_file_path, "w") as f2:
@@ -187,7 +180,7 @@ def ingest_openai(
 # NOTE: copied from chunk_dataset.py
 class Chunk(BaseModel):
     id: str = Field(
-        alias="id"
+        alias="id",
     )  # unique id for the chunk (can combine doc id with index within that chunk)
     doc_id: str = Field(alias="doc_id")
     index_in_doc: int = Field(alias="index_in_doc")
@@ -222,9 +215,7 @@ def ingest_openai_embeddings_as_pt(
         assert embeddings_pt.shape[0] == len(batch)
         assert embeddings_pt.shape[1] == model_name2dim(model_name)
         all_embeddings.append(embeddings_pt)
-    assert (
-        len(all_embeddings) > 0
-    ), f"No embeddings found for {chunks_file_path.as_posix()}"
+    assert len(all_embeddings) > 0, f"No embeddings found for {chunks_file_path.as_posix()}"
     embeddings_pt = torch.cat(all_embeddings, dim=0)
     assert len(embeddings_pt.shape) == 2
     assert embeddings_pt.shape[0] == len(chunks)

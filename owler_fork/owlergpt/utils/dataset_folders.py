@@ -15,9 +15,7 @@ def choose_dataset_folders(dataset_path: str) -> list[str] | None:
     :return: The selected dataset folder.
     """
     dataset_folders = [
-        f
-        for f in os.listdir(dataset_path)
-        if os.path.isdir(os.path.join(dataset_path, f))
+        f for f in os.listdir(dataset_path) if os.path.isdir(os.path.join(dataset_path, f))
     ]
     if not dataset_folders:
         click.echo(f"No dataset folders found. Dataset path was {dataset_path}")

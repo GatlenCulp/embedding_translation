@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-
 """
 Support utilities for various things pertaining to collections, parsing their names, etc...
 """
@@ -8,7 +7,6 @@ import os
 
 from openai import OpenAI
 from sentence_transformers import SentenceTransformer
-
 
 OPENAI_MODELS = ["text-embedding-3-small", "text-embedding-3-large"]
 COHERE_MODELS = ["embed-english-v3.0"]
@@ -54,14 +52,9 @@ class ModelLatentSizing:
     @staticmethod
     def get_openai_model_size(model_name: str) -> int:
         """Helper."""
-        if model_name.startswith("openai/"):
-            model_name = model_name[len("openai/") :]
-        client = OpenAI(
-            api_key=os.environ["OPENAI_KEY"]
-        )  # <---- export properly beforehand
-        list_obj = (
-            client.embeddings.create(input=["hi"], model=model_name).data[0].embedding
-        )
+        model_name = model_name.removeprefix("openai/")
+        client = OpenAI(api_key=os.environ["OPENAI_KEY"])  # <---- export properly beforehand
+        list_obj = client.embeddings.create(input=["hi"], model=model_name).data[0].embedding
         assert isinstance(list_obj, list)
         assert all(isinstance(x, float) for x in list_obj)
         return len(list_obj)

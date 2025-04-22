@@ -9,7 +9,6 @@ from rich.highlighter import RegexHighlighter
 from rich.logging import RichHandler
 from rich.theme import Theme
 
-
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 
 
@@ -56,7 +55,7 @@ def setup_logger(filename: str) -> None:
             "log.linenumber": "bold yellow",
             "log.level": "bold green",  # <--- [CHANGED] Made levels more visible
             "log.timestamp": "dim blue",  # <--- [NEW] Added timestamp style
-        }
+        },
     )
 
     console = Console(theme=theme, highlighter=LogHighlighter())

@@ -1,7 +1,6 @@
 """Aggregate statistics across all the stitches."""
 
-from pydantic import BaseModel
-from pydantic import Field
+from pydantic import BaseModel, Field
 
 from src.schema.training_schemas import StitchSummary
 
@@ -13,6 +12,4 @@ class AggregateStatistics(BaseModel):
     """
 
     # Input
-    summaries: list[StitchSummary] = Field(
-        description="Literally every training run as input."
-    )
+    summaries: list[StitchSummary] = Field(description="Literally every training run as input.")

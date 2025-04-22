@@ -2,8 +2,8 @@ import os
 from pathlib import Path
 
 import click
-import numpy as np
 from flask import current_app
+import numpy as np
 
 
 # NOTE: examples/samples are
@@ -12,7 +12,7 @@ from flask import current_app
 def shrink(max_num_examples: int):
     # 0. Setup/parameters
     dataset_path = Path(
-        os.environ["DATASET_FOLDER_PATH"] + "_old"
+        os.environ["DATASET_FOLDER_PATH"] + "_old",
     )  # NOTE: before you run this mv the folder
     dataset_out_path = Path(os.environ["DATASET_FOLDER_PATH"])
     click.confirm(
@@ -27,9 +27,7 @@ def shrink(max_num_examples: int):
     _parents = set(f.parent for f in files)
     for parent in _parents:
         assert len(list(parent.glob("**/*.jsonl"))) == 2
-        assert (parent / "corpus.jsonl").exists() and (
-            parent / "queries.jsonl"
-        ).exists()
+        assert (parent / "corpus.jsonl").exists() and (parent / "queries.jsonl").exists()
 
     # 3. Shuffle and clip
     # Open it, shuffle the lines, then clip and re-write to a new file
@@ -42,6 +40,4 @@ def shrink(max_num_examples: int):
         np.random.shuffle(lines)
         lines = lines[:max_num_examples]
         with open(out_file, "w") as f:
-            f.writelines(
-                lines
-            )  # NOTE you must manually inspect this is a valid jsonl and looks OK
+            f.writelines(lines)  # NOTE you must manually inspect this is a valid jsonl and looks OK

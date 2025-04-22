@@ -2,10 +2,7 @@
 
 from typing import Literal
 
-from pydantic import BaseModel
-from pydantic import Field
-from pydantic import computed_field
-from pydantic import model_validator
+from pydantic import BaseModel, Field, computed_field, model_validator
 
 from src.schema.training_schemas import EmbeddingDatasetInformation
 
@@ -18,7 +15,7 @@ class SimilarityMatrixEvaluation(BaseModel):
 
     # Data Source
     test_dataset: EmbeddingDatasetInformation = Field(
-        description="stitched or non-stitched testing dataset"
+        description="stitched or non-stitched testing dataset",
     )
 
     @model_validator(mode="after")
@@ -35,12 +32,14 @@ class SimilarityMatrixEvaluation(BaseModel):
 
     # Process
     similarity_function: Literal["normalized_dot_product", "cosine_distance"] = Field(
-        description="Name of similarity function used"
+        description="Name of similarity function used",
     )
 
     # Results
     similarity_matrix: list[list[float]] = Field(
-        description="n x n matrix of similarity scores", ge=0, le=1
+        description="n x n matrix of similarity scores",
+        ge=0,
+        le=1,
     )
 
     @computed_field
@@ -60,13 +59,8 @@ class SimilarityMatrixPairwiseEvaluation(BaseModel):
     @model_validator(mode="after")
     def validate_matching_record_ids(self) -> "SimilarityMatrixPairwiseEvaluation":
         """Validate that both datasets have the same record IDs."""
-        if (
-            self.target_similarity_matrix.record_ids
-            != self.stitched_similarity_matrix.record_ids
-        ):
-            raise ValueError(
-                "Target and stitched datasets must have identical record IDs"
-            )
+        if self.target_similarity_matrix.record_ids != self.stitched_similarity_matrix.record_ids:
+            raise ValueError("Target and stitched datasets must have identical record IDs")
         return self
 
     @computed_field

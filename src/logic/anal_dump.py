@@ -9,15 +9,11 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-import numpy as np
 from loguru import logger
-from pydantic import BaseModel
-from pydantic import ConfigDict
-from pydantic import Field
-from pydantic import field_serializer
+import numpy as np
+from pydantic import BaseModel, ConfigDict, Field, field_serializer
 
 from src.utils.general_setup import setup
-
 
 setup("anal_dump")
 
@@ -28,7 +24,8 @@ class DataFile(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     pydantic_schema: str | None = Field(
-        default=None, description="The pydantic schema that the data is saved in"
+        default=None,
+        description="The pydantic schema that the data is saved in",
     )
 
     name: str = Field(description="Name of this piece of data")
@@ -40,7 +37,8 @@ class DataFile(BaseModel):
     )
     version: str = Field(default="1.0.0", description="Version of the data format")
     description: str | None = Field(
-        default=None, description="Optional description of the data dump"
+        default=None,
+        description="Optional description of the data dump",
     )
 
     # Original data field

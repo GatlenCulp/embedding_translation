@@ -6,14 +6,13 @@ embeddings will be an arrow from the original to the translated embedding labele
 with the distance between one and the other.
 """
 
+from loguru import logger
 import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
-from loguru import logger
 
 from src.utils.general_setup import setup
 from src.viz.save_figure import save_figure
-
 
 setup("dimensionality_reduction")
 
@@ -46,7 +45,7 @@ def _plot_embedding_spaces(
                 mode="markers",
                 name=name,
                 marker=dict(color=colors[i % len(colors)]),
-            )
+            ),
         )
 
     # Update layout

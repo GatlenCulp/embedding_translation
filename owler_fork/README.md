@@ -1,4 +1,5 @@
 # What this is
+
 This is a copy from the paper below. the instructions recommend you use poetry. You can just use `conda` and it'll probably work better tbh, but whatever you like is OK. Note that this is modified and janky right now.
 
 Everything marked with `TODO` is something that should be done eventually. Everything marked with `XXX` is something that should be done ASAP (ideally before PR, but sometimes that is not actually done).
@@ -11,6 +12,7 @@ Embedding Model Similarity for Retrieval Augmented Generation Systems".
 [arXiv](https://arxiv.org/abs/2407.08275)
 
 ## Installation
+
 - [Python 3.11+](https://python.org)
 - [Python Poetry](https://python-poetry.org/)
 
@@ -23,12 +25,13 @@ poetry install
 ```
 
 Alternatively, you can create a conda env. and try:
+
 ```bash
 pip3 install -e .
 pip3 install -r requirements.txt
 ```
 
----
+______________________________________________________________________
 
 ## Configuring the application
 
@@ -42,19 +45,21 @@ By default, `.env` is configured to use [intfloat/e5-large-v2](https://huggingfa
 well, see the [Huggingface leaderboard](https://huggingface.co/spaces/mteb/leaderboard) to include additional ones). Change the remaining properties as needed.
 If you want to use a proprietary model, you will need to configure the corresponding API-key as well.
 
----
+______________________________________________________________________
 
 ### Datasets
+
 [List of datasets that can be used for evaluating RAG](https://github.com/beir-cellar/beir?tab=readme-ov-file)
 
----
+______________________________________________________________________
 
 ## Ingesting Datasets
 
 Place the dataset files under `./datasets` and run the following command to:
+
 - Load the data in batches from the `corpus.jsonl` and `queries.jsonl` files.
 - Generate text embeddings for the documents and questions. The text will be chunked automatically based on the
-embedding model's tokenizer.
+  embedding model's tokenizer.
 - Store these embeddings in a vector store, so they can be used for evaluation lateron.
 
 ```bash
@@ -73,7 +78,7 @@ poetry run flask ingest_ds # The dataset should contain corpus.jsonl, queries.js
 # ....
 ```
 
----
+______________________________________________________________________
 
 ## Evaluation
 

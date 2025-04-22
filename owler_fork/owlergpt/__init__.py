@@ -4,17 +4,18 @@ from dotenv import load_dotenv
 from flask import Flask
 
 from owler_fork.owlergpt import utils
-from owler_fork.owlergpt.modern.schemas import EmbeddingDatasetInformation
-from owler_fork.owlergpt.modern.schemas import EmbeddingMetadata
-from owler_fork.owlergpt.modern.schemas import EvaluationSettings
-from owler_fork.owlergpt.modern.schemas import ExperimentConfig
-from owler_fork.owlergpt.modern.schemas import IngestionSettings
-from owler_fork.owlergpt.modern.schemas import StitchEvaluation
-from owler_fork.owlergpt.modern.schemas import StitchEvaluationLog
-from owler_fork.owlergpt.modern.schemas import StitchSummary
-from owler_fork.owlergpt.modern.schemas import TrainSettings
-from owler_fork.owlergpt.modern.schemas import TrainStatus
-
+from owler_fork.owlergpt.modern.schemas import (
+    EmbeddingDatasetInformation,
+    EmbeddingMetadata,
+    EvaluationSettings,
+    ExperimentConfig,
+    IngestionSettings,
+    StitchEvaluation,
+    StitchEvaluationLog,
+    StitchSummary,
+    TrainSettings,
+    TrainStatus,
+)
 
 load_dotenv()
 

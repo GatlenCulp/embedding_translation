@@ -5,16 +5,18 @@ from typing import Any
 from uuid import uuid4
 
 from chromadb.api.models.Collection import Collection
-from pydantic import BaseModel
-from pydantic import ValidationError
+from pydantic import BaseModel, ValidationError
 
-from owlergpt.modern.collection_utils import OPENAI_MODELS
-from owlergpt.modern.collection_utils import model2model_dimension
-from owlergpt.modern.collection_utils import parse_collection_name
-from owlergpt.modern.schemas import EmbeddingDatasetInformation
-from owlergpt.modern.schemas import EmbeddingMetadata
-from owlergpt.modern.schemas import IngestionSettings
-
+from owlergpt.modern.collection_utils import (
+    OPENAI_MODELS,
+    model2model_dimension,
+    parse_collection_name,
+)
+from owlergpt.modern.schemas import (
+    EmbeddingDatasetInformation,
+    EmbeddingMetadata,
+    IngestionSettings,
+)
 
 """ XXX
 What needs to be done:
@@ -73,9 +75,7 @@ class EmbeddingMetadataPopulatorCoordinator:
     ):
         self.selected_folder: str = selected_folder
         self.collections: list[Collection] = collections
-        self.metadata_populator_args: EmbeddingMetadataPopulatorArgs = (
-            metadata_populator_args
-        )
+        self.metadata_populator_args: EmbeddingMetadataPopulatorArgs = metadata_populator_args
         # Return the embedding metadata to be stored for this element in all the collections, says
         # - chunk_text (redundant)
         # - chunk_id (new)
@@ -111,13 +111,13 @@ class EmbeddingMetadataPopulatorCoordinator:
         ]  # NOTE by this they SEEM to actually mean chunk text???
         record_id = chunk_metadata["record_id"]
         if self.already_populated_one_collection:
-            assert (
-                chunk_text in self.chunk_text2embedding_metadata
-            ), f"Chunk text not found in metadata: {chunk_text}"
+            assert chunk_text in self.chunk_text2embedding_metadata, (
+                f"Chunk text not found in metadata: {chunk_text}"
+            )
             return self.chunk_text2embedding_metadata[chunk_text]
-        assert (
-            chunk_text not in self.chunk_text2embedding_metadata
-        ), f"Chunk text should not be in metadata: {chunk_text}"
+        assert chunk_text not in self.chunk_text2embedding_metadata, (
+            f"Chunk text should not be in metadata: {chunk_text}"
+        )
         tags = {}
         return [
             EmbeddingMetadata(
@@ -128,24 +128,23 @@ class EmbeddingMetadataPopulatorCoordinator:
                 record_type=record_type,
                 record_split=record_split,
                 tags=tags,
-            )
+            ),
         ]
 
     def validate_collections(self):
         """Validate the datasets."""
         # 1. validate sizes
         sizes = [len(collection.get()) for collection in self.collections]
-        assert all(
-            size == sizes[0] for size in sizes
-        ), f"All collections must have the same number of elements: {sizes}"
+        assert all(size == sizes[0] for size in sizes), (
+            f"All collections must have the same number of elements: {sizes}"
+        )
         # 2. validate that either all or none have been populated (collection granularity)
         metadata_populated = [
-            self.__collection_metadata_is_populated(collection)
-            for collection in self.collections
+            self.__collection_metadata_is_populated(collection) for collection in self.collections
         ]
-        assert (
-            all(metadata_populated) or not any(metadata_populated)
-        ), f"Either all or none collections must have been populated: {metadata_populated}"
+        assert all(metadata_populated) or not any(metadata_populated), (
+            f"Either all or none collections must have been populated: {metadata_populated}"
+        )
         # 3. validate that the train-test split is consistent across collections
         all_is_popped: list[bool] = []
         for collection in self.collections:
@@ -157,14 +156,12 @@ class EmbeddingMetadataPopulatorCoordinator:
         all_is_popped_dump = "\n".join(
             [
                 f"{collection.name}: {is_popped}"
-                for collection, is_popped in zip(
-                    self.collections, all_is_popped, strict=False
-                )
-            ]
+                for collection, is_popped in zip(self.collections, all_is_popped, strict=False)
+            ],
         )
-        assert (
-            all(all_is_popped) or not any(all_is_popped)
-        ), f"Either all or none collections must have been populated: {all_is_popped_dump}"
+        assert all(all_is_popped) or not any(all_is_popped), (
+            f"Either all or none collections must have been populated: {all_is_popped_dump}"
+        )
 
     def preprocess_idx2embedding_metadata(self):
         """Preprocess the idx2embedding_metadata to be able to use it to populate the metadata."""
@@ -272,13 +269,13 @@ class EmbeddingMetadataPopulator:
             dataloader_batch_size = self.collection.metadata["dataloader_batch_size"]
         dataloader_num_workers = 4  # default hardcoded
         if "hnsw:space" in self.collection.metadata:
-            assert (
-                distance_function == self.collection.metadata["hnsw:space"]
-            ), f"Distance function mismatch: {distance_function} != {self.collection.metadata['hnsw:space']} (disable environ?)"
+            assert distance_function == self.collection.metadata["hnsw:space"], (
+                f"Distance function mismatch: {distance_function} != {self.collection.metadata['hnsw:space']} (disable environ?)"
+            )
             distance_function = self.collection.metadata["hnsw:space"]
-        assert (
-            device not in self.collection.metadata
-        ), f"Device should not be in metadata: {self.collection.metadata} (reserved name, but not used rn)"
+        assert device not in self.collection.metadata, (
+            f"Device should not be in metadata: {self.collection.metadata} (reserved name, but not used rn)"
+        )
         if "normalize_embeddings" in self.collection.metadata:
             normalize_embeddings = self.collection.metadata["normalize_embeddings"]
 
@@ -313,13 +310,13 @@ class EmbeddingMetadataPopulator:
             obj = EmbeddingDatasetInformation.model_validate(current_metadata)
             if not self.metadata_populator_args.overwrite_metadata:
                 raise EmbeddingMetadataPopulatorIdempotencyBug(
-                    "Embedding collection metadata already properly setup"
+                    "Embedding collection metadata already properly setup",
                 )
             return obj
         except ValidationError:
             inferred_ingestion = self.infer_ingestion_settings()
-            embedding_model_name, text_dataset, chromadb_collection_name = (
-                parse_collection_name(self.collection.name)
+            embedding_model_name, text_dataset, chromadb_collection_name = parse_collection_name(
+                self.collection.name,
             )
             is_openai = embedding_model_name in OPENAI_MODELS
             assert "/" not in embedding_model_name, f"Embedding model name should not contain '/': {embedding_model_name}"  # fmt: skip
@@ -338,9 +335,7 @@ class EmbeddingMetadataPopulator:
         """Primary method of this class."""
         # 1. Update the collection metadata
         try:
-            coll_metadata: EmbeddingMetadata = (
-                self.infer_embedding_dataset_information()
-            )
+            coll_metadata: EmbeddingMetadata = self.infer_embedding_dataset_information()
             self.collection.modify(metadata=coll_metadata.model_dump())
         except EmbeddingMetadataPopulatorIdempotencyBug:
             return  # already properly setup

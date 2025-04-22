@@ -5,12 +5,11 @@ Used for testing and development purposes.
 
 from pathlib import Path
 
-import numpy as np
 from loguru import logger
+import numpy as np
 from safetensors.numpy import save_file
 
 from src.utils.general_setup import setup
-
 
 rng = setup("safe_tensor")
 
@@ -80,7 +79,7 @@ def generate_mock_safetensor_batch(
     for i in range(num_files):
         output_path = output_dir / f"{prefix}_{i}.safetensors"
         generated_files.append(
-            generate_mock_safetensor(shape=shapes, output_path=output_path, dtype=dtype)
+            generate_mock_safetensor(shape=shapes, output_path=output_path, dtype=dtype),
         )
 
     return generated_files
@@ -100,6 +99,9 @@ if __name__ == "__main__":
 
     # Generate multiple files
     batch_files = generate_mock_safetensor_batch(
-        shapes=shapes, output_dir="data/embeddings", num_files=5, prefix="mock_dataset"
+        shapes=shapes,
+        output_dir="data/embeddings",
+        num_files=5,
+        prefix="mock_dataset",
     )
     logger.info(f"Generated {len(batch_files)} files in batch")

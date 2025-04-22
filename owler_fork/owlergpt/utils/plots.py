@@ -1,10 +1,10 @@
 import os
 
+from matplotlib import pyplot as plt
+from matplotlib.backends.backend_pdf import PdfPages
 import numpy as np
 import pandas as pd
 import seaborn as sns
-from matplotlib import pyplot as plt
-from matplotlib.backends.backend_pdf import PdfPages
 
 
 def _save_heatmap(results: list, file_name: str, folder: str, models: list):
@@ -66,9 +66,7 @@ def _save_lineplot(results: dict, file_name: str, folder: str, models: list, k: 
         for j in results[i]:
             if i != j:
                 ax.plot(x, results[i][j], label=f"{model}_vs_{models[j]}")
-        fig.legend(
-            loc="outside upper center", fontsize="xx-large", mode="expand", ncols=3
-        )
+        fig.legend(loc="outside upper center", fontsize="xx-large", mode="expand", ncols=3)
         path = os.path.join(folder, f"{file_name}_{model}.pdf")
         plt.savefig(path, bbox_inches="tight")
         plt.close()

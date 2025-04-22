@@ -2,12 +2,11 @@
 
 from pathlib import Path
 
+from loguru import logger
 import numpy as np
 import safetensors.numpy
-from loguru import logger
 
 from src.utils.general_setup import setup
-
 
 rng = setup("load_embeddings")
 

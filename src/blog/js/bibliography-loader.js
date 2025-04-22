@@ -1,16 +1,16 @@
 // async function loadBibliography() {
-//     console.log('Starting bibliography load...'); 
+//     console.log('Starting bibliography load...');
 //     try {
 //         // Fetch the .bib file
 //         const response = await fetch('bibliography.bib');
 //         console.log('Fetch response:', response.status);
-        
+
 //         if (!response.ok) {
 //             throw new Error(`HTTP error! status: ${response.status}`);
 //         }
 //         const bibContent = await response.text();
 //         console.log('Bibliography content loaded, length:', bibContent.length);
-        
+
 //         // Create or update the bibliography script tag
 //         let bibElement = document.querySelector('script[type="text/bibliography"]');
 //         if (!bibElement) {
@@ -18,21 +18,21 @@
 //             bibElement.type = 'text/bibliography';
 //             document.body.appendChild(bibElement);
 //         }
-        
+
 //         // Update content
 //         bibElement.textContent = bibContent;
-        
+
 //         // Try to access Distill's internal citation system
 //         if (window.distill && window.distill.template && window.distill.template.bibliography) {
 //             console.log('Found Distill bibliography system, updating...');
-            
+
 //             // Parse bibliography content
 //             const bibParser = new window.distill.template.Bibliography(bibContent);
 //             const parsedBib = bibParser.parse();
-            
+
 //             // Update Distill's internal bibliography
 //             window.distill.template.bibliography = parsedBib;
-            
+
 //             // Force update all citation elements
 //             document.querySelectorAll('d-cite').forEach(cite => {
 //                 const keys = cite.getAttribute('key').split(',');
@@ -43,11 +43,11 @@
 //                     cite.requestUpdate();
 //                 }
 //             });
-            
+
 //             console.log('Bibliography updated');
 //         } else {
 //             console.warn('Distill bibliography system not found, adding front matter...');
-            
+
 //             // Create front matter if it doesn't exist
 //             if (!document.querySelector('d-front-matter')) {
 //                 const frontMatter = document.createElement('d-front-matter');
@@ -64,7 +64,7 @@
 //             article.style.display = 'none';
 //             article.offsetHeight; // Force reflow
 //             article.style.display = '';
-            
+
 //             // Also try to force Distill to reprocess
 //             if (window.distill && window.distill.template) {
 //                 window.distill.template.render();

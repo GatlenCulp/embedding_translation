@@ -1,5 +1,3 @@
 {
-    "recommendations": [
-        "dvirtz.parquet-viewer"
-    ]
+	"recommendations": ["dvirtz.parquet-viewer"]
 }

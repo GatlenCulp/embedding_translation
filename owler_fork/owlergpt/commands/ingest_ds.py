@@ -1,26 +1,21 @@
 import os
 from pathlib import Path
 
-import click
-import cohere
-import yaml
-from chromadb import PersistentClient
-from chromadb import Settings
+from chromadb import PersistentClient, Settings
 from chromadb.api.client import AdminClient
 from chromadb.config import DEFAULT_TENANT
 from chromadb.db.base import UniqueConstraintError
+import click
+import cohere
 from flask import current_app
-from langchain.text_splitter import SentenceTransformersTokenTextSplitter
-from langchain.text_splitter import TokenTextSplitter
+from langchain.text_splitter import SentenceTransformersTokenTextSplitter, TokenTextSplitter
 from openai import OpenAI
 from sentence_transformers import SentenceTransformer
 from torch.utils.data import DataLoader
 from tqdm import tqdm
+import yaml
 
-from owlergpt.utils import JSONDataset
-from owlergpt.utils import choose_dataset_folders
-from owlergpt.utils import collate_fn
-
+from owlergpt.utils import JSONDataset, choose_dataset_folders, collate_fn
 
 OPENAI_MODELS = ["text-embedding-3-small", "text-embedding-3-large"]
 COHERE_MODELS = ["embed-english-v3.0"]
@@ -49,7 +44,8 @@ class FastEmbedder:
 
 # XXX this will have to be modified
 def create_split_embedding_models(
-    model_name: str, parallelism_batch_size: int
+    model_name: str,
+    parallelism_batch_size: int,
 ) -> list[SentenceTransformer]:
     return [
         SentenceTransformer(
@@ -84,17 +80,13 @@ def ingest_dataset() -> None:
         parallelism_batch_size = None
         embedding_model: SentenceTransformer | None = None
         if environ["VECTOR_SEARCH_SENTENCE_TRANSFORMER_DEVICE"] == "cpu":
-            raise ValueError(
-                "CPU is not supported for embedding model. Please use a GPU."
-            )
+            raise ValueError("CPU is not supported for embedding model. Please use a GPU.")
             # click.echo("Using CPU for embedding model. This might be slow...")
         print("OkOKOK ===============================================")  # XXX
         if model_name not in OPENAI_MODELS and model_name not in COHERE_MODELS:
             parallelism_batch_size = 1
             # parallelism_batch_size = click.prompt("Please enter how many models to generate dbs in parallel for:", type=int, default=8)
-            embedding_model = create_split_embedding_models(
-                model_name, parallelism_batch_size
-            )[0]
+            embedding_model = create_split_embedding_models(model_name, parallelism_batch_size)[0]
 
         # # Ask the user for the tokens_per_chunk value
         # tokens_per_chunk = click.prompt("Please enter the tokens per chunk value (128, 256, 512, 1024)", type=int, default=256)
@@ -121,7 +113,7 @@ def ingest_dataset() -> None:
         else:
             if "CUDA_VISIBLE_DEVICES" not in environ:
                 raise ValueError(
-                    "CUDA_VISIBLE_DEVICES is not set, you should set it since parallel inference requires GPU support"
+                    "CUDA_VISIBLE_DEVICES is not set, you should set it since parallel inference requires GPU support",
                 )
             text_splitter = SentenceTransformersTokenTextSplitter(
                 model_name=model_name,
@@ -140,10 +132,7 @@ def ingest_dataset() -> None:
 
         # 1. Create databases
         print(f"Creating {len(selected_folders)} databases")
-        db_names = [
-            f"{selected_folder}_{tokens_per_chunk}"
-            for selected_folder in selected_folders
-        ]
+        db_names = [f"{selected_folder}_{tokens_per_chunk}" for selected_folder in selected_folders]
         assert len(db_names) == len(selected_folders)
         collections = []
         for db_name, selected_folder in tqdm(
@@ -152,37 +141,33 @@ def ingest_dataset() -> None:
         ):
             try:
                 admin_client.create_database(db_name)
-                click.echo(
-                    f"Created dataset-specific DB {db_name} to store embeddings."
-                )
+                click.echo(f"Created dataset-specific DB {db_name} to store embeddings.")
             except UniqueConstraintError:
                 click.echo(
-                    f"Dataset-specific DB {db_name} already exists. Using it to store embeddings"
+                    f"Dataset-specific DB {db_name} already exists. Using it to store embeddings",
                 )
             chroma_client.set_tenant(tenant=DEFAULT_TENANT, database=db_name)
             # Include VECTOR_SEARCH_SENTENCE_TRANSFORMER_MODEL in the collection name
-            collection_name = f"{selected_folder}_{transformer_model}_CharacterSplitting_{tokens_per_chunk}"
+            collection_name = (
+                f"{selected_folder}_{transformer_model}_CharacterSplitting_{tokens_per_chunk}"
+            )
 
             try:
                 # Attempt to create a new collection with the selected folder name
                 chroma_collection = chroma_client.create_collection(
                     name=collection_name,
-                    metadata={
-                        "hnsw:space": os.environ["VECTOR_SEARCH_DISTANCE_FUNCTION"]
-                    },
+                    metadata={"hnsw:space": os.environ["VECTOR_SEARCH_DISTANCE_FUNCTION"]},
                 )
                 collections.append(chroma_collection)
             except UniqueConstraintError:
                 # If the collection already exists, delete it and create a new one
                 click.echo(
-                    f"Collection {collection_name} already exists. Removing and creating a new one."
+                    f"Collection {collection_name} already exists. Removing and creating a new one.",
                 )
                 chroma_client.delete_collection(name=collection_name)
                 chroma_collection = chroma_client.create_collection(
                     name=collection_name,
-                    metadata={
-                        "hnsw:space": os.environ["VECTOR_SEARCH_DISTANCE_FUNCTION"]
-                    },
+                    metadata={"hnsw:space": os.environ["VECTOR_SEARCH_DISTANCE_FUNCTION"]},
                 )
                 collections.append(chroma_collection)
         assert len(collections) == len(db_names)
@@ -200,9 +185,7 @@ def ingest_dataset() -> None:
             else:
                 record_type = "document"
             dataset = JSONDataset(
-                os.path.join(
-                    environ["DATASET_FOLDER_PATH"], selected_folders[0], filename
-                ),
+                os.path.join(environ["DATASET_FOLDER_PATH"], selected_folders[0], filename),
                 text_splitter,
                 model_name,
                 tokens_per_chunk,
@@ -211,20 +194,23 @@ def ingest_dataset() -> None:
                 record_type,
             )
             dataloader = DataLoader(
-                dataset, batch_size=batch_size, collate_fn=collate_fn, num_workers=4
+                dataset,
+                batch_size=batch_size,
+                collate_fn=collate_fn,
+                num_workers=4,
             )
             total_records += dataset.__len__()
             for documents, ids, text_chunks in tqdm(
-                dataloader, desc="| Computing embeddings |", total=len(dataloader)
+                dataloader,
+                desc="| Computing embeddings |",
+                total=len(dataloader),
             ):
                 if len(documents) == 0 or len(ids) == 0 or len(text_chunks) == 0:
                     continue
                 # Generate embeddings for each chunk
                 if model_name in OPENAI_MODELS:
                     embeddings = []
-                    data = client.embeddings.create(
-                        input=text_chunks, model=model_name
-                    ).data
+                    data = client.embeddings.create(input=text_chunks, model=model_name).data
                     for entry in data:
                         embeddings.append(entry.embedding)
                 elif model_name in COHERE_MODELS:
@@ -236,7 +222,8 @@ def ingest_dataset() -> None:
                     ).embeddings.float
                 else:
                     embeddings = embedding_model.encode(
-                        text_chunks, normalize_embeddings=normalize_embeddings
+                        text_chunks,
+                        normalize_embeddings=normalize_embeddings,
                     ).tolist()
 
                 # Prepare metadata for each chunk
@@ -260,5 +247,5 @@ def ingest_dataset() -> None:
                 )
 
             click.echo(
-                f"Processed {total_records} documents, generated {total_embeddings} embeddings."
+                f"Processed {total_records} documents, generated {total_embeddings} embeddings.",
             )

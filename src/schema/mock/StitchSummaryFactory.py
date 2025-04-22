@@ -3,19 +3,20 @@
 TODO: Get this to work
 """
 
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 from typing import Any
 
 from polyfactory.factories import BaseFactory
 
-from src.schema.training_schemas import EmbeddingDatasetInformation
-from src.schema.training_schemas import ExperimentConfig
-from src.schema.training_schemas import StitchEvaluation
-from src.schema.training_schemas import StitchEvaluationLog
-from src.schema.training_schemas import StitchSummary
-from src.schema.training_schemas import TrainSettings
-from src.schema.training_schemas import TrainStatus
+from src.schema.training_schemas import (
+    EmbeddingDatasetInformation,
+    ExperimentConfig,
+    StitchEvaluation,
+    StitchEvaluationLog,
+    StitchSummary,
+    TrainSettings,
+    TrainStatus,
+)
 
 
 class EmbeddingDatasetInformationFactory(BaseFactory[EmbeddingDatasetInformation]):
@@ -127,14 +128,12 @@ class StitchSummaryFactory(BaseFactory[StitchSummary]):
             training_evaluation_log=cls.create_training_evaluation_log(),
             train_status_final=cls.create_train_status(),
             train_stitch_embeddings=EmbeddingDatasetInformationFactory.build(
-                stitch_model_name="stitch_v1"
+                stitch_model_name="stitch_v1",
             ),
             test_experiment_config=test_config,
-            test_evaluation_log=StitchEvaluationLog(
-                evaluations=[StitchEvaluationFactory.build()]
-            ),
+            test_evaluation_log=StitchEvaluationLog(evaluations=[StitchEvaluationFactory.build()]),
             test_stitch_embeddings=EmbeddingDatasetInformationFactory.build(
-                stitch_model_name="stitch_v1"
+                stitch_model_name="stitch_v1",
             ),
             **kwargs,
         )

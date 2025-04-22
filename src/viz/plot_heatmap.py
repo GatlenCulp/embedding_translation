@@ -1,9 +1,8 @@
+from loguru import logger
 import numpy as np
 import plotly.graph_objects as go
-from loguru import logger
 
 from src.utils.general_setup import setup
-
 
 setup("plot_heatmap")
 
@@ -70,7 +69,7 @@ def _plot_heatmap(
             textfont={"color": "black"},
             reversescale=False,
             showscale=True,
-        )
+        ),
     )
 
     fig.update_layout(
@@ -90,7 +89,7 @@ def _plot_heatmap(
                 "hoverClosestCartesian",
                 "hoverCompareCartesian",
                 "toggleSpikelines",
-            ]
+            ],
         ),
         dragmode=False,  # Disables dragging/panning
     )

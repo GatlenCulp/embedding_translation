@@ -6,24 +6,20 @@ from pathlib import Path
 from typing import Any
 
 import chromadb
-import click
-import cohere
-from chromadb import PersistentClient
-from chromadb import Settings
+from chromadb import PersistentClient, Settings
 from chromadb.api.client import AdminClient
 from chromadb.config import DEFAULT_TENANT
 from chromadb.db.base import UniqueConstraintError
-from langchain.text_splitter import SentenceTransformersTokenTextSplitter
-from langchain.text_splitter import TokenTextSplitter
+import click
+import cohere
+from langchain.text_splitter import SentenceTransformersTokenTextSplitter, TokenTextSplitter
 from openai import OpenAI
 from sentence_transformers import SentenceTransformer
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
-from owlergpt.modern.collection_utils import COHERE_MODELS
-from owlergpt.modern.collection_utils import OPENAI_MODELS
-from owlergpt.utils import JSONDataset
-from owlergpt.utils import collate_fn
+from owlergpt.modern.collection_utils import COHERE_MODELS, OPENAI_MODELS
+from owlergpt.utils import JSONDataset, collate_fn
 
 
 # TODO(Adriano) also add a HF method? Maybe convert into HF dataset instead?
@@ -52,9 +48,7 @@ class StringsToJSONDataset:
             texts: List of text strings to convert
             record_type: Type of records ("document" or "query")
         """
-        assert (
-            self.output_path.exists()
-        ), f"Output path {self.output_path} does not exist"
+        assert self.output_path.exists(), f"Output path {self.output_path} does not exist"
         for output_path, records in [
             (self.queries_output_path, queries),
             (self.corpus_output_path, texts),
@@ -71,9 +65,9 @@ class StringsToJSONDataset:
 
             # Write records to JSONL file
             assert not output_path.exists(), f"Output path {output_path} already exists"
-            assert (
-                output_path.parent.exists()
-            ), f"Output path parent {output_path.parent} does not exist"
+            assert output_path.parent.exists(), (
+                f"Output path parent {output_path.parent} does not exist"
+            )
             with open(output_path, "w") as f:
                 for record in records:
                     f.write(json.dumps(record) + "\n")
@@ -87,7 +81,8 @@ class OriginalIngestion:
 
     @staticmethod
     def __create_split_embedding_models(
-        model_name: str, parallelism_batch_size: int = 1
+        model_name: str,
+        parallelism_batch_size: int = 1,
     ) -> list[SentenceTransformer]:
         return [
             SentenceTransformer(
@@ -118,7 +113,7 @@ class OriginalIngestion:
             if openai_key is None:
                 if "OPENAI_KEY" not in os.environ:
                     raise ValueError(
-                        "OPENAI_KEY is not set, you should set it since parallel inference requires GPU support"
+                        "OPENAI_KEY is not set, you should set it since parallel inference requires GPU support",
                     )
                 openai_key = os.environ["OPENAI_KEY"]
             client = OpenAI(api_key=openai_key)
@@ -126,7 +121,7 @@ class OriginalIngestion:
             if cohere_key is None:
                 if "COHERE_KEY" not in os.environ:
                     raise ValueError(
-                        "COHERE_KEY is not set, you should set it since parallel inference requires GPU support"
+                        "COHERE_KEY is not set, you should set it since parallel inference requires GPU support",
                     )
                 cohere_key = os.environ["COHERE_KEY"]
             client = cohere.Client(cohere_key)
@@ -135,7 +130,7 @@ class OriginalIngestion:
         else:
             if "CUDA_VISIBLE_DEVICES" not in os.environ:
                 raise ValueError(
-                    "CUDA_VISIBLE_DEVICES is not set, you should set it since parallel inference requires GPU support"
+                    "CUDA_VISIBLE_DEVICES is not set, you should set it since parallel inference requires GPU support",
                 )
             text_splitter = SentenceTransformersTokenTextSplitter(
                 model_name=model_name,
@@ -166,21 +161,20 @@ class OriginalIngestion:
     ) -> tuple[PersistentClient, chromadb.Collection]:
         if log:
             print("Getting text_splitter, transformer_model, client")
-        text_splitter, transformer_model, client = (
-            OriginalIngestion.__get_splitter_and_model(
-                # fetch keys from environ
-                model_name,
-                chunk_overlap,
-                tokens_per_chunk,
-                openai_key,
-                cohere_key,
-            )
+        text_splitter, transformer_model, client = OriginalIngestion.__get_splitter_and_model(
+            # fetch keys from environ
+            model_name,
+            chunk_overlap,
+            tokens_per_chunk,
+            openai_key,
+            cohere_key,
         )
 
         if log:
             print("Creating split embedding models")
         embedding_model = OriginalIngestion.__create_split_embedding_models(
-            model_name, parallelism_batch_size=1
+            model_name,
+            parallelism_batch_size=1,
         )[0]
 
         tqdm_func = tqdm if log else lambda *args, **kwargs: args[0]
@@ -209,10 +203,7 @@ class OriginalIngestion:
         # 1. Create databases
         if log:
             print(f"Creating {len(selected_folders)} databases")
-        db_names = [
-            f"{selected_folder}_{tokens_per_chunk}"
-            for selected_folder in selected_folders
-        ]
+        db_names = [f"{selected_folder}_{tokens_per_chunk}" for selected_folder in selected_folders]
         assert len(db_names) == len(selected_folders)
         collections = []
         for db_name, selected_folder in tqdm_func(
@@ -222,17 +213,17 @@ class OriginalIngestion:
             try:
                 admin_client.create_database(db_name)
                 if log:
-                    click.echo(
-                        f"Created dataset-specific DB {db_name} to store embeddings."
-                    )
+                    click.echo(f"Created dataset-specific DB {db_name} to store embeddings.")
             except UniqueConstraintError:
                 if log:
                     click.echo(
-                        f"Dataset-specific DB {db_name} already exists. Using it to store embeddings"
+                        f"Dataset-specific DB {db_name} already exists. Using it to store embeddings",
                     )
             chroma_client.set_tenant(tenant=DEFAULT_TENANT, database=db_name)
             # Include VECTOR_SEARCH_SENTENCE_TRANSFORMER_MODEL in the collection name
-            collection_name = f"{selected_folder}_{transformer_model}_CharacterSplitting_{tokens_per_chunk}"
+            collection_name = (
+                f"{selected_folder}_{transformer_model}_CharacterSplitting_{tokens_per_chunk}"
+            )
 
             try:
                 # Attempt to create a new collection with the selected folder name
@@ -244,7 +235,7 @@ class OriginalIngestion:
             except UniqueConstraintError:
                 # If the collection already exists, delete it and create a new one
                 click.echo(
-                    f"Collection {collection_name} already exists. Removing and creating a new one."
+                    f"Collection {collection_name} already exists. Removing and creating a new one.",
                 )
                 chroma_client.delete_collection(name=collection_name)
                 chroma_collection = chroma_client.create_collection(
@@ -285,16 +276,16 @@ class OriginalIngestion:
             )
             total_records += dataset.__len__()
             for documents, ids, text_chunks in tqdm(
-                dataloader, desc="| Computing embeddings |", total=len(dataloader)
+                dataloader,
+                desc="| Computing embeddings |",
+                total=len(dataloader),
             ):
                 if len(documents) == 0 or len(ids) == 0 or len(text_chunks) == 0:
                     continue
                 # Generate embeddings for each chunk
                 if model_name in OPENAI_MODELS:
                     embeddings = []
-                    data = client.embeddings.create(
-                        input=text_chunks, model=model_name
-                    ).data
+                    data = client.embeddings.create(input=text_chunks, model=model_name).data
                     for entry in data:
                         embeddings.append(entry.embedding)
                 elif model_name in COHERE_MODELS:
@@ -306,7 +297,8 @@ class OriginalIngestion:
                     ).embeddings.float
                 else:
                     embeddings = embedding_model.encode(
-                        text_chunks, normalize_embeddings=normalize_embeddings
+                        text_chunks,
+                        normalize_embeddings=normalize_embeddings,
                     ).tolist()
 
                 # Prepare metadata for each chunk
@@ -330,6 +322,6 @@ class OriginalIngestion:
                 )
 
             click.echo(
-                f"Processed {total_records} documents, generated {total_embeddings} embeddings."
+                f"Processed {total_records} documents, generated {total_embeddings} embeddings.",
             )
         return chroma_client, collections

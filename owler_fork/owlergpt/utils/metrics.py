@@ -3,11 +3,9 @@ import random
 import click
 import numpy as np
 import plotly.express as px
-import torch
 from sklearn.neighbors import NearestNeighbors
-from torch.nn.functional import cosine_similarity
-from torch.nn.functional import pairwise_distance
-
+import torch
+from torch.nn.functional import cosine_similarity, pairwise_distance
 
 COSINE = "cosine"
 EUCLIDEAN = "euclidean"
@@ -20,7 +18,10 @@ NEAREST_NEIGHBORS = [JACCARD, RANK]
 
 
 def _pairwise_similarity(
-    embeds1: torch.Tensor, embeds2: torch.Tensor, metric: str, device: torch.device
+    embeds1: torch.Tensor,
+    embeds2: torch.Tensor,
+    metric: str,
+    device: torch.device,
 ):
     """Calculates the pairwise cosine similarity or Euclidean distance between the given tensors.
 
@@ -34,9 +35,7 @@ def _pairwise_similarity(
         return cosine_similarity(embeds1.to(device), embeds2.to(device))
     if metric == EUCLIDEAN:
         return pairwise_distance(embeds1.to(device), embeds2.to(device))
-    raise NotImplementedError(
-        f"Provided unsupported metric {metric} for pairwise similarity!"
-    )
+    raise NotImplementedError(f"Provided unsupported metric {metric} for pairwise similarity!")
 
 
 def _mean_pairwise_similarity(
@@ -81,10 +80,7 @@ def _jaccard_sim(indices1: np.ndarray, indices2: np.ndarray):
     inds = np.concatenate((indices1, indices2), axis=1)
     len_union = np.array([len(np.unique(i)) for i in inds])
     len_intersection = np.array(
-        [
-            len(set(i).intersection(set(j)))
-            for i, j in zip(indices1, indices2, strict=False)
-        ]
+        [len(set(i).intersection(set(j))) for i, j in zip(indices1, indices2, strict=False)],
     )
     return np.mean(len_intersection / len_union)
 
@@ -104,10 +100,7 @@ def _get_rank_sum(indices1: np.ndarray, indices2: np.ndarray):
     ar1_indices = aux_sort_indices[:-1][mask] + 1
     ar2_indices = aux_sort_indices[1:][mask] - indices1.size + 1
     rank_sum = np.sum(
-        [
-            2 / ((1 + abs(i - j)) * (i + j))
-            for i, j in zip(ar1_indices, ar2_indices, strict=False)
-        ]
+        [2 / ((1 + abs(i - j)) * (i + j)) for i, j in zip(ar1_indices, ar2_indices, strict=False)],
     )
     return rank_sum
 
@@ -122,10 +115,7 @@ def _rank_sim(indices1: np.ndarray, indices2: np.ndarray):
     """
     rank_sums = [_get_rank_sum(i, j) for i, j in zip(indices1, indices2, strict=False)]
     len_intersection = np.array(
-        [
-            len(set(i).intersection(set(j)))
-            for i, j in zip(indices1, indices2, strict=False)
-        ]
+        [len(set(i).intersection(set(j))) for i, j in zip(indices1, indices2, strict=False)],
     )
     factors = []
     for idx, elem1 in enumerate(len_intersection):
@@ -258,9 +248,7 @@ def _calculate_embed_metric(
         )
     if metric == CKA:
         return _cka(embeds1, embeds2)
-    raise NotImplementedError(
-        f"Provided unsupported metric {metric} for embedding similarity!"
-    )
+    raise NotImplementedError(f"Provided unsupported metric {metric} for embedding similarity!")
 
 
 def _sample_embeddings(
@@ -287,7 +275,7 @@ def _sample_embeddings(
         if min_size < num_embeds:
             click.echo(
                 f"Chosen number of embeddings is larger than number of available ones {min_size}. "
-                f"Using all available."
+                f"Using all available.",
             )
         else:
             indices = random.sample(range(min_size), num_embeds)
@@ -331,7 +319,11 @@ def calculate_metric(
     embeddings1 = embeds1[:min_size]
     embeddings2 = embeds2[:min_size]
     embeddings1, embeddings2 = _sample_embeddings(
-        embeddings1, embeddings2, min_size, num_embeds, baseline
+        embeddings1,
+        embeddings2,
+        min_size,
+        num_embeds,
+        baseline,
     )
 
     if center:
@@ -363,5 +355,5 @@ def self_sim_score(metric: str):
     if metric == EUCLIDEAN:
         return 0
     raise NotImplementedError(
-        f"Cannot return self-similarity score of unsupported metric {metric}!"
+        f"Cannot return self-similarity score of unsupported metric {metric}!",
     )
