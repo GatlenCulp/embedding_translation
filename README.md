@@ -4,9 +4,10 @@
 
 # LEAD: Linear Embedding Alignment across Deep Neural Network Language Models' Representations
 
-_Note: This project/paper is not yet fully complete._
+> [!WARNING]\
+> This project was developed in around six days as a final project for [MIT's 6.7960 Deep Learning class](https://phillipi.github.io/6.7960/) and as such, there are some slight errors in our results and final analysis. Nonetheless, this project, it's methodology, and codebase may be informative to others.
 
-This is a repository containing the source code for the [LEAD Blog Post](https://gatlenculp.github.io/embedding_translation/) by Gatlen Culp and Adriano Hernandez from MIT.
+This is a repository containing the source code for the [LEAD Blog Post](https://gatlenculp.github.io/embedding_translation/) by [Gatlen Culp](https://gatlen.me) and [Adriano Hernandez](https://www.linkedin.com/in/adriano-hernandez/) from MIT.
 
 Published December 10th, 2024
 
