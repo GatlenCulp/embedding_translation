@@ -27,6 +27,7 @@ repos:
     hooks:
       - id: gitleaks
         name: "🔒 security · Detect hardcoded secrets"
+        args: ["--config", ".gitleaks.toml"]
 
   # --------------------------- 🔍 Code Quality Tools -------------------------- #
 
