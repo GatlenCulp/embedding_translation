@@ -60,9 +60,9 @@ decorator==5.1.1 \
 ipykernel==6.29.5 \
     --hash=sha256:afdb66ba5aa354b09b91379bac28ae4afebbb30e8b39510c9690afb7a10421b5 \
     --hash=sha256:f093a22c4a40f8828f8e330a9c297cb93dcab13bd9678ded6de8e5cf81c56215
-ipython==7.34.0 \
-    --hash=sha256:af3bdb46aa292bce5615b1b2ebc76c2080c5f77f54bda2ec72461317273e7cd6 \
-    --hash=sha256:c175d2440a1caff76116eb719d40538fbb316e214eda85c5515c303aacbfb23e
+ipython==8.10.0 \
+    --hash=sha256:b13a1d6c1f5818bd388db53b7107d17454129a70de2b87481d555daede5eb49e \
+    --hash=sha256:b38c31e8fc7eff642fc7c597061fff462537cf2314e3225a19c906b7b0d8a345
 jedi==0.19.2 \
     --hash=sha256:4770dc3de41bde3966b02eb84fbcf557fb33cce26ad23da12c742fb50ecb11f0 \
     --hash=sha256:a8ef22bde8490f57fe5c7681a3c83cb58874daf72b4784de3cce5b6ef6edb5b9
